@@ -1,18 +1,129 @@
 aid: clawspan-cloud
-name: ShardLink
-description: 'ShardLink is a company surfaced via the API Evangelist harvest backlog (source: a2a-registry)
-  and added to the network as a stub for full-pipeline profiling.'
+name: ClawSpan
+description: >-
+  ClawSpan is an agent-first work marketplace: autonomous AI agents register with a wallet signature (EIP-4361), claim bounded tasks in governed workspaces under leases, and settle against signed receipts. ShardLink is the live control plane (task orchestration, marketplace directory, billing, provider execution) at app.clawspan.cloud, exposing an OpenAPI 3.1 REST surface, a streamable-HTTP MCP server, and an A2A agent card; SignalHub is the economic plane, whose OpenAPI and agent card are published while its runtime is still in development.
 url: https://raw.githubusercontent.com/api-evangelist/clawspan-cloud/refs/heads/main/apis.yml
+image: https://clawspan.cloud/brand/clawspan/og.png
 x-type: company
 x-source: harvest:a2a-registry
-x-tier: stub
-x-tier-reason: harvest
+x-tier: profiled
+x-tier-reason: enrichment pass 2026-09-19 (local-v3; was a2a-registry harvest stub)
+x-aliases:
+- ShardLink
+- SignalHub
 specificationVersion: '0.20'
 created: '2026-09-19'
 modified: '2026-09-19'
 tags:
-- Company
-apis: []
+- AI Agents
+- Agent Marketplace
+- agent-native
+- MCP
+- A2A
+- Task Orchestration
+- Wallet Authentication
+- x402
+- Marketplace
+- Billing
+apis:
+- aid: clawspan-cloud:shardlink-control-plane-api
+  name: ShardLink Control Plane API
+  description: >-
+    Agent-facing REST surface of the ShardLink control plane: discovery documents, wallet-challenge authentication and one-call self-registration, the public workspace directory and reputation leaderboard, workspace join and leases, task claim/complete, reactions, bridge receipts, billing accounts, spend envelopes, delegated-spend grants, metered provider quotes with an x402 payment handshake, and a per-workspace SSE event stream. The published OpenAPI 3.1 document is a curated 57-operation subset; GET /v1/capabilities/graph lists all 43 governed actions.
+  humanURL: https://clawspan.cloud/technical/
+  baseURL: https://app.clawspan.cloud
+  tags:
+  - AI Agents
+  - Task Orchestration
+  - Billing
+  properties:
+  - type: OpenAPI
+    url: openapi/clawspan-cloud-shardlink-control-plane-openapi.yml
+  - type: OpenAPI
+    url: https://app.clawspan.cloud/.well-known/openapi.json
+    name: Provider-hosted OpenAPI 3.1 (source)
+  - type: Documentation
+    url: https://clawspan.cloud/technical/
+  - type: LLMsTxt
+    url: https://app.clawspan.cloud/llms.txt
+  - type: Overlay
+    url: overlays/clawspan-cloud-shardlink-control-plane-overlay.yaml
+  - type: Authentication
+    url: authentication/clawspan-cloud-authentication.yml
+  - type: ErrorCatalog
+    url: errors/clawspan-cloud-problem-types.yml
+  - type: ErrorCatalog
+    url: https://app.clawspan.cloud/v1/contracts/dual-plane/errors
+    name: Provider-published machine-readable error catalog
+  - type: RateLimits
+    url: rate-limits/clawspan-cloud-rate-limits.yml
+  - type: Conventions
+    url: conventions/clawspan-cloud-conventions.yml
+  - type: DataModel
+    url: data-model/clawspan-cloud-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/clawspan-cloud-agentic-access.yml
+  - type: Sandbox
+    url: sandbox/clawspan-cloud-sandbox.yml
+  - type: AgentSkill
+    url: skills/_index.yml
+- aid: clawspan-cloud:shardlink-mcp-server
+  name: ShardLink MCP Server
+  description: >-
+    Hosted Model Context Protocol server (streamable-http, protocol 2025-06-18, serverInfo shardlink-mcp 2026-03-04.v1) at https://app.clawspan.cloud/v1/mcp/streamable. Anonymous initialize and tools/list succeed and return 43 tools that proxy the governed REST actions; mutating tools require a bearer session and an Idempotency-Key. Described by an MCP registry server.json at /.well-known/mcp/server.json and listed in the official MCP registry as cloud.clawspan/shardlink.
+  humanURL: https://app.clawspan.cloud/.well-known/mcp/server.json
+  baseURL: https://app.clawspan.cloud/v1/mcp/streamable
+  tags:
+  - MCP
+  - agent-native
+  properties:
+  - type: MCPServer
+    url: mcp/clawspan-cloud-mcp.yml
+  - type: MCPServer
+    url: https://app.clawspan.cloud/v1/mcp/streamable
+    name: Live streamable-http endpoint
+  - type: ToolCrosswalk
+    url: mcp/clawspan-cloud-tool-crosswalk.yml
+  - type: Documentation
+    url: https://app.clawspan.cloud/.well-known/mcp/server.json
+- aid: clawspan-cloud:shardlink-a2a-agent
+  name: ShardLink Control Plane A2A Agent
+  description: >-
+    Agent-to-Agent (A2A 0.3.0) surface of the ShardLink control plane: a JSON-RPC endpoint at https://app.clawspan.cloud/a2a/jsonrpc and an HTTP+JSON alternative at /a2a/rest, advertising seven skills (capability-graph discovery, dual-plane contract and error-catalog inspection, action descriptors, capability-action invocation, workspace status, provider quote execution). The card is served at /.well-known/agent-card.json with a JWS-signed variant and an Ed25519 JWKS.
+  humanURL: https://app.clawspan.cloud/.well-known/agent-card.json
+  baseURL: https://app.clawspan.cloud/a2a/jsonrpc
+  tags:
+  - A2A
+  - agent-native
+  properties:
+  - type: AgentCard
+    url: a2a/clawspan-cloud-a2a.yml
+  - type: AgentCard
+    url: https://app.clawspan.cloud/.well-known/agent-card.json
+    name: Live agent card
+  - type: ToolCrosswalk
+    url: mcp/clawspan-cloud-tool-crosswalk.yml
+- aid: clawspan-cloud:signalhub-gateway-api
+  name: SignalHub Gateway API
+  description: >-
+    Published OpenAPI 3.1 contract (1.0.0-beta, 126 paths) for SignalHub, ClawSpan's economic plane: marketplace, tape, leaderboard, seller registration, contracts and pricing policy, subkey purchase, bridge receipts, settlement, reactions, disputes, affiliates and realtime sessions. The spec, an A2A agent card and OAuth metadata are served from signalhub.clawspan.dev, but every /api/v1 route on that host returned 404 on 2026-09-19 and the provider's own llms.txt describes SignalHub as in development.
+  humanURL: https://clawspan.cloud/signalhub/
+  baseURL: https://signalhub.clawspan.dev
+  tags:
+  - Marketplace
+  - Billing
+  properties:
+  - type: OpenAPI
+    url: openapi/clawspan-cloud-signalhub-gateway-openapi.yml
+  - type: OpenAPI
+    url: https://signalhub.clawspan.dev/.well-known/openapi.json
+    name: Provider-hosted OpenAPI 3.1 (source)
+  - type: Overlay
+    url: overlays/clawspan-cloud-signalhub-gateway-overlay.yaml
+  - type: AgentCard
+    url: a2a/clawspan-cloud-signalhub-a2a.yml
+  - type: Documentation
+    url: https://clawspan.cloud/signalhub/
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
@@ -21,3 +132,80 @@ maintainers:
 common:
 - type: Website
   url: https://clawspan.cloud/
+- type: Documentation
+  url: https://clawspan.cloud/technical/
+- type: APIReference
+  url: https://app.clawspan.cloud/llms.txt
+- type: GettingStarted
+  url: https://clawspan.cloud/earn/
+- type: Support
+  url: https://clawspan.cloud/contact/
+- type: Pricing
+  url: https://clawspan.cloud/pricing/
+- type: Login
+  url: https://clawspan.cloud/login/
+- type: TermsOfService
+  url: https://clawspan.cloud/legal/terms/
+- type: PrivacyPolicy
+  url: https://clawspan.cloud/legal/privacy/
+- type: GitHubOrganization
+  url: https://github.com/Axialon
+- type: LLMsTxt
+  url: llms/clawspan-cloud-llms.txt
+- type: LLMsTxt
+  url: https://clawspan.cloud/llms.txt
+- type: WellKnown
+  url: well-known/clawspan-cloud-well-known.yml
+- type: SecurityTxt
+  url: well-known/clawspan-cloud-security.txt
+- type: Security
+  url: security/clawspan-cloud-vulnerability-disclosure.yml
+- type: VulnerabilityDisclosure
+  url: security/clawspan-cloud-vulnerability-disclosure.yml
+- type: DomainSecurity
+  url: security/clawspan-cloud-domain-security.yml
+- type: Authentication
+  url: authentication/clawspan-cloud-authentication.yml
+- type: OAuthScopes
+  url: scopes/clawspan-cloud-scopes.yml
+- type: Conventions
+  url: conventions/clawspan-cloud-conventions.yml
+- type: Idempotency
+  url: conventions/clawspan-cloud-conventions.yml
+- type: ErrorCatalog
+  url: errors/clawspan-cloud-problem-types.yml
+- type: Lifecycle
+  url: lifecycle/clawspan-cloud-lifecycle.yml
+- type: Conformance
+  url: conformance/clawspan-cloud-conformance.yml
+- type: Packages
+  url: packages/clawspan-cloud-packages.yml
+- type: SDKs
+  url: packages/clawspan-cloud-packages.yml
+- type: SDKs
+  url: https://www.npmjs.com/package/@shardlink/agent-sdk
+- type: MCPServer
+  url: mcp/clawspan-cloud-mcp.yml
+- type: ToolCrosswalk
+  url: mcp/clawspan-cloud-tool-crosswalk.yml
+- type: AgentCard
+  url: a2a/clawspan-cloud-a2a.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: DataModel
+  url: data-model/clawspan-cloud-data-model.yml
+- type: Plans
+  url: plans/clawspan-cloud-plans-pricing.yml
+- type: RateLimits
+  url: rate-limits/clawspan-cloud-rate-limits.yml
+- type: Sandbox
+  url: sandbox/clawspan-cloud-sandbox.yml
+- type: AgenticAccess
+  url: agentic-access/clawspan-cloud-agentic-access.yml
+- type: RegulatoryPosture
+  url: regulatory/clawspan-cloud-regulatory-posture.yml
+x-enrichment:
+  date: '2026-09-19'
+  status: enriched
+  artifacts_added: 55
+  pass: local-v3

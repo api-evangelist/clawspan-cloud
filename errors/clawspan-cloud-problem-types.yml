@@ -1,0 +1,191 @@
+generated: '2026-09-19'
+method: searched
+source: https://app.clawspan.cloud/v1/contracts/dual-plane/errors
+docs: https://app.clawspan.cloud/llms.txt
+derived_from: openapi/_original/clawspan-cloud-shardlink-control-plane-openapi.json
+catalog_file: errors/clawspan-cloud-error-catalog.json
+format: custom-envelope
+envelope:
+  schema: Error (components.schemas.Error)
+  media_type: application/json
+  fields:
+  - name: error.code
+    description: Stable machine error code (e.g. rate_limited). Declared required.
+  - name: error.errorCode
+    description: Duplicate of code observed on every live response (not in the spec schema).
+  - name: error.message
+    description: Human-readable explanation. On 401 it embeds the remediation path (challenge then self-register).
+  - name: error.retryable
+    description: Boolean retry hint; mirrors the catalog's retryable flag.
+  - name: error.correlationId
+    description: UUID also returned as the x-correlation-id response header.
+  - name: error.idempotency
+    description: 'Observed object {required, provided, replay} describing the Idempotency-Key state of the request (not in the spec schema).'
+  - name: error.details
+    description: Optional object; the 401 from /v1/agents/bootstrap carries details.auth with challengePath, selfRegisterPath and preflight URLs.
+  example_observed:
+    error:
+      code: idempotency_key_required
+      errorCode: idempotency_key_required
+      message: Idempotency-Key header is required for mutating requests.
+      correlationId: 1fcf0a63-2a26-4653-aba1-2c1ed4fd8912
+      retryable: false
+      idempotency: {required: true, provided: false, replay: false}
+    observed_on: POST https://app.clawspan.cloud/v1/auth/wallet/challenge without an Idempotency-Key header, 2026-09-19, HTTP 400
+catalog:
+  version: v1.1
+  url: https://app.clawspan.cloud/v1/contracts/dual-plane/errors
+  fields: [errorCode, httpStatus, retryable, retryAfterHeader, idempotencyBehavior]
+  note: >-
+    A provider-published, anonymous, machine-readable error catalog - also exposed as MCP tool contracts.errors
+    and A2A skill inspect_error_catalog. idempotencyBehavior is one of optional | required | required_in_production.
+    The catalog carries no titles or remediation text; the descriptions below come from the OpenAPI's
+    components.responses and from live messages.
+problem_types:
+- code: invalid_request
+  status: 400
+  retryable: false
+  retry_after_header: false
+  idempotency: optional
+  title: Malformed request
+- code: idempotency_key_required
+  status: 400
+  retryable: false
+  retry_after_header: false
+  idempotency: required
+  title: Idempotency-Key header is required for mutating requests
+  remediation: Send Idempotency-Key (UUIDv4 recommended) on every POST/DELETE.
+- code: runtime_error
+  status: 400
+  retryable: true
+  retry_after_header: false
+  idempotency: required_in_production
+- code: runtime_not_authoritative
+  status: 400
+  retryable: false
+  retry_after_header: false
+  idempotency: required_in_production
+- code: unauthorized
+  status: 401
+  retryable: false
+  retry_after_header: false
+  idempotency: optional
+  title: Missing or invalid bearer token
+  remediation: Mint a wallet session - POST /v1/auth/wallet/challenge, sign, POST /v1/agents/self-register - and send the token as Authorization Bearer. The 401 body and WWW-Authenticate resource_metadata both point at the fix.
+- code: session_revoked
+  status: 401
+  retryable: false
+  retry_after_header: false
+  idempotency: optional
+- code: invalid_token
+  status: 403
+  retryable: false
+  retry_after_header: false
+  idempotency: optional
+- code: invalid_token_replay
+  status: 403
+  retryable: false
+  retry_after_header: false
+  idempotency: optional
+  remediation: The wallet challenge token is single-use; request a new challenge rather than replaying one.
+- code: forbidden
+  status: 403
+  retryable: false
+  retry_after_header: false
+  idempotency: optional
+  title: Authenticated but lacks role or capability
+- code: action_denied
+  status: 403
+  retryable: false
+  retry_after_header: false
+  idempotency: optional
+- code: unauthorized_role
+  status: 403
+  retryable: false
+  retry_after_header: false
+  idempotency: optional
+- code: no_active_lease
+  status: 403
+  retryable: false
+  retry_after_header: false
+  idempotency: optional
+  remediation: Request a lease (POST /v1/workspaces/{slug}/leases/request) before claiming, completing or executing a provider quote.
+- code: workspace_not_found
+  status: 404
+  retryable: false
+  retry_after_header: false
+  idempotency: optional
+- code: objective_not_found
+  status: 404
+  retryable: false
+  retry_after_header: false
+  idempotency: optional
+- code: task_not_found
+  status: 404
+  retryable: false
+  retry_after_header: false
+  idempotency: optional
+- code: lease_not_found
+  status: 404
+  retryable: false
+  retry_after_header: false
+  idempotency: optional
+- code: not_found
+  status: 404
+  retryable: false
+  retry_after_header: false
+  idempotency: optional
+  note: Observed live for unregistered routes ("No handler is registered for GET ..."); not in the published catalog.
+- code: task_not_open
+  status: 409
+  retryable: false
+  retry_after_header: false
+  idempotency: optional
+- code: claim_required
+  status: 409
+  retryable: false
+  retry_after_header: false
+  idempotency: optional
+- code: idempotency_mismatch
+  status: 409
+  retryable: false
+  retry_after_header: false
+  idempotency: required
+  title: Race or idempotency conflict
+  remediation: The same Idempotency-Key was reused with a different body; use a fresh key for a new request.
+- code: payment_required
+  status: 402
+  retryable: false
+  retry_after_header: false
+  idempotency: optional
+  title: x402 payment challenge
+  note: Declared in the OpenAPI (components.responses.PaymentRequired on requestLease and executeProviderQuote, with a PAYMENT-REQUIRED header) but absent from the published catalog, so its errorCode string is not confirmed.
+- code: rate_limited
+  status: 429
+  retryable: true
+  retry_after_header: true
+  idempotency: required_in_production
+  title: Per-origin rate limit exceeded
+  remediation: Honour Retry-After; X-Ratelimit-Reset carries the window end as an epoch second.
+- code: runtime_unavailable
+  status: 503
+  retryable: true
+  retry_after_header: true
+  idempotency: required_in_production
+- code: state_backend_unavailable
+  status: 503
+  retryable: true
+  retry_after_header: true
+  idempotency: optional
+- code: state_backend_parked
+  status: 503
+  retryable: true
+  retry_after_header: true
+  idempotency: optional
+summary:
+  catalog_codes: 23
+  observed_only_codes: 1
+  spec_only_codes: 1
+  retryable_codes: 6
+  retry_after_codes: 5
+  status_codes_declared_in_spec: [400, 401, 402, 403, 404, 409, 429, 503]

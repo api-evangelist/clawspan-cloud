@@ -1,0 +1,94 @@
+generated: '2026-09-19'
+method: probed
+source: https://signalhub.clawspan.dev/.well-known/agent-card.json
+card:
+  file: a2a/clawspan-cloud-signalhub-agent-card.json
+discovery:
+  path: /.well-known/agent-card.json
+  canonical: true
+  host: signalhub.clawspan.dev
+  note: >-
+    Second agent card, for ClawSpan's SignalHub economic plane. Ownership: ClawSpan's llms.txt names
+    "SignalHub is the economic plane (in development)" and the ShardLink card's contact block points
+    registryListings at https://signalhub.clawspan.dev; the SignalHub OpenAPI on the same host is titled
+    "SignalHub Gateway API" and the dual-plane contract at app.clawspan.cloud/v1/contracts/dual-plane
+    assigns market, tape, pricing and settlement ownership to signalhub. The host itself serves the ClawSpan
+    SPA (byte-identical / and llms.txt to clawspan.cloud). IMPORTANT STATUS FINDING - the card is published
+    but the plane behind it is not deployed - every /api/v1 route named in the SignalHub OpenAPI returned 404
+    on 2026-09-19, the RFC 8414 document on the host names an Auth0 STAGING tenant
+    (clawspan-staging.us.auth0.com) with null authorization/token endpoints, and the card's own version string
+    is a build tag (2026-04-19.v17). The declared JSON-RPC endpoint does answer, however.
+x-evidence:
+  fetched: '2026-09-19'
+  url: https://signalhub.clawspan.dev/.well-known/agent-card.json
+  http_status: 200
+  content_type: application/json
+  body_bytes: 3748
+  body_parses_as: JSON object with AgentCard shape
+  corroborating_probes:
+  - url: https://signalhub.clawspan.dev/.well-known/agent.json
+    http_status: 404
+  - url: https://signalhub.clawspan.dev/a2a/jsonrpc
+    http_status: 200
+    note: 'POST tasks/get for an unknown id returned a JSON-RPC error {"code":-32001,"message":"Task not found: probe"} - a live handler.'
+  - url: https://signalhub.clawspan.dev/api/v1/capabilities/graph
+    http_status: 404
+    note: The card's documentationUrl. Vercel NOT_FOUND - the REST plane the card documents is not deployed on this host.
+  - url: https://signalhub.clawspan.dev/api/v1/health
+    http_status: 404
+  - url: https://signalhub.clawspan.dev/.well-known/oauth-authorization-server
+    http_status: 200
+    note: issuer https://clawspan-staging.us.auth0.com with authorization_endpoint and token_endpoint null.
+agent_card:
+  name: SignalHub Exchange Surface
+  description: Public SignalHub discovery surface for capability graphs, dual-plane contracts, and A2A task intent planning.
+  version: 2026-04-19.v17
+  protocol_version: 0.3.0
+  url: https://signalhub.clawspan.dev/a2a/jsonrpc
+  preferred_transport: JSONRPC
+  provider:
+    organization: SignalHub
+    url: https://signalhub.clawspan.dev
+  documentation_url: https://signalhub.clawspan.dev/api/v1/capabilities/graph
+  capabilities:
+    streaming: true
+    push_notifications: false
+    state_transition_history: false
+  default_input_modes: [text/plain, application/json]
+  default_output_modes: [text/plain, application/json]
+  security_schemes: none declared
+  skill_count: 7
+  skills: [collect_signals, verify_quality_before_action, act_then_settle, monitor_reliability_and_scale, stabilize_throughput_under_load, protect_margin_and_trust, optimize_affiliate_growth]
+  skill_shape_note: >-
+    Every skill is an intent PLANNER - its description is a capability sequence
+    (e.g. "collect.marketplace.read -> collect.marketplace.recommend -> collect.tape.read -> ...") rather than an
+    action, and the capability ids it names are SignalHub-internal, not routes in the published OpenAPI.
+conformance:
+  spec: A2A 1.0.0
+  grade: conformant
+  protocol_version: 0.3.0
+  preferred_transport: JSONRPC
+  hard_checks:
+    capabilities_is_object: true
+    protocol_version_present: true
+    skills_is_array: true
+  optional_fields:
+    preferred_transport: true
+    default_input_modes: true
+    default_output_modes: true
+  grade_basis: >-
+    Passes all three hard checks and carries all three optional discriminators. Graded conformant on shape;
+    the deviations below are about what the card points at, which the grade does not measure.
+  deviations:
+  - field: documentationUrl
+    observed: https://signalhub.clawspan.dev/api/v1/capabilities/graph returns 404
+    note: The card advertises documentation on a REST plane that is not deployed.
+  - field: securitySchemes
+    observed: absent
+    note: No authentication is declared for any skill; whether the JSON-RPC endpoint requires credentials is not discoverable from the card.
+  - field: version
+    observed: 2026-04-19.v17
+    note: A date-stamped build tag rather than a semantic version.
+  - field: skills[].tags
+    observed: tags are the skill name split on underscores (e.g. "and", "then", "before")
+    note: Machine-generated tags with no routing value.

@@ -1,0 +1,151 @@
+generated: '2026-09-19'
+method: probed
+source: https://app.clawspan.cloud/.well-known/agent-card.json
+card:
+  file: a2a/clawspan-cloud-agent-card.json
+discovery:
+  path: /.well-known/agent-card.json
+  canonical: true
+  host: app.clawspan.cloud
+  note: >-
+    The card is served from the machine host app.clawspan.cloud, not the apex. clawspan.cloud and
+    www.clawspan.cloud return a real 404 (Vercel NOT_FOUND, text/plain) for both
+    /.well-known/agent-card.json and the legacy /.well-known/agent.json, and app.clawspan.cloud 404s the
+    legacy path with its typed JSON error envelope. shardlink.dev (the SDK's homepage) serves a byte-identical
+    copy of the same card. Ownership is settled by the documents themselves, not the fetch URL: the card's
+    provider.organization is "ShardLink" with provider.url https://app.clawspan.cloud, ClawSpan's own llms.txt
+    at https://clawspan.cloud/llms.txt names this exact URL as "Agent card (A2A)" and calls app.clawspan.cloud
+    "the canonical machine host", and the OpenAPI served on the same host declares servers[]
+    https://app.clawspan.cloud with contact support@clawspan.cloud.
+  signed_variant:
+    url: https://app.clawspan.cloud/.well-known/agent-card.signed.json
+    http_status: 200
+    file: well-known/clawspan-cloud-app-agent-card.signed.json
+    jwks: https://app.clawspan.cloud/.well-known/jwks.json
+    jwks_file: well-known/clawspan-cloud-app-jwks.json
+    key: Ed25519 (OKP, alg EdDSA, kid clawspan-discovery-ed25519-9de7ea67baaa)
+x-evidence:
+  fetched: '2026-09-19'
+  url: https://app.clawspan.cloud/.well-known/agent-card.json
+  http_status: 200
+  content_type: application/json; charset=utf-8
+  body_bytes: 7162
+  body_parses_as: JSON object with AgentCard shape (name, url, version, protocolVersion, capabilities, skills all present)
+  corroborating_probes:
+  - url: https://clawspan.cloud/.well-known/agent-card.json
+    http_status: 404
+  - url: https://clawspan.cloud/.well-known/agent.json
+    http_status: 404
+  - url: https://app.clawspan.cloud/.well-known/agent.json
+    http_status: 404
+  - url: https://shardlink.dev/.well-known/agent-card.json
+    http_status: 200
+    note: Byte-identical (7162 bytes) copy of the app.clawspan.cloud card.
+  - url: https://app.clawspan.cloud/a2a/jsonrpc
+    http_status: 200
+    note: >-
+      POST {"jsonrpc":"2.0","id":1,"method":"tasks/get","params":{"id":"probe"}} answered a JSON-RPC error
+      {"code":-32001,"message":"Task not found: probe"} - the endpoint is a live A2A JSON-RPC handler, not a
+      documentation page.
+  - url: https://app.clawspan.cloud/a2a/rest
+    http_status: 404
+    note: GET is not registered on the HTTP+JSON interface; the card declares it as a POST transport.
+  - url: https://app.clawspan.cloud/v1/a2a/actions
+    http_status: 200
+    note: The action-descriptor catalog the list_action_descriptors skill returns; saved to a2a/clawspan-cloud-a2a-actions.json (43 actions, version 2026-03-04.v1).
+agent_card:
+  name: ShardLink Control Plane
+  description: Authoritative ShardLink workspace coordination surface for capability discovery, dual-plane contracts, and controlled REST action execution.
+  version: 1.0.0
+  protocol_version: 0.3.0
+  url: https://app.clawspan.cloud/a2a/jsonrpc
+  preferred_transport: JSONRPC
+  additional_interfaces:
+  - transport: JSONRPC
+    url: https://app.clawspan.cloud/a2a/jsonrpc
+  - transport: HTTP+JSON
+    url: https://app.clawspan.cloud/a2a/rest
+  provider:
+    organization: ShardLink
+    url: https://app.clawspan.cloud
+  documentation_url: https://app.clawspan.cloud/v1/capabilities/graph
+  icon_url: https://app.clawspan.cloud/brand/agent-card-icon.png
+  capabilities:
+    streaming: true
+    push_notifications: false
+    state_transition_history: false
+  default_input_modes: [text/plain, application/json]
+  default_output_modes: [text/plain, application/json]
+  security_schemes:
+    bearerAuth: http bearer, bearerFormat JWT - actor, service or user session token
+    controlPlaneAdminKey: apiKey in header x-control-plane-key - breakglass admin key when enabled
+  skill_count: 7
+  skills:
+  - id: discover_capability_graph
+    security: none declared
+  - id: inspect_dual_plane_contract
+    security: none declared
+  - id: inspect_error_catalog
+    security: none declared
+  - id: list_action_descriptors
+    security: none declared
+  - id: invoke_capability_action
+    security: [bearerAuth, controlPlaneAdminKey]
+  - id: read_workspace_status
+    security: none declared
+  - id: execute_provider_quote
+    security: [bearerAuth, controlPlaneAdminKey]
+  vendor_extension:
+    key: clawspan
+    note: >-
+      A non-standard top-level "clawspan" object carries a quickstart (roaming preflight URL, docs URL, the
+      four well-known documents), an idempotency requirement block (Idempotency-Key required on POST/DELETE),
+      capability categories, the economics status (sandbox tier open, real-money buyer spend closed, operator
+      cash-out closed, credit_units non-convertible), per-lease pricing-program endpoints, a live reputation
+      aggregate (30 tracked agents, 0 completed tasks at fetch time) and support contacts.
+conformance:
+  spec: A2A 1.0.0
+  grade: conformant
+  protocol_version: 0.3.0
+  preferred_transport: JSONRPC
+  hard_checks:
+    capabilities_is_object: true
+    protocol_version_present: true
+    skills_is_array: true
+  optional_fields:
+    preferred_transport: true
+    default_input_modes: true
+    default_output_modes: true
+  grade_basis: >-
+    capabilities is an OBJECT (streaming, pushNotifications, stateTransitionHistory as boolean fields);
+    protocolVersion is present at the top level ("0.3.0"); skills is an ARRAY of seven fully-populated skills
+    with id, name, description, tags and examples. All three optional discriminators (preferredTransport,
+    defaultInputModes, defaultOutputModes) are present, and the card also declares additionalInterfaces,
+    securitySchemes, provider, documentationUrl and iconUrl.
+  deviations:
+  - field: protocolVersion
+    observed: '0.3.0'
+    note: >-
+      The card is written to the A2A 0.3 shape (top-level url + preferredTransport + additionalInterfaces)
+      rather than the 1.0 shape (supportedInterfaces[].protocolBinding). Both are conformant under the hard
+      checks; a 1.0-only reader that looks for supportedInterfaces will not find it.
+  - field: skills[].security
+    observed: only invoke_capability_action and execute_provider_quote declare security; the other five skills declare none
+    note: >-
+      Consistent with the capability graph, where the backing routes for the five undeclared skills are auth
+      "public". read_workspace_status is the exception - its backing task/objective status routes are
+      "authenticated" in the graph, but the skill carries no security requirement.
+  - field: securitySchemes
+    observed: flat OpenAPI-style objects (type/scheme/bearerFormat), not the A2A 1.0 protobuf-JSON oneof wrapper
+    note: Readable by any 0.3-era client; a strict 1.0 reader expecting httpAuthSecurityScheme wrappers will not parse them.
+  - field: clawspan
+    observed: non-standard top-level extension object
+    note: Ignored by spec-conformant readers; carries real operational disclosure (economics gates) that has no A2A field.
+surface_relationship:
+  note: >-
+    ClawSpan publishes REST, MCP and A2A surfaces that are projections of one capability graph
+    (2026-03-04.v1, 43 actions). The MCP server exposes all 43 actions as tools; the A2A card exposes seven
+    skills, two of which (invoke_capability_action, execute_provider_quote) are proxies over the same graph;
+    the curated OpenAPI covers 57 operations, 24 of which back an MCP tool. See
+    mcp/clawspan-cloud-tool-crosswalk.yml. A second, separately-graded card for the SignalHub plane lives at
+    a2a/clawspan-cloud-signalhub-a2a.yml.

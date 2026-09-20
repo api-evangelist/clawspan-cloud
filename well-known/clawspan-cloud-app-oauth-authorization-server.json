@@ -1,0 +1,1 @@
+{"issuer":"https://clerk.clawspan.cloud","authorization_endpoint":"https://app.clawspan.cloud/v1/auth/oidc/start","token_endpoint":null,"response_types_supported":["code"],"grant_types_supported":["authorization_code"],"code_challenge_methods_supported":["S256"],"scopes_supported":["openid","profile","email"]}

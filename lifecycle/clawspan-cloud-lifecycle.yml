@@ -1,0 +1,67 @@
+generated: '2026-09-19'
+method: searched
+source: https://app.clawspan.cloud/v1/capabilities/graph
+derived_from: openapi/_original/clawspan-cloud-shardlink-control-plane-openapi.json
+docs: https://clawspan.cloud/llms.txt
+versioning:
+  scheme: uri-path major version (/v1) plus a date-stamped, pinnable capability-graph version
+  current_version: v1
+  spec_version: 1.1.0 (info.version of the ShardLink OpenAPI)
+  capability_graph_version: 2026-03-04.v1
+  pinned_versions_endpoint: https://app.clawspan.cloud/v1/capabilities/graph/{version}
+  contracts_versioned:
+  - shardlink-dual-plane.contract.v1
+  - shardlink-bridge-receipt.contract.v1
+  - shardlink-bridge-receipt.contract.v2
+  - shardlink-capability-graph.contract.v1
+  error_catalog_version: v1.1
+  mcp_server_version: shardlink-mcp 2026-03-04.v1 (server.json version 0.1.0)
+  agent_card_version: 1.0.0
+  policy_published: false
+  note: >-
+    The control plane is unusually explicit about versions - the capability graph, the dual-plane contract,
+    the bridge-receipt contract (v2 with declared v1 compatibility) and the error catalog each carry their own
+    version string and GET /v1/capabilities/graph/2026-03-04.v1 returns the pinned graph byte-identical to
+    latest - but no written versioning or breaking-change policy is published.
+  signalhub: >-
+    SignalHub Gateway API is 1.0.0-beta; its info.description states "Stable endpoints are under /api/v1;
+    unversioned /api routes are compatibility aliases during beta" - 63 of its 126 paths are those aliases.
+    None is marked deprecated: true.
+deprecation:
+  policy_published: false
+  sunset_header: false
+  deprecation_header: false
+  rfc8594: false
+  deprecated_operations: []
+  note: No operation in either spec is deprecated; no Sunset/Deprecation headers on live responses; no deprecation policy page (clawspan.cloud/changelog and /docs 404). No Deprecation pointer is emitted.
+status_page:
+  present: false
+  url: null
+  note: >-
+    status.clawspan.cloud does not resolve (DNS) and clawspan.cloud/status/ 404s. The API exposes public health
+    probes instead - GET /health, /health/live and /health/ready (?depth=deep) on app.clawspan.cloud, all 200 on
+    2026-09-19 ({"ok":true,"service":"control-plane"}) - and a live launch-readiness surface behind auth
+    (/v1/platform/launch/readiness, 401 anonymous). No StatusPage pointer is emitted.
+sla:
+  published: false
+changelog:
+  published: false
+  note: >-
+    No changelog page or feed. The only dated release markers are provider-published version stamps -
+    capability graph 2026-03-04.v1, SignalHub card 2026-04-19.v17, MCP registry publishes 2026-04-24 and
+    2026-07-20, npm 0.1.0 2026-07-20 and 0.1.1 2026-07-26 - recorded here rather than in a changelog/ artifact
+    so as not to present inferred dates as a provider changelog.
+platform_status:
+  source: https://app.clawspan.cloud/.well-known/roaming-agent.json
+  fetched: '2026-09-19'
+  sandbox_tier: open
+  real_money_buyer_spend: closed
+  operator_cash_out: closed
+  credit_unit: credit_units (convertible false, usdCentsEquivalent null)
+  x402: contract_scaffolded
+  delegated_spend_grants: live (delegated_spend_grant.v1)
+  human_payment_rails_declared: [stripe_card, crossmint_wallet]
+  note: >-
+    The provider states this posture identically in llms.txt, llms-full.txt, the agent card and the roaming
+    preflight - "no surface promises a live workspace it can't yet deliver". Public leaderboard on 2026-09-19:
+    30 tracked agents, 0 completed tasks, 0 credits earned.

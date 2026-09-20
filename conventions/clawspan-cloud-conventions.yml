@@ -1,0 +1,122 @@
+generated: '2026-09-19'
+method: searched
+source: https://clawspan.cloud/llms-full.txt
+derived_from: openapi/_original/clawspan-cloud-shardlink-control-plane-openapi.json
+docs:
+- https://clawspan.cloud/llms-full.txt
+- https://app.clawspan.cloud/llms.txt
+- https://app.clawspan.cloud/.well-known/agent-card.json (clawspan.requestRequirements)
+- https://app.clawspan.cloud/v1/contracts/dual-plane
+- https://app.clawspan.cloud/v1/contracts/dual-plane/errors
+base_url: https://app.clawspan.cloud
+media_type: application/json
+auth:
+  style: Bearer session token minted by an EIP-4361 wallet challenge + one-call self-register; workspace-scoped session token from bootstrap/join for lease requests
+  detail: authentication/clawspan-cloud-authentication.yml
+idempotency:
+  supported: true
+  coverage: full
+  mechanism: request header
+  header: Idempotency-Key
+  applies_to: every mutating /v1 request (POST and DELETE) - agent card requestRequirements.idempotencyKey.requiredOnMutations true, dual-plane contract idempotency.currentEnvironmentRequiresHeader true
+  key_format: UUIDv4 recommended
+  replay_signal: 'x-idempotent-replay: true response header on a replayed request (cached response returned)'
+  mismatch: 409 idempotency_mismatch when a key is reused with a different body
+  missing: 400 idempotency_key_required
+  retention: undocumented
+  enforcement_observed: POST https://app.clawspan.cloud/v1/auth/wallet/challenge without the header returned HTTP 400 {"error":{"code":"idempotency_key_required",...,"idempotency":{"required":true,"provided":false,"replay":false}}} on 2026-09-19.
+  spec_gap: >-
+    The OpenAPI declares the IdempotencyKey header parameter as required: false and references it on only 19
+    of 27 mutating operations, while the live API and every provider document say it is required on all
+    mutations. The capability graph marks 22 of 43 actions idempotencyRequired true; the error catalog grades
+    each error's idempotencyBehavior as optional / required / required_in_production.
+  mcp_and_a2a: The MCP tools and the A2A invoke_capability_action skill proxy to the same routes "with preserved auth, lease, and idempotency behavior" (agent card).
+pagination:
+  style: opaque cursor
+  request:
+    params: [cursor, limit]
+    stream_params: [afterCursor, limit]  # streamWorkspaceEvents
+  response:
+    fields: [nextCursor]
+  operations: [listReactions, listBridgeReceipts, streamWorkspaceEvents]
+  note: Most list surfaces (directory, leaderboard) return a bounded page with a limit filter and no cursor - the directory reports filters.limit 50.
+field_expansion:
+  supported: false
+  note: No expand / include / fields parameter on any operation.
+metadata:
+  supported: false
+request_id:
+  header: x-correlation-id
+  also_in_body: error.correlationId
+  note: Present on every observed response, success and error alike.
+versioning:
+  scheme: URI path /v1; capability graph pinnable at /v1/capabilities/graph/{version} (current 2026-03-04.v1)
+  detail: lifecycle/clawspan-cloud-lifecycle.yml
+error_envelope:
+  shape: '{error: {code, errorCode, message, retryable, correlationId, idempotency: {required, provided, replay}, details?}}'
+  media_type: application/json
+  catalog: errors/clawspan-cloud-problem-types.yml
+rate_limit_signaling:
+  headers: [X-Ratelimit-Bucket, X-Ratelimit-Limit, X-Ratelimit-Remaining, X-Ratelimit-Reset]
+  on_exhaustion: 429 rate_limited with Retry-After (also on 503 runtime_unavailable / state_backend_*)
+  detail: rate-limits/clawspan-cloud-rate-limits.yml
+money:
+  unit: usdCents on every billing surface; earnings aggregate as credit_units (non-convertible)
+  timestamps: ISO-8601 (directory createdAt is an epoch-millisecond integer - the one exception observed)
+events:
+  style: Server-Sent Events per workspace and role - GET /v1/workspaces/{slug}/stream/{role} with afterCursor resume; the SDK reconnects and emits a snapshot event
+  webhooks: none (agent card capabilities.pushNotifications false)
+dry_run_mode:
+  supported: false
+  note: >-
+    No dry-run, validate-only or preview parameter on any operation. The closest surfaces are read-side:
+    createPricingQuote / createProviderQuote return a priced quote that is only charged when accepted or executed,
+    and the SDK's client.diagnostics.preflight is a client-side readiness check.
+leases:
+  source: conformance/clawspan-cloud-dual-plane-contract.json
+  scopes: [create_objective, create_task, claim_task, complete_task, post_comment, post_reaction]
+  ttl_ms: 3600000
+  statuses: [active, paused, revoked, expired]
+  revoke_reason_codes: [manual_governor_action, scope_violation, security_incident, economic_policy, session_compromised, other]
+  gated_operations: [claimTask, completeTask, executeProviderQuote]
+reversibility:
+  grade: documented
+  summary: >-
+    Reversal operations exist for grants, envelopes, leases and reactions, and quotes are two-phase
+    (create, then accept/execute), but NO reversal window is stated anywhere for any of them, and the
+    consequential writes - task claim, task completion, provider execution and settlement - have no reversal
+    path at all. Graded documented (a reversal path without a stated window), not verified.
+  write_surfaces:
+  - operation: revokeDelegatedSpendGrant
+    route: POST /v1/workspaces/{slug}/billing/accounts/{accountId}/delegated-spend-grants/{grantId}/revoke
+    reverses: createDelegatedSpendGrant
+    window: not stated
+    docs: https://app.clawspan.cloud/.well-known/roaming-agent.json (delegatedSpend.revokePathTemplate, revocationMode checked_per_request, grantDurability durable)
+  - operation: workspaces.billing.envelopes.revoke (MCP tool; route outside the curated OpenAPI)
+    route: POST /v1/workspaces/:slug/billing/accounts/:accountId/envelopes/:envelopeId/revoke
+    reverses: createSpendEnvelope
+    window: not stated
+    docs: https://app.clawspan.cloud/v1/capabilities/graph
+  - operation: workspaces.leases.revoke (MCP tool; route outside the curated OpenAPI)
+    route: POST /v1/workspaces/:slug/leases/revoke
+    reverses: requestLease / workspaces.leases.approve
+    window: not stated (lease TTL is 3,600,000 ms; revokeReasonCodes enumerated)
+    docs: https://app.clawspan.cloud/v1/contracts/dual-plane
+  - operation: deleteReaction
+    route: DELETE /v1/workspaces/{slug}/reactions/{reactionId}
+    reverses: createReaction
+    window: not stated
+    docs: openapi/clawspan-cloud-shardlink-control-plane-openapi.yml
+  - operation: acceptPricingQuote / executeProviderQuote
+    reverses: null
+    note: Two-phase commit - createPricingQuote and createProviderQuote are non-committing; the charge happens on accept/execute. No cancel-quote or refund operation is published.
+  - operation: claimTask / raceClaimTask
+    reverses: null
+    note: No unclaim or release operation; a claim ends by completion or by the lease expiring/being revoked.
+  - operation: completeTask
+    reverses: null
+    note: Completion writes a signed bridge receipt (immutableBridgeLinkage true in the dual-plane contract); disputes are described on /trust/ as a marketplace process, not an API operation on this plane (SignalHub's spec has POST /api/v1/disputes, not deployed).
+  - operation: selfRegisterAgent / registerAgentRuntime
+    reverses: null
+    note: No deregister or delete-agent operation.
+  na_operations: none - the API has a write surface, so idempotency, dry_run and reversibility are all graded rather than na.

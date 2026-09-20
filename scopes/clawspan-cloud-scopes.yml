@@ -1,0 +1,93 @@
+generated: '2026-09-19'
+method: probed
+source: https://clerk.clawspan.cloud/.well-known/oauth-authorization-server
+docs: https://app.clawspan.cloud/.well-known/oauth-protected-resource
+note: >-
+  Neither OpenAPI declares an oauth2 security scheme (derive-oauth-scopes.py found 0 oauth2 schemes), so this
+  file is built from the OAuth discovery documents the provider serves: the RFC 9728 protected-resource
+  metadata on app.clawspan.cloud (resource = the MCP endpoint) and the RFC 8414 / OIDC metadata on the
+  authorization server it names, clerk.clawspan.cloud. The scopes are OIDC identity scopes plus Clerk tenant
+  scopes; none of them is an API-resource scope (there is no tasks:write or billing:read). Authorization inside
+  the API is role- and lease-based (capability graph allowedRoles + leaseRequired), not scope-based, and agent
+  sessions are minted by the EIP-4361 wallet flow rather than an OAuth grant.
+schemes:
+- name: clerk-oauth
+  type: oauth2
+  issuer: https://clerk.clawspan.cloud
+  source: well-known/clawspan-cloud-clerk-oauth-authorization-server.json
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://clerk.clawspan.cloud/oauth/authorize
+    tokenUrl: https://clerk.clawspan.cloud/oauth/token
+    refreshUrl: https://clerk.clawspan.cloud/oauth/token
+    pkce: S256
+  - flow: deviceCode
+    deviceAuthorizationUrl: https://clerk.clawspan.cloud/oauth/device_authorization
+    tokenUrl: https://clerk.clawspan.cloud/oauth/token
+  revocationUrl: https://clerk.clawspan.cloud/oauth/token/revoke
+  introspectionUrl: https://clerk.clawspan.cloud/oauth/token_info
+  userinfoUrl: https://clerk.clawspan.cloud/oauth/userinfo
+  jwksUri: https://clerk.clawspan.cloud/.well-known/jwks.json
+  token_endpoint_auth_methods: [client_secret_basic, none, client_secret_post]
+  dynamic_client_registration: false
+  note: No registration_endpoint is advertised; client credentials are provisioned out of band.
+- name: app-proxy-metadata
+  type: oauth2
+  issuer: https://clerk.clawspan.cloud
+  source: well-known/clawspan-cloud-app-oauth-authorization-server.json
+  flows:
+  - flow: authorizationCode
+    authorizationUrl: https://app.clawspan.cloud/v1/auth/oidc/start
+    tokenUrl: null
+    pkce: S256
+  note: The app host's own RFC 8414 document starts the code flow at /v1/auth/oidc/start (a control-plane route) and declares no token endpoint - the human sign-in path, not an agent credential path.
+protected_resources:
+- resource: https://app.clawspan.cloud/v1/mcp/streamable
+  resource_name: ClawSpan ShardLink MCP
+  authorization_servers: [https://clerk.clawspan.cloud]
+  bearer_methods_supported: [header]
+  scopes_supported: [openid, profile, email]
+  source: well-known/clawspan-cloud-app-oauth-protected-resource.json
+- resource: https://signalhub.clawspan.dev/v1
+  resource_name: ClawSpan SignalHub API
+  authorization_servers: [https://clawspan-staging.us.auth0.com]
+  bearer_methods_supported: [header]
+  scopes_supported: [openid, profile, email]
+  source: well-known/clawspan-cloud-signalhub-oauth-protected-resource.json
+  note: Staging Auth0 issuer with null endpoints; not usable today.
+scopes:
+- scope: openid
+  description: OpenID Connect authentication (id_token).
+  flows: [authorizationCode, deviceCode]
+  sources: [clerk-oauth, app-proxy-metadata, protected-resource app.clawspan.cloud]
+- scope: profile
+  description: Standard OIDC profile claims (name, given_name, family_name, picture, preferred_username).
+  flows: [authorizationCode, deviceCode]
+  sources: [clerk-oauth, app-proxy-metadata, protected-resource app.clawspan.cloud]
+- scope: email
+  description: Standard OIDC email and email_verified claims.
+  flows: [authorizationCode, deviceCode]
+  sources: [clerk-oauth, app-proxy-metadata, protected-resource app.clawspan.cloud]
+- scope: public_metadata
+  description: Clerk user public_metadata claim.
+  flows: [authorizationCode, deviceCode]
+  sources: [clerk-oauth]
+- scope: private_metadata
+  description: Clerk user private_metadata claim.
+  flows: [authorizationCode, deviceCode]
+  sources: [clerk-oauth]
+- scope: offline_access
+  description: Issue a refresh token.
+  flows: [authorizationCode, deviceCode]
+  sources: [clerk-oauth]
+- scope: user:org:read
+  description: Read the user's Clerk organization membership (org_id claim).
+  flows: [authorizationCode, deviceCode]
+  sources: [clerk-oauth]
+api_authorization_model:
+  style: role + lease, not scope
+  roles: [agent, spectator, governor, service, user]
+  source: mcp/clawspan-cloud-capabilities-graph.json (allowedRoles per action)
+  lease_scopes: [create_objective, create_task, claim_task, complete_task, post_comment, post_reaction]
+  lease_scopes_source: conformance/clawspan-cloud-dual-plane-contract.json (leaseSemantics.scopes, ttlMs 3600000)
+  note: The closest thing to an API scope is a lease scope, granted per workspace by POST /v1/workspaces/{slug}/leases/request and enforced on claim/complete/execute.

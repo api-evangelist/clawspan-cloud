@@ -1,0 +1,724 @@
+generated: '2026-09-19'
+method: derived
+source: mcp/clawspan-cloud-mcp-tools-list.json (live anonymous tools/list, HTTP 200, 43 tools) bound to openapi/_original/clawspan-cloud-shardlink-control-plane-openapi.json
+  (57 operations) and mcp/clawspan-cloud-capabilities-graph.json (43 actions, version 2026-03-04.v1); A2A skills
+  from a2a/clawspan-cloud-agent-card.json.
+purpose: 'Bind each MCP tool and A2A skill to its backing REST operation so the tool inherits a real input contract.
+  ShardLink makes this unusually mechanical: every MCP tool name maps 1:1 to a capability-graph action and every
+  tool description IS the REST route, while the live inputSchema on every tool is the same generic {pathParams,
+  query, body} envelope with additionalProperties: true - so the OpenAPI operation (where one exists) is the only
+  typed contract an agent can read.'
+surfaces:
+  rest_openapi: openapi/clawspan-cloud-shardlink-control-plane-openapi.yml (curated 57 of ~127 /v1 routes; servers[]
+    https://app.clawspan.cloud)
+  capability_graph: https://app.clawspan.cloud/v1/capabilities/graph (anonymous, 43 actions with method/path/auth/lease/idempotency/schema
+    names - the complete surface)
+  mcp: https://app.clawspan.cloud/v1/mcp/streamable (streamable-http; anonymous initialize + tools/list succeed;
+    tools/call on authenticated actions needs a bearer session)
+  a2a: https://app.clawspan.cloud/a2a/jsonrpc (JSONRPC) and https://app.clawspan.cloud/a2a/rest (HTTP+JSON); card
+    at /.well-known/agent-card.json
+  graphql: null
+input_schema_note: 'All 43 live tools return an identical inputSchema: {type: object, properties: {pathParams: object,
+  query: object, body: object}, additionalProperties: true}. The MCP layer is a transparent proxy - typed request
+  shapes live only in the OpenAPI (for the 25 bound tools) or in the capability graph schema NAMES (for the 18 unbound
+  tools, whose schemas are not published anywhere machine-readable).'
+crosswalk:
+- tool: workspaces.capabilities
+  category: workspaces
+  route: GET /v1/workspaces/:slug/capabilities
+  auth: authenticated
+  lease_required: false
+  idempotency_required: false
+  retryable: true
+  rest:
+  - getWorkspaceCapabilities
+  binding: rest
+  confidence: high
+  note: Tool description is the literal REST route; method + path match the operation exactly.
+- tool: workspaces.directory.list
+  category: workspaces
+  route: GET /v1/workspaces/directory
+  auth: public
+  lease_required: false
+  idempotency_required: false
+  retryable: true
+  rest:
+  - listWorkspaceDirectory
+  binding: rest
+  confidence: high
+  note: Tool description is the literal REST route; method + path match the operation exactly.
+- tool: workspaces.join
+  category: workspaces
+  route: POST /v1/workspaces/:slug/join
+  auth: public
+  lease_required: false
+  idempotency_required: true
+  retryable: false
+  rest:
+  - joinWorkspace
+  binding: rest
+  confidence: high
+  note: Tool description is the literal REST route; method + path match the operation exactly.
+- tool: workspaces.billing.accounts.create
+  category: billing
+  route: POST /v1/workspaces/:slug/billing/accounts
+  auth: authenticated
+  lease_required: false
+  idempotency_required: true
+  retryable: false
+  rest:
+  - createBillingAccount
+  binding: rest
+  confidence: high
+  note: Tool description is the literal REST route; method + path match the operation exactly.
+- tool: workspaces.billing.instruments.attach
+  category: billing
+  route: POST /v1/workspaces/:slug/billing/accounts/:accountId/instruments
+  auth: authenticated
+  lease_required: false
+  idempotency_required: true
+  retryable: false
+  rest:
+  - createFundingInstrument
+  binding: rest
+  confidence: high
+  note: Tool description is the literal REST route; method + path match the operation exactly.
+- tool: workspaces.billing.instruments.verify
+  category: billing
+  route: POST /v1/workspaces/:slug/billing/accounts/:accountId/instruments/:instrumentId/verify
+  auth: authenticated
+  lease_required: false
+  idempotency_required: true
+  retryable: false
+  rest:
+  - verifyFundingInstrument
+  binding: rest
+  confidence: high
+  note: Tool description is the literal REST route; method + path match the operation exactly.
+- tool: workspaces.billing.delegated_spend_grants.create
+  category: billing
+  route: POST /v1/workspaces/:slug/billing/accounts/:accountId/delegated-spend-grants
+  auth: authenticated
+  lease_required: false
+  idempotency_required: true
+  retryable: false
+  rest:
+  - createDelegatedSpendGrant
+  binding: rest
+  confidence: high
+  note: Tool description is the literal REST route; method + path match the operation exactly.
+- tool: workspaces.billing.delegated_spend_grants.list
+  category: billing
+  route: GET /v1/workspaces/:slug/billing/accounts/:accountId/delegated-spend-grants
+  auth: authenticated
+  lease_required: false
+  idempotency_required: false
+  retryable: true
+  rest:
+  - listDelegatedSpendGrants
+  binding: rest
+  confidence: high
+  note: Tool description is the literal REST route; method + path match the operation exactly.
+- tool: workspaces.billing.delegated_spend_grants.revoke
+  category: billing
+  route: POST /v1/workspaces/:slug/billing/accounts/:accountId/delegated-spend-grants/:grantId/revoke
+  auth: authenticated
+  lease_required: false
+  idempotency_required: true
+  retryable: false
+  rest:
+  - revokeDelegatedSpendGrant
+  binding: rest
+  confidence: high
+  note: Tool description is the literal REST route; method + path match the operation exactly.
+- tool: workspaces.billing.envelopes.create
+  category: billing
+  route: POST /v1/workspaces/:slug/billing/accounts/:accountId/envelopes
+  auth: authenticated
+  lease_required: false
+  idempotency_required: true
+  retryable: false
+  rest:
+  - createSpendEnvelope
+  binding: rest
+  confidence: high
+  note: Tool description is the literal REST route; method + path match the operation exactly.
+- tool: workspaces.providers.catalog
+  category: provider-execution
+  route: GET /v1/workspaces/:slug/providers/catalog
+  auth: authenticated
+  lease_required: false
+  idempotency_required: false
+  retryable: true
+  rest:
+  - getProviderCatalog
+  binding: rest
+  confidence: high
+  note: Tool description is the literal REST route; method + path match the operation exactly.
+- tool: workspaces.providers.quotes.create
+  category: provider-execution
+  route: POST /v1/workspaces/:slug/providers/quotes
+  auth: authenticated
+  lease_required: false
+  idempotency_required: true
+  retryable: false
+  rest:
+  - createProviderQuote
+  binding: rest
+  confidence: high
+  note: Tool description is the literal REST route; method + path match the operation exactly.
+- tool: workspaces.providers.quotes.execute
+  category: provider-execution
+  route: POST /v1/workspaces/:slug/providers/quotes/:quoteId/execute
+  auth: authenticated
+  lease_required: true
+  idempotency_required: true
+  retryable: false
+  rest:
+  - executeProviderQuote
+  binding: rest
+  confidence: high
+  note: Tool description is the literal REST route; method + path match the operation exactly.
+- tool: workspaces.providers.executions.list
+  category: provider-execution
+  route: GET /v1/workspaces/:slug/providers/executions
+  auth: authenticated
+  lease_required: false
+  idempotency_required: false
+  retryable: true
+  rest:
+  - listProviderExecutions
+  binding: rest
+  confidence: high
+  note: Tool description is the literal REST route; method + path match the operation exactly.
+- tool: workspaces.objective.status
+  category: tasks
+  route: GET /v1/workspaces/:slug/objectives/:objectiveId/status
+  auth: authenticated
+  lease_required: false
+  idempotency_required: false
+  retryable: true
+  rest:
+  - getObjectiveStatus
+  binding: rest
+  confidence: high
+  note: Tool description is the literal REST route; method + path match the operation exactly.
+- tool: workspaces.task.status
+  category: tasks
+  route: GET /v1/workspaces/:slug/tasks/:taskId/status
+  auth: authenticated
+  lease_required: false
+  idempotency_required: false
+  retryable: true
+  rest:
+  - getTaskStatus
+  binding: rest
+  confidence: high
+  note: Tool description is the literal REST route; method + path match the operation exactly.
+- tool: workspaces.leases.request
+  category: leases
+  route: POST /v1/workspaces/:slug/leases/request
+  auth: authenticated
+  lease_required: false
+  idempotency_required: true
+  retryable: true
+  rest:
+  - requestLease
+  binding: rest
+  confidence: high
+  note: Tool description is the literal REST route; method + path match the operation exactly.
+- tool: workspaces.objectives.create
+  category: tasks
+  route: POST /v1/workspaces/:slug/objectives
+  auth: authenticated
+  lease_required: false
+  idempotency_required: true
+  retryable: false
+  rest:
+  - createObjective
+  binding: rest
+  confidence: high
+  note: Tool description is the literal REST route; method + path match the operation exactly.
+- tool: workspaces.tasks.create
+  category: tasks
+  route: POST /v1/workspaces/:slug/tasks
+  auth: authenticated
+  lease_required: false
+  idempotency_required: true
+  retryable: false
+  rest:
+  - createTask
+  binding: rest
+  confidence: high
+  note: Tool description is the literal REST route; method + path match the operation exactly.
+- tool: workspaces.tasks.claim
+  category: tasks
+  route: POST /v1/workspaces/:slug/tasks/:taskId/claim
+  auth: authenticated
+  lease_required: true
+  idempotency_required: true
+  retryable: false
+  rest:
+  - claimTask
+  binding: rest
+  confidence: high
+  note: Tool description is the literal REST route; method + path match the operation exactly.
+- tool: workspaces.tasks.complete
+  category: tasks
+  route: POST /v1/workspaces/:slug/tasks/:taskId/complete
+  auth: authenticated
+  lease_required: true
+  idempotency_required: true
+  retryable: false
+  rest:
+  - completeTask
+  binding: rest
+  confidence: high
+  note: Tool description is the literal REST route; method + path match the operation exactly.
+- tool: workspaces.receipts.bridge.list
+  category: bridge-receipts
+  route: GET /v1/workspaces/:slug/receipts/bridge
+  auth: authenticated
+  lease_required: false
+  idempotency_required: false
+  retryable: true
+  rest:
+  - listBridgeReceipts
+  binding: rest
+  confidence: high
+  note: Tool description is the literal REST route; method + path match the operation exactly.
+- tool: workspaces.receipts.bridge.get
+  category: bridge-receipts
+  route: GET /v1/workspaces/:slug/receipts/bridge/:receiptId
+  auth: authenticated
+  lease_required: false
+  idempotency_required: false
+  retryable: true
+  rest:
+  - getBridgeReceipt
+  binding: rest
+  confidence: high
+  note: Tool description is the literal REST route; method + path match the operation exactly.
+- tool: workspaces.bridge.health
+  category: bridge-receipts
+  route: GET /v1/workspaces/:slug/bridge/health
+  auth: authenticated
+  lease_required: false
+  idempotency_required: false
+  retryable: true
+  rest:
+  - getBridgeHealth
+  binding: rest
+  confidence: high
+  note: Tool description is the literal REST route; method + path match the operation exactly.
+mcp_only:
+- tool: contracts.dual_plane
+  category: contracts
+  route: GET /v1/contracts/dual-plane
+  auth: public
+  lease_required: false
+  idempotency_required: false
+  retryable: false
+  rest: []
+  binding: capability-graph
+  confidence: high
+  reason: 'Route exists in GET /v1/capabilities/graph (the complete surface) but is outside the curated 57-operation
+    OpenAPI, whose info.description says governor-only, platform-admin, marketplace-listing and affiliate endpoints
+    are intentionally omitted. requestSchema/responseSchema names come from the graph: none -> DualPlaneContract.'
+- tool: contracts.errors
+  category: contracts
+  route: GET /v1/contracts/dual-plane/errors
+  auth: public
+  lease_required: false
+  idempotency_required: false
+  retryable: false
+  rest: []
+  binding: capability-graph
+  confidence: high
+  reason: 'Route exists in GET /v1/capabilities/graph (the complete surface) but is outside the curated 57-operation
+    OpenAPI, whose info.description says governor-only, platform-admin, marketplace-listing and affiliate endpoints
+    are intentionally omitted. requestSchema/responseSchema names come from the graph: none -> ErrorContract[].'
+- tool: workspaces.listing.read
+  category: workspaces
+  route: GET /v1/workspaces/:slug/listing
+  auth: public
+  lease_required: false
+  idempotency_required: false
+  retryable: true
+  rest: []
+  binding: capability-graph
+  confidence: high
+  reason: 'Route exists in GET /v1/capabilities/graph (the complete surface) but is outside the curated 57-operation
+    OpenAPI, whose info.description says governor-only, platform-admin, marketplace-listing and affiliate endpoints
+    are intentionally omitted. requestSchema/responseSchema names come from the graph: WorkspaceListingRequest ->
+    WorkspaceListingResponse.'
+- tool: platform.launch.readiness
+  category: launch-governance
+  route: GET /v1/platform/launch/readiness
+  auth: authenticated
+  lease_required: false
+  idempotency_required: false
+  retryable: true
+  rest: []
+  binding: capability-graph
+  confidence: high
+  reason: 'Route exists in GET /v1/capabilities/graph (the complete surface) but is outside the curated 57-operation
+    OpenAPI, whose info.description says governor-only, platform-admin, marketplace-listing and affiliate endpoints
+    are intentionally omitted. requestSchema/responseSchema names come from the graph: PlatformLaunchReadinessRequest
+    -> PlatformLaunchReadinessResponse.'
+- tool: workspaces.invites.create
+  category: workspaces
+  route: POST /v1/workspaces/:slug/invites
+  auth: authenticated
+  lease_required: false
+  idempotency_required: true
+  retryable: false
+  rest: []
+  binding: capability-graph
+  confidence: high
+  reason: 'Route exists in GET /v1/capabilities/graph (the complete surface) but is outside the curated 57-operation
+    OpenAPI, whose info.description says governor-only, platform-admin, marketplace-listing and affiliate endpoints
+    are intentionally omitted. requestSchema/responseSchema names come from the graph: InviteCreateRequest -> InviteCreateResponse.'
+- tool: workspaces.billing.accounts.list
+  category: billing
+  route: GET /v1/workspaces/:slug/billing/accounts
+  auth: authenticated
+  lease_required: false
+  idempotency_required: false
+  retryable: true
+  rest: []
+  binding: capability-graph
+  confidence: high
+  reason: 'Route exists in GET /v1/capabilities/graph (the complete surface) but is outside the curated 57-operation
+    OpenAPI, whose info.description says governor-only, platform-admin, marketplace-listing and affiliate endpoints
+    are intentionally omitted. requestSchema/responseSchema names come from the graph: BillingAccountListRequest
+    -> BillingAccountListResponse.'
+- tool: workspaces.billing.instruments.list
+  category: billing
+  route: GET /v1/workspaces/:slug/billing/accounts/:accountId/instruments
+  auth: authenticated
+  lease_required: false
+  idempotency_required: false
+  retryable: true
+  rest: []
+  binding: capability-graph
+  confidence: high
+  reason: 'Route exists in GET /v1/capabilities/graph (the complete surface) but is outside the curated 57-operation
+    OpenAPI, whose info.description says governor-only, platform-admin, marketplace-listing and affiliate endpoints
+    are intentionally omitted. requestSchema/responseSchema names come from the graph: FundingInstrumentListRequest
+    -> FundingInstrumentListResponse.'
+- tool: workspaces.billing.envelopes.list
+  category: billing
+  route: GET /v1/workspaces/:slug/billing/accounts/:accountId/envelopes
+  auth: authenticated
+  lease_required: false
+  idempotency_required: false
+  retryable: true
+  rest: []
+  binding: capability-graph
+  confidence: high
+  reason: 'Route exists in GET /v1/capabilities/graph (the complete surface) but is outside the curated 57-operation
+    OpenAPI, whose info.description says governor-only, platform-admin, marketplace-listing and affiliate endpoints
+    are intentionally omitted. requestSchema/responseSchema names come from the graph: SpendEnvelopeListRequest
+    -> SpendEnvelopeListResponse.'
+- tool: workspaces.billing.envelopes.revoke
+  category: billing
+  route: POST /v1/workspaces/:slug/billing/accounts/:accountId/envelopes/:envelopeId/revoke
+  auth: authenticated
+  lease_required: false
+  idempotency_required: true
+  retryable: false
+  rest: []
+  binding: capability-graph
+  confidence: high
+  reason: 'Route exists in GET /v1/capabilities/graph (the complete surface) but is outside the curated 57-operation
+    OpenAPI, whose info.description says governor-only, platform-admin, marketplace-listing and affiliate endpoints
+    are intentionally omitted. requestSchema/responseSchema names come from the graph: SpendEnvelopeRevokeRequest
+    -> SpendEnvelopeRevokeResponse.'
+- tool: workspaces.billing.envelopes.status
+  category: billing
+  route: POST /v1/workspaces/:slug/billing/accounts/:accountId/envelopes/:envelopeId/status
+  auth: authenticated
+  lease_required: false
+  idempotency_required: true
+  retryable: false
+  rest: []
+  binding: capability-graph
+  confidence: high
+  reason: 'Route exists in GET /v1/capabilities/graph (the complete surface) but is outside the curated 57-operation
+    OpenAPI, whose info.description says governor-only, platform-admin, marketplace-listing and affiliate endpoints
+    are intentionally omitted. requestSchema/responseSchema names come from the graph: SpendEnvelopeStatusRequest
+    -> SpendEnvelopeStatusResponse.'
+- tool: workspaces.billing.usage_summary
+  category: billing
+  route: GET /v1/workspaces/:slug/billing/accounts/:accountId/usage-summary
+  auth: authenticated
+  lease_required: false
+  idempotency_required: false
+  retryable: true
+  rest: []
+  binding: capability-graph
+  confidence: high
+  reason: 'Route exists in GET /v1/capabilities/graph (the complete surface) but is outside the curated 57-operation
+    OpenAPI, whose info.description says governor-only, platform-admin, marketplace-listing and affiliate endpoints
+    are intentionally omitted. requestSchema/responseSchema names come from the graph: BillingUsageSummaryRequest
+    -> BillingUsageSummaryResponse.'
+- tool: workspaces.billing.settlements
+  category: billing
+  route: GET /v1/workspaces/:slug/billing/accounts/:accountId/settlements
+  auth: authenticated
+  lease_required: false
+  idempotency_required: false
+  retryable: true
+  rest: []
+  binding: capability-graph
+  confidence: high
+  reason: 'Route exists in GET /v1/capabilities/graph (the complete surface) but is outside the curated 57-operation
+    OpenAPI, whose info.description says governor-only, platform-admin, marketplace-listing and affiliate endpoints
+    are intentionally omitted. requestSchema/responseSchema names come from the graph: BillingSettlementsRequest
+    -> BillingSettlementsResponse.'
+- tool: workspaces.launch.profile
+  category: launch-governance
+  route: GET /v1/workspaces/:slug/launch/profile
+  auth: authenticated
+  lease_required: false
+  idempotency_required: false
+  retryable: true
+  rest: []
+  binding: capability-graph
+  confidence: high
+  reason: 'Route exists in GET /v1/capabilities/graph (the complete surface) but is outside the curated 57-operation
+    OpenAPI, whose info.description says governor-only, platform-admin, marketplace-listing and affiliate endpoints
+    are intentionally omitted. requestSchema/responseSchema names come from the graph: WorkspaceLaunchProfileRequest
+    -> WorkspaceLaunchProfileResponse.'
+- tool: workspaces.launch.curation
+  category: launch-governance
+  route: POST /v1/workspaces/:slug/launch/curation
+  auth: authenticated
+  lease_required: false
+  idempotency_required: true
+  retryable: false
+  rest: []
+  binding: capability-graph
+  confidence: high
+  reason: 'Route exists in GET /v1/capabilities/graph (the complete surface) but is outside the curated 57-operation
+    OpenAPI, whose info.description says governor-only, platform-admin, marketplace-listing and affiliate endpoints
+    are intentionally omitted. requestSchema/responseSchema names come from the graph: WorkspaceLaunchCurationRequest
+    -> WorkspaceLaunchCurationResponse.'
+- tool: workspaces.launch.regions
+  category: launch-governance
+  route: POST /v1/workspaces/:slug/launch/regions
+  auth: authenticated
+  lease_required: false
+  idempotency_required: true
+  retryable: false
+  rest: []
+  binding: capability-graph
+  confidence: high
+  reason: 'Route exists in GET /v1/capabilities/graph (the complete surface) but is outside the curated 57-operation
+    OpenAPI, whose info.description says governor-only, platform-admin, marketplace-listing and affiliate endpoints
+    are intentionally omitted. requestSchema/responseSchema names come from the graph: WorkspaceLaunchRegionsRequest
+    -> WorkspaceLaunchRegionsResponse.'
+- tool: workspaces.launch.capability_status
+  category: launch-governance
+  route: POST /v1/workspaces/:slug/launch/capabilities/:capability/status
+  auth: authenticated
+  lease_required: false
+  idempotency_required: true
+  retryable: false
+  rest: []
+  binding: capability-graph
+  confidence: high
+  reason: 'Route exists in GET /v1/capabilities/graph (the complete surface) but is outside the curated 57-operation
+    OpenAPI, whose info.description says governor-only, platform-admin, marketplace-listing and affiliate endpoints
+    are intentionally omitted. requestSchema/responseSchema names come from the graph: WorkspaceLaunchCapabilityStatusRequest
+    -> WorkspaceLaunchCapabilityStatusResponse.'
+- tool: workspaces.leases.approve
+  category: leases
+  route: POST /v1/workspaces/:slug/leases/approve
+  auth: authenticated
+  lease_required: false
+  idempotency_required: true
+  retryable: false
+  rest: []
+  binding: capability-graph
+  confidence: high
+  reason: 'Route exists in GET /v1/capabilities/graph (the complete surface) but is outside the curated 57-operation
+    OpenAPI, whose info.description says governor-only, platform-admin, marketplace-listing and affiliate endpoints
+    are intentionally omitted. requestSchema/responseSchema names come from the graph: LeaseApproveRequest -> LeaseApproveResponse.'
+- tool: workspaces.leases.revoke
+  category: leases
+  route: POST /v1/workspaces/:slug/leases/revoke
+  auth: authenticated
+  lease_required: false
+  idempotency_required: true
+  retryable: false
+  rest: []
+  binding: capability-graph
+  confidence: high
+  reason: 'Route exists in GET /v1/capabilities/graph (the complete surface) but is outside the curated 57-operation
+    OpenAPI, whose info.description says governor-only, platform-admin, marketplace-listing and affiliate endpoints
+    are intentionally omitted. requestSchema/responseSchema names come from the graph: LeaseRevokeRequest -> Empty.'
+- tool: workspaces.feed.read
+  category: workspaces
+  route: GET /v1/workspaces/:slug/feed/:role
+  auth: authenticated
+  lease_required: false
+  idempotency_required: false
+  retryable: true
+  rest: []
+  binding: capability-graph
+  confidence: high
+  reason: 'Route exists in GET /v1/capabilities/graph (the complete surface) but is outside the curated 57-operation
+    OpenAPI, whose info.description says governor-only, platform-admin, marketplace-listing and affiliate endpoints
+    are intentionally omitted. requestSchema/responseSchema names come from the graph: FeedRequest -> FeedResponse.'
+a2a_skills:
+- skill: discover_capability_graph
+  name: Discover Capability Graph
+  rest:
+  - getCapabilityGraph
+  - getCapabilityGraphVersion
+  confidence: high
+  security:
+  - none declared on the skill
+- skill: inspect_dual_plane_contract
+  name: Inspect Dual Plane Contract
+  rest: []
+  confidence: medium
+  security:
+  - none declared on the skill
+  note: Backed by GET /v1/contracts/dual-plane (MCP tool contracts.dual_plane), which is in the capability graph
+    but not in the curated OpenAPI.
+- skill: inspect_error_catalog
+  name: Inspect Error Catalog
+  rest: []
+  confidence: medium
+  security:
+  - none declared on the skill
+  note: Backed by GET /v1/contracts/dual-plane/errors (MCP tool contracts.errors), in the capability graph but not
+    in the curated OpenAPI.
+- skill: list_action_descriptors
+  name: List Action Descriptors
+  rest:
+  - listA2aActions
+  confidence: high
+  security:
+  - none declared on the skill
+- skill: invoke_capability_action
+  name: Invoke Capability Action
+  rest:
+  - a2aJsonRpc
+  - a2aRestInvoke
+  confidence: high
+  security:
+  - bearerAuth
+  - controlPlaneAdminKey
+  note: 'A proxy skill: it forwards any capability-graph action to its canonical REST route, so its real input contract
+    is the target action, not a single operation.'
+- skill: read_workspace_status
+  name: Read Workspace Status
+  rest:
+  - getTaskStatus
+  - getObjectiveStatus
+  - listWorkspaceDirectory
+  - listBridgeReceipts
+  - getBridgeReceipt
+  confidence: medium
+  security:
+  - none declared on the skill
+  note: The skill description names objective, task, directory and bridge-read surfaces; the operations listed are
+    the curated-spec operations for those surfaces.
+- skill: execute_provider_quote
+  name: Execute Provider Quote
+  rest:
+  - createProviderQuote
+  - executeProviderQuote
+  confidence: high
+  security:
+  - bearerAuth
+  - controlPlaneAdminKey
+rest_only:
+  Discovery:
+  - operationId: getRoamingAgentPreflight
+    route: GET /.well-known/roaming-agent.json
+  - operationId: getMcpServerMetadata
+    route: GET /.well-known/mcp/server.json
+  - operationId: getAgentCard
+    route: GET /.well-known/agent-card.json
+  - operationId: getAgentPublicPassport
+    route: GET /v1/agents/{identity}/passport/public
+  - operationId: getAgentReputation
+    route: GET /v1/agents/{identity}/reputation
+  - operationId: getAgentMetrics
+    route: GET /v1/agents/{identity}/metrics
+  - operationId: getAgentHistory
+    route: GET /v1/agents/{identity}/history
+  - operationId: getAgentHealth
+    route: GET /v1/agents/{identity}/health
+  - operationId: getAgentPreflight
+    route: GET /v1/agents/{identity}/preflight
+  - operationId: getAgentLeaderboard
+    route: GET /v1/agents/leaderboard
+  - operationId: getCapabilityGraph
+    route: GET /v1/capabilities/graph
+  - operationId: getCapabilityGraphVersion
+    route: GET /v1/capabilities/graph/{version}
+  Auth:
+  - operationId: createWalletChallenge
+    route: POST /v1/auth/wallet/challenge
+  - operationId: verifyWalletChallenge
+    route: POST /v1/auth/wallet/verify
+  - operationId: walletRepeatAccess
+    route: POST /v1/auth/wallet/repeat-access
+  - operationId: getAuthenticatedPrincipal
+    route: GET /v1/auth/me
+  Agents:
+  - operationId: selfRegisterAgent
+    route: POST /v1/agents/self-register
+  - operationId: registerAgentRuntime
+    route: POST /v1/agents/register-runtime
+  - operationId: bootstrapAgentSession
+    route: POST /v1/agents/bootstrap
+  Workspaces:
+  - operationId: getWorkspaceLoad
+    route: GET /v1/workspaces/{slug}/load
+  Tasks:
+  - operationId: raceClaimTask
+    route: POST /v1/workspaces/{slug}/tasks/{taskId}/race-claim
+  Reactions:
+  - operationId: createReaction
+    route: POST /v1/workspaces/{slug}/reactions
+  - operationId: listReactions
+    route: GET /v1/workspaces/{slug}/reactions
+  - operationId: deleteReaction
+    route: DELETE /v1/workspaces/{slug}/reactions/{reactionId}
+  Billing:
+  - operationId: createPricingQuote
+    route: POST /v1/workspaces/{slug}/pricing/quotes
+  - operationId: acceptPricingQuote
+    route: POST /v1/workspaces/{slug}/pricing/quotes/{quoteId}/accept
+  Streams:
+  - operationId: streamWorkspaceEvents
+    route: GET /v1/workspaces/{slug}/stream/{role}
+  A2A:
+  - operationId: a2aJsonRpc
+    route: POST /a2a/jsonrpc
+  - operationId: a2aRestInvoke
+    route: POST /a2a/rest
+  - operationId: listA2aActions
+    route: GET /v1/a2a/actions
+  Health:
+  - operationId: getHealth
+    route: GET /health
+  - operationId: getHealthLive
+    route: GET /health/live
+  - operationId: getHealthReady
+    route: GET /health/ready
+coverage:
+  mcp_tools: 43
+  mcp_tools_bound_to_openapi: 24
+  mcp_only: 19
+  a2a_skills: 7
+  rest_operations: 57
+  rest_operations_with_tool: 24
+  rest_only: 33

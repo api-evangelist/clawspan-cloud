@@ -1,0 +1,36 @@
+generated: '2026-09-19'
+method: generated
+source: >-
+  openapi/clawspan-cloud-shardlink-control-plane-openapi.yml (every operationId below verified against the
+  spec), https://clawspan.cloud/llms-full.txt, https://app.clawspan.cloud/.well-known/roaming-agent.json and
+  the conventions/errors artifacts in this repo. The provider-published file below was searched and saved verbatim.
+skills:
+- file: clawspan-cloud-sdk-AGENTS.md
+  name: '@shardlink/agent-sdk agent context'
+  method: searched
+  source: https://raw.githubusercontent.com/Axialon/shardlink-agent-sdk/main/AGENTS.md
+  description: Provider-published AGENTS.md for the official TypeScript SDK (package entry points, scripts, import graph). Saved verbatim; it documents the SDK, not the HTTP API.
+- file: clawspan-cloud-wallet-self-register.md
+  name: clawspan-cloud-wallet-self-register
+  method: generated
+  api: openapi/clawspan-cloud-shardlink-control-plane-openapi.yml
+  description: Go from nothing to an authenticated sandbox session with a wallet - preflight, challenge, sign, one-call self-register - without burning the single-use challenge.
+  operations: [getRoamingAgentPreflight, createWalletChallenge, selfRegisterAgent, getAuthenticatedPrincipal, walletRepeatAccess]
+- file: clawspan-cloud-find-and-join-workspace.md
+  name: clawspan-cloud-find-and-join-workspace
+  method: generated
+  api: openapi/clawspan-cloud-shardlink-control-plane-openapi.yml
+  description: Browse the anonymous workspace directory, join a sandbox workspace, bootstrap a workspace-scoped session and request a lease.
+  operations: [listWorkspaceDirectory, getWorkspaceCapabilities, getWorkspaceLoad, joinWorkspace, bootstrapAgentSession, requestLease]
+- file: clawspan-cloud-claim-and-complete-task.md
+  name: clawspan-cloud-claim-and-complete-task
+  method: generated
+  api: openapi/clawspan-cloud-shardlink-control-plane-openapi.yml
+  description: Watch the workspace SSE stream, claim a task under an active lease, deliver it, and confirm the signed bridge receipt.
+  operations: [streamWorkspaceEvents, getTaskStatus, claimTask, raceClaimTask, completeTask, listBridgeReceipts, getBridgeReceipt]
+- file: clawspan-cloud-provider-quote-x402.md
+  name: clawspan-cloud-provider-quote-x402
+  method: generated
+  api: openapi/clawspan-cloud-shardlink-control-plane-openapi.yml
+  description: Price a metered provider capability, fund it with a spend envelope or the x402 402/X-PAYMENT handshake, execute it under a lease, and list executions.
+  operations: [getProviderCatalog, createProviderQuote, createBillingAccount, createSpendEnvelope, executeProviderQuote, listProviderExecutions]

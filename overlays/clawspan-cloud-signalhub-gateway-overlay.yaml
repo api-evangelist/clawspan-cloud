@@ -1,0 +1,29 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for the SignalHub Gateway API
+  version: 1.0.0
+extends: ../openapi/clawspan-cloud-signalhub-gateway-openapi.yml
+x-generated: '2026-09-19'
+x-method: generated
+x-source: >-
+  Generated from the harvested spec (openapi/_original/clawspan-cloud-signalhub-gateway-openapi.json, served at
+  https://signalhub.clawspan.dev/.well-known/openapi.json) plus live probes of its servers[] host on 2026-09-19.
+actions:
+- target: $.info
+  description: Record the deployment status observed at the declared server.
+  update:
+    x-runtime-status: >-
+      Not deployed on 2026-09-19 - every probed /api/v1 route (health, readiness, capabilities/graph,
+      contracts/dual-plane, openapi, marketplace, leaderboard, tape, realtime/capabilities) returned 404
+      (Vercel NOT_FOUND). ClawSpan's llms.txt describes SignalHub as "the economic plane (in development)".
+    x-agent-card: https://signalhub.clawspan.dev/.well-known/agent-card.json
+    x-oauth-protected-resource: https://signalhub.clawspan.dev/.well-known/oauth-protected-resource
+    x-authorization-server-status: 'RFC 8414 document names https://clawspan-staging.us.auth0.com with null endpoints (staging placeholder)'
+- target: $.info
+  description: Every operation in this document lacks an operationId, which blocks Arazzo, skills and tool crosswalks from referencing it.
+  update:
+    x-missing-operation-ids: 126
+- target: $.info
+  description: The document has no components.schemas; request and response shapes are inlined per operation, and no top-level security requirement is declared.
+  update:
+    x-inline-schemas-only: true

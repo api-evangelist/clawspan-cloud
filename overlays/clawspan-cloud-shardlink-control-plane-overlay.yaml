@@ -1,0 +1,55 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enhancements for the ShardLink Control Plane API
+  version: 1.0.0
+extends: ../openapi/clawspan-cloud-shardlink-control-plane-openapi.yml
+x-generated: '2026-09-19'
+x-method: generated
+x-source: >-
+  Generated from the harvested spec (openapi/_original/clawspan-cloud-shardlink-control-plane-openapi.json,
+  served at https://app.clawspan.cloud/.well-known/openapi.json) plus the probed artifacts in this repo.
+  Annotations only; the provider's contract is never mutated.
+actions:
+- target: $.info
+  description: Link the provider's own machine discovery surface from the contract.
+  update:
+    x-llms-txt: https://clawspan.cloud/llms.txt
+    x-machine-host-llms-txt: https://app.clawspan.cloud/llms.txt
+    x-roaming-agent-preflight: https://app.clawspan.cloud/.well-known/roaming-agent.json
+    x-agent-card: https://app.clawspan.cloud/.well-known/agent-card.json
+    x-agent-card-signed: https://app.clawspan.cloud/.well-known/agent-card.signed.json
+    x-mcp-server: https://app.clawspan.cloud/.well-known/mcp/server.json
+    x-mcp-endpoint: https://app.clawspan.cloud/v1/mcp/streamable
+    x-capability-graph: https://app.clawspan.cloud/v1/capabilities/graph
+    x-error-catalog: https://app.clawspan.cloud/v1/contracts/dual-plane/errors
+    x-oauth-protected-resource: https://app.clawspan.cloud/.well-known/oauth-protected-resource
+    x-oauth-authorization-server: https://clerk.clawspan.cloud/.well-known/oauth-authorization-server
+- target: $.info
+  description: >-
+    Record the rate-limit headers observed on every live response, since the contract declares a 429 but no
+    response headers.
+  update:
+    x-rate-limit-headers: [X-Ratelimit-Bucket, X-Ratelimit-Limit, X-Ratelimit-Remaining, X-Ratelimit-Reset, Retry-After]
+    x-rate-limit-observed: 'bucket=default limit=240 (window not documented; reset is an epoch second)'
+- target: $.info
+  description: >-
+    Record that the Idempotency-Key header is enforced on every mutating route, not just the 19 operations that
+    declare the optional IdempotencyKey parameter - a POST without it returns 400 idempotency_key_required.
+  update:
+    x-idempotency: {header: Idempotency-Key, required_on: [POST, DELETE], replay_header: x-idempotent-replay, mismatch_status: 409, mismatch_code: idempotency_mismatch}
+- target: $.components.parameters.IdempotencyKey
+  description: The spec marks the header optional; the live API and the provider's own llms.txt and agent card say it is required on all mutations.
+  update:
+    x-enforced-required: true
+- target: $.servers[1]
+  description: The second server is a deployment template whose default (control-plane.example.com) is a placeholder, not a reachable host.
+  update:
+    x-template-only: true
+- target: $.info
+  description: The SDK sentence in info.description is stale; @shardlink/agent-sdk 0.1.1 has been on npm since 2026-07-20.
+  update:
+    x-sdk: {npm: '@shardlink/agent-sdk', version: 0.1.1, published: '2026-07-26'}
+- target: $.info
+  description: Point at the complete surface the curated spec omits.
+  update:
+    x-coverage-note: 57 of ~127 /v1 routes; 19 of the 43 MCP tools proxy routes absent from this document (see mcp/clawspan-cloud-tool-crosswalk.yml).

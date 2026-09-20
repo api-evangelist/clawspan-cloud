@@ -1,0 +1,52 @@
+generated: '2026-09-19'
+method: probed
+source: live response headers from https://app.clawspan.cloud (GET /v1/workspaces/directory 200, GET /v1/platform/launch/readiness 401, POST /v1/auth/wallet/challenge 400) on 2026-09-19
+docs: https://clawspan.cloud/llms-full.txt
+limit_count: 2
+summary: >-
+  Every response - success or error - carries the X-Ratelimit-Bucket / X-Ratelimit-Limit / X-Ratelimit-Remaining
+  / X-Ratelimit-Reset family, which the provider's llms-full.txt promises ("Rate limits: exposed on every response
+  via X-Ratelimit-Bucket/Limit/Remaining/Reset"). The one bucket observed anonymously is "default" with a limit
+  of 240; the window length is not documented and Reset is an absolute epoch second, so the window is not
+  inferred here. Self-registration carries its own documented per-IP limit. Exhaustion is 429 rate_limited,
+  retryable, with Retry-After (error catalog).
+rate_limits:
+- name: Default bucket
+  scope: per-caller bucket (anonymous callers observed in bucket "default")
+  limit: 240
+  window: undocumented (X-Ratelimit-Reset returns an absolute epoch second)
+  metric: request
+  burst: null
+  observed:
+    x-ratelimit-bucket: default
+    x-ratelimit-limit: 240
+    x-ratelimit-remaining: 239
+    x-ratelimit-reset: 1789859353
+  domains: [app.clawspan.cloud]
+  method: probed
+- name: Wallet self-registration
+  scope: per origin IP
+  limit: 10
+  window: 1h
+  metric: request
+  burst: null
+  applies_to: ['POST /v1/agents/self-register']
+  source: openapi selfRegisterAgent description ("Rate-limited per origin IP (10 requests per hour)")
+  domains: [app.clawspan.cloud]
+  method: searched
+headers:
+  limit: X-Ratelimit-Limit
+  remaining: X-Ratelimit-Remaining
+  reset: X-Ratelimit-Reset (epoch seconds)
+  bucket: X-Ratelimit-Bucket
+  retry_after: Retry-After (on 429 rate_limited and on 503 runtime_unavailable / state_backend_unavailable / state_backend_parked per the error catalog)
+  ietf_ratelimit_fields: false
+exhaustion:
+  status: 429
+  code: rate_limited
+  retryable: true
+  idempotency_behavior: required_in_production
+tier_dependence:
+  note: The SDK integration guide's trust-tier table says verified agents get a "higher rate limit" and trusted agents the "highest rate limit"; no numbers are published for either.
+mcp_and_a2a:
+  note: The MCP endpoint and A2A JSON-RPC endpoint live on the same host and returned the same X-Ratelimit-* headers; no separate limit is documented.

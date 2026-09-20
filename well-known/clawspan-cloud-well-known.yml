@@ -1,0 +1,246 @@
+generated: '2026-09-19'
+method: probed
+source: >-
+  Live GET probes on 2026-09-19 of every host the record knows: the registrable domain and www, the
+  API/MCP/A2A host app.clawspan.cloud (servers[] of the ShardLink OpenAPI and the MCP endpoint host),
+  the authorization server the app host's RFC 8414/9728 documents name (clerk.clawspan.cloud), the
+  SignalHub plane host signalhub.clawspan.dev, the SDK homepage shardlink.dev, and clawspan.dev. Every
+  row below is a request that was issued; every status is the one returned. A 404 on clawspan.cloud is a
+  real Vercel NOT_FOUND (text/plain), not an SPA shell, so a 200 there is a real document.
+summary:
+  hosts_probed: 7
+  documents_served: 20
+  note: >-
+    ClawSpan concentrates its machine discovery surface on app.clawspan.cloud: an A2A agent card plus a
+    JWS-signed variant and an Ed25519 JWKS, an MCP registry server.json under /.well-known/mcp/, an
+    OpenAPI 3.1 document at /.well-known/openapi.json, RFC 8414 authorization-server metadata, RFC 9728
+    protected-resource metadata scoped to the MCP endpoint, and a non-standard roaming-agent.json
+    preflight. The apex serves an RFC 9116 security.txt and llms.txt. The authorization server the app
+    host names (clerk.clawspan.cloud, a Clerk tenant on the provider's own subdomain) serves full RFC 8414
+    metadata, OpenID Connect discovery and an RS256 JWKS. No host serves an RFC 9727 api-catalog,
+    ai-plugin.json or apis.json.
+hosts:
+- host: clawspan.cloud
+  role: Public website (Vercel SPA); apex of the registrable domain
+  documents:
+  - path: /.well-known/security.txt
+    status: 200
+    content_type: text/plain; charset=utf-8
+    file: clawspan-cloud-security.txt
+    standard: RFC 9116
+    note: Contact mailto:support@clawspan.cloud, Expires 2027-04-29, Preferred-Languages en, Canonical. No Policy, Encryption or Acknowledgments field.
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/mcp.json
+    status: 404
+  - path: /.well-known/apis.json
+    status: 404
+  - path: /llms.txt
+    status: 200
+    content_type: text/plain; charset=utf-8
+    file: ../llms/clawspan-cloud-llms.txt
+    note: Not a /.well-known path; recorded because it is the document that names every machine entry point below.
+- host: www.clawspan.cloud
+  role: Alias of the apex (identical responses)
+  documents:
+  - path: /.well-known/security.txt
+    status: 200
+    content_type: text/plain; charset=utf-8
+    file: clawspan-cloud-security.txt
+    standard: RFC 9116
+    note: Byte-identical to the apex document.
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/agent.json
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+- host: app.clawspan.cloud
+  role: Canonical machine host - REST API (servers[]), MCP endpoint /v1/mcp/streamable, A2A /a2a/jsonrpc
+  documents:
+  - path: /.well-known/agent-card.json
+    status: 200
+    content_type: application/json; charset=utf-8
+    file: ../a2a/clawspan-cloud-agent-card.json
+    standard: A2A Agent Card (protocolVersion 0.3.0)
+  - path: /.well-known/agent-card.signed.json
+    status: 200
+    content_type: application/json; charset=utf-8
+    file: clawspan-cloud-app-agent-card.signed.json
+    standard: JWS (RFC 7515) envelope over the agent card
+  - path: /.well-known/jwks.json
+    status: 200
+    content_type: application/json; charset=utf-8
+    file: clawspan-cloud-app-jwks.json
+    standard: RFC 7517
+    note: One Ed25519 OKP key, alg EdDSA, use sig, kid clawspan-discovery-ed25519-9de7ea67baaa.
+  - path: /.well-known/agent.json
+    status: 404
+    note: Legacy pre-0.3 path; typed JSON error envelope "No handler is registered for GET /.well-known/agent.json."
+  - path: /.well-known/mcp/server.json
+    status: 200
+    content_type: application/json; charset=utf-8
+    file: clawspan-cloud-app-mcp-server.json
+    standard: MCP registry server.json (schema 2025-12-11)
+    note: name cloud.clawspan/shardlink, remotes[] streamable-http https://app.clawspan.cloud/v1/mcp/streamable, repository github.com/Axialon/ShardLink (private - GitHub API 404).
+  - path: /.well-known/openapi.json
+    status: 200
+    content_type: application/json; charset=utf-8
+    file: ../openapi/_original/clawspan-cloud-shardlink-control-plane-openapi.json
+    standard: OpenAPI 3.1.0
+    note: 62,632 bytes, 55 paths / 57 operations. Also served at /openapi.json (identical).
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    content_type: application/json; charset=utf-8
+    file: clawspan-cloud-app-oauth-authorization-server.json
+    standard: RFC 8414
+    note: >-
+      issuer https://clerk.clawspan.cloud, authorization_endpoint https://app.clawspan.cloud/v1/auth/oidc/start,
+      token_endpoint null, authorization_code + S256 only, scopes openid/profile/email. A thin proxy document -
+      the full metadata lives on the issuer host below.
+  - path: /.well-known/oauth-protected-resource
+    status: 200
+    content_type: application/json; charset=utf-8
+    file: clawspan-cloud-app-oauth-protected-resource.json
+    standard: RFC 9728
+    note: >-
+      resource https://app.clawspan.cloud/v1/mcp/streamable, authorization_servers [https://clerk.clawspan.cloud],
+      bearer_methods_supported [header], resource_name "ClawSpan ShardLink MCP", jwks_uri on this host. A 401
+      from the API carries WWW-Authenticate: Bearer realm="shardlink", resource_metadata=<this URL>.
+  - path: /.well-known/oauth-protected-resource/v1/mcp/streamable
+    status: 404
+    note: The RFC 9728 path-suffixed form is not served; only the host-root document is.
+  - path: /.well-known/roaming-agent.json
+    status: 200
+    content_type: application/json; charset=utf-8
+    file: clawspan-cloud-app-roaming-agent.json
+    standard: non-standard (roaming_agent_readiness.v1)
+    note: Provider-defined preflight naming wallet auth, MCP, A2A, economics and trust endpoints.
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+  - path: /.well-known/apis.json
+    status: 404
+  - path: /llms.txt
+    status: 200
+    content_type: text/markdown; charset=utf-8
+    file: ../llms/clawspan-cloud-app-llms.txt
+    note: A second, machine-host llms.txt distinct from the apex one.
+- host: clerk.clawspan.cloud
+  role: Authorization server named by the app host's RFC 8414 and RFC 9728 documents (Clerk tenant on the provider's subdomain)
+  documents:
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    content_type: application/json
+    file: clawspan-cloud-clerk-oauth-authorization-server.json
+    standard: RFC 8414
+    note: authorization_code, refresh_token and device_code grants; PKCE S256; 7 scopes; token_endpoint_auth_methods client_secret_basic/none/client_secret_post; service_documentation https://clerk.com/docs/oauth/scoped-access.
+  - path: /.well-known/openid-configuration
+    status: 200
+    content_type: application/json
+    file: clawspan-cloud-clerk-openid-configuration.json
+    standard: OpenID Connect Discovery 1.0
+    note: Adds userinfo and introspection endpoints, RS256 id tokens, form_post/query response modes.
+  - path: /.well-known/jwks.json
+    status: 200
+    content_type: application/json
+    file: clawspan-cloud-clerk-jwks.json
+    standard: RFC 7517
+    note: One RS256 RSA key (kid ins_3CnwicyPyt73bQb4jrAYFK0bfew).
+  - path: /.well-known/oauth-protected-resource
+    status: 404
+  - path: /.well-known/security.txt
+    status: 404
+  - path: /.well-known/agent-card.json
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+- host: signalhub.clawspan.dev
+  role: SignalHub economic-plane host (serves the ClawSpan SPA plus static discovery documents; its /api/v1 routes 404)
+  documents:
+  - path: /.well-known/agent-card.json
+    status: 200
+    content_type: application/json
+    file: ../a2a/clawspan-cloud-signalhub-agent-card.json
+    standard: A2A Agent Card (protocolVersion 0.3.0)
+  - path: /.well-known/agent.json
+    status: 404
+  - path: /.well-known/openapi.json
+    status: 200
+    content_type: application/json
+    file: ../openapi/_original/clawspan-cloud-signalhub-gateway-openapi.json
+    standard: OpenAPI 3.1.0
+    note: 51,332 bytes, 126 paths, "SignalHub Gateway API" 1.0.0-beta. Also served at /openapi.json.
+  - path: /.well-known/oauth-authorization-server
+    status: 200
+    content_type: application/json
+    file: clawspan-cloud-signalhub-oauth-authorization-server.json
+    standard: RFC 8414 (shape only)
+    note: issuer https://clawspan-staging.us.auth0.com; authorization_endpoint and token_endpoint are null and every *_supported list is empty - a staging placeholder, not a usable authorization server.
+  - path: /.well-known/oauth-protected-resource
+    status: 200
+    content_type: application/json
+    file: clawspan-cloud-signalhub-oauth-protected-resource.json
+    standard: RFC 9728
+    note: resource https://signalhub.clawspan.dev/v1, authorization_servers [https://clawspan-staging.us.auth0.com], resource_name "ClawSpan SignalHub API".
+  - path: /.well-known/security.txt
+    status: 200
+    content_type: text/plain; charset=utf-8
+    file: clawspan-cloud-signalhub-security.txt
+    standard: RFC 9116
+    note: Byte-identical to the apex document (its Canonical field points at clawspan.cloud).
+  - path: /.well-known/openid-configuration
+    status: 404
+  - path: /.well-known/api-catalog
+    status: 404
+  - path: /.well-known/ai-plugin.json
+    status: 404
+- host: shardlink.dev
+  role: SDK homepage (npm @shardlink/agent-sdk); serves the same ClawSpan SPA and the ShardLink discovery documents
+  documents:
+  - path: /.well-known/agent-card.json
+    status: 200
+    content_type: application/json; charset=utf-8
+    file: ../a2a/clawspan-cloud-agent-card.json
+    note: Byte-identical (7162 bytes) to the app.clawspan.cloud card.
+  - path: /.well-known/security.txt
+    status: 200
+    content_type: text/plain; charset=utf-8
+    file: clawspan-cloud-security.txt
+    note: Byte-identical to the apex document.
+- host: clawspan.dev
+  role: Redirect-only alias
+  documents:
+  - path: /.well-known/security.txt
+    status: 307
+    note: Redirects to https://clawspan.cloud/.well-known/security.txt.
+  - path: /.well-known/agent-card.json
+    status: 307
+    note: Redirects to https://clawspan.cloud/.well-known/agent-card.json, which 404s.

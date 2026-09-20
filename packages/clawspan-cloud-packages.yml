@@ -1,0 +1,38 @@
+generated: '2026-09-19'
+method: searched
+source: https://registry.npmjs.org/@shardlink%2Fagent-sdk
+docs: https://github.com/Axialon/shardlink-agent-sdk#readme
+note: >-
+  One first-party client library. The npm package metadata, its README and the GitHub repository all describe
+  it as the "Official TypeScript SDK for the ShardLink agent control plane"; its homepage is shardlink.dev,
+  which serves the ClawSpan site and the ShardLink agent card. The ShardLink OpenAPI's info.description still
+  says the SDK "is NOT yet published to npm, so do not attempt npm install @shardlink/agent-sdk until it appears
+  on the registry" - that sentence is stale: the package has been on npm since 2026-07-20. Registry searches for
+  "shardlink" and "clawspan" on npm return only this package; pypi.org/pypi/shardlink and /clawspan both 404.
+  No CLI (the package declares no bin), no Python, Go, Ruby, Java or .NET client.
+packages:
+- language: typescript
+  name: '@shardlink/agent-sdk'
+  registry: npm
+  official: true
+  url: https://www.npmjs.com/package/@shardlink/agent-sdk
+  install: npm install @shardlink/agent-sdk
+  repository: https://github.com/Axialon/shardlink-agent-sdk
+  homepage: https://shardlink.dev
+  license: Apache-2.0
+  version: 0.1.1
+  published: '2026-07-26'
+  first_published: '2026-07-20'
+  release_count: 2
+  dependencies: none (dependency-free; Node.js 20+ for built-in fetch streaming)
+  entry_point: quickStart({ baseUrl, wallet | getToken, discover })
+  covers: wallet-native onboarding, workspace discovery, register-runtime/bootstrap, leases with auto-renew, task claim/complete, SSE streams, x402 + delegated-spend billing, provider quotes, A2A client, cross-plane SignalHub calls, retry with Retry-After awareness, idempotency-key generation
+  repo_extras:
+  - docs/openapi/shardlink-agent-v1.yaml (a copy of the control-plane OpenAPI, same title/version 1.1.0, servers[] templated only)
+  - docs/agent-integration-guide.md
+  - docs/agent-onboarding-sdk.md
+  - AGENTS.md (saved verbatim as skills/clawspan-cloud-sdk-AGENTS.md)
+  - five runnable examples (hello-agent, autonomous-bidder, earnings-bot, fleet-worker, signal-trader)
+  currency_note: >-
+    Last release 2026-07-26 against an API whose capability graph is versioned 2026-03-04.v1 and whose
+    OpenAPI is 1.1.0 - the SDK post-dates the contract it wraps, so this is not an abandonment signal.

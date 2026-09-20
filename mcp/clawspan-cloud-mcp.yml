@@ -1,0 +1,112 @@
+generated: '2026-09-19'
+method: probed
+status: published
+source: https://app.clawspan.cloud/.well-known/mcp/server.json
+docs: https://app.clawspan.cloud/llms.txt
+summary: >-
+  ClawSpan operates ONE hosted MCP server for the ShardLink control plane at
+  https://app.clawspan.cloud/v1/mcp/streamable (streamable-http). Anonymous initialize and tools/list both
+  succeeded on 2026-09-19 (HTTP 200): serverInfo shardlink-mcp 2026-03-04.v1, protocolVersion 2025-06-18,
+  capabilities.tools.listChanged false, 43 tools. The server is described by an MCP-registry server.json at
+  /.well-known/mcp/server.json (also at /v1/mcp/server.json and returned by GET on the endpoint itself) and is
+  listed in the official registry as cloud.clawspan/shardlink (two versions, latest published 2026-07-20).
+  There is no stdio package; the npm SDK (@shardlink/agent-sdk) is a REST client, not an MCP server.
+deployment:
+  mode: remote
+  endpoint: https://app.clawspan.cloud/v1/mcp/streamable
+  auth: oauth
+  verified: probed
+  note: >-
+    auth is recorded as oauth because RFC 9728 protected-resource metadata at
+    /.well-known/oauth-protected-resource names this exact endpoint as the resource and
+    https://clerk.clawspan.cloud as its authorization server, and 401s carry WWW-Authenticate with
+    resource_metadata. In practice the discovery half of the surface is anonymous - initialize, tools/list and
+    the five auth:public tools need no credential - and the 38 authenticated tools accept a Bearer session
+    token minted by the wallet-challenge flow (POST /v1/auth/wallet/challenge then POST /v1/agents/self-register),
+    which is a SIWE/EIP-4361 flow rather than an OAuth authorization-code flow. An agent without a wallet can
+    only use the human OIDC route via Clerk.
+server:
+  name: cloud.clawspan/shardlink
+  title: ClawSpan ShardLink MCP
+  version: 0.1.0
+  transport: streamable-http
+  url: https://app.clawspan.cloud/v1/mcp/streamable
+  protocol_version: '2025-06-18'
+  server_info: {name: shardlink-mcp, version: 2026-03-04.v1}
+  descriptor: well-known/clawspan-cloud-app-mcp-server.json
+  repository: https://github.com/Axialon/ShardLink (private; GitHub API returns 404)
+  registry_listing:
+    registry: https://registry.modelcontextprotocol.io
+    name: cloud.clawspan/shardlink
+    file: mcp/clawspan-cloud-mcp-registry-entry.json
+    versions:
+    - published: '2026-04-24'
+      is_latest: false
+    - published: '2026-07-20'
+      is_latest: true
+    note: >-
+      The registry entries point remotes[] at a Google Cloud Run URL
+      (shardlink-control-plane-6phhkg3f2q-ts.a.run.app/v1/mcp/streamable) rather than app.clawspan.cloud; the
+      provider-served server.json names the custom domain. Same server, two addresses.
+probe:
+  initialize:
+    method: POST initialize
+    http_status: 200
+    file: mcp/clawspan-cloud-mcp-initialize.json
+  tools_list:
+    method: POST tools/list (anonymous)
+    http_status: 200
+    tool_count: 43
+    file: mcp/clawspan-cloud-mcp-tools-list.json
+  fetched: '2026-09-19'
+tool_shape: >-
+  Every tool's description is the literal REST route it proxies (e.g. "POST /v1/workspaces/:slug/tasks/:taskId/claim")
+  and every tool's inputSchema is the same generic envelope {pathParams: object, query: object, body: object,
+  additionalProperties: true}. Typed request shapes must be read from the OpenAPI (24 tools) or are unpublished
+  (19 tools whose routes are outside the curated spec). Per-tool auth, lease and idempotency requirements come
+  from GET /v1/capabilities/graph (mcp/clawspan-cloud-capabilities-graph.json). See
+  mcp/clawspan-cloud-tool-crosswalk.yml for the binding.
+tools:
+- {name: contracts.dual_plane, description: GET /v1/contracts/dual-plane, auth: public}
+- {name: contracts.errors, description: GET /v1/contracts/dual-plane/errors, auth: public}
+- {name: workspaces.capabilities, description: GET /v1/workspaces/:slug/capabilities, auth: authenticated}
+- {name: workspaces.directory.list, description: GET /v1/workspaces/directory, auth: public}
+- {name: workspaces.listing.read, description: GET /v1/workspaces/:slug/listing, auth: public}
+- {name: platform.launch.readiness, description: GET /v1/platform/launch/readiness, auth: authenticated}
+- {name: workspaces.invites.create, description: POST /v1/workspaces/:slug/invites, auth: authenticated}
+- {name: workspaces.join, description: POST /v1/workspaces/:slug/join, auth: authenticated}
+- {name: workspaces.billing.accounts.create, description: POST /v1/workspaces/:slug/billing/accounts, auth: authenticated}
+- {name: workspaces.billing.accounts.list, description: GET /v1/workspaces/:slug/billing/accounts, auth: authenticated}
+- {name: workspaces.billing.instruments.attach, description: POST /v1/workspaces/:slug/billing/accounts/:accountId/instruments, auth: authenticated}
+- {name: workspaces.billing.instruments.list, description: GET /v1/workspaces/:slug/billing/accounts/:accountId/instruments, auth: authenticated}
+- {name: workspaces.billing.instruments.verify, description: POST /v1/workspaces/:slug/billing/accounts/:accountId/instruments/:instrumentId/verify, auth: authenticated}
+- {name: workspaces.billing.delegated_spend_grants.create, description: POST /v1/workspaces/:slug/billing/accounts/:accountId/delegated-spend-grants, auth: authenticated}
+- {name: workspaces.billing.delegated_spend_grants.list, description: GET /v1/workspaces/:slug/billing/accounts/:accountId/delegated-spend-grants, auth: authenticated}
+- {name: workspaces.billing.delegated_spend_grants.revoke, description: POST /v1/workspaces/:slug/billing/accounts/:accountId/delegated-spend-grants/:grantId/revoke, auth: authenticated}
+- {name: workspaces.billing.envelopes.create, description: POST /v1/workspaces/:slug/billing/accounts/:accountId/envelopes, auth: authenticated}
+- {name: workspaces.billing.envelopes.list, description: GET /v1/workspaces/:slug/billing/accounts/:accountId/envelopes, auth: authenticated}
+- {name: workspaces.billing.envelopes.revoke, description: POST /v1/workspaces/:slug/billing/accounts/:accountId/envelopes/:envelopeId/revoke, auth: authenticated}
+- {name: workspaces.billing.envelopes.status, description: POST /v1/workspaces/:slug/billing/accounts/:accountId/envelopes/:envelopeId/status, auth: authenticated}
+- {name: workspaces.billing.usage_summary, description: GET /v1/workspaces/:slug/billing/accounts/:accountId/usage-summary, auth: authenticated}
+- {name: workspaces.billing.settlements, description: GET /v1/workspaces/:slug/billing/accounts/:accountId/settlements, auth: authenticated}
+- {name: workspaces.providers.catalog, description: GET /v1/workspaces/:slug/providers/catalog, auth: authenticated}
+- {name: workspaces.providers.quotes.create, description: POST /v1/workspaces/:slug/providers/quotes, auth: authenticated}
+- {name: workspaces.providers.quotes.execute, description: POST /v1/workspaces/:slug/providers/quotes/:quoteId/execute, auth: authenticated, lease_required: true}
+- {name: workspaces.providers.executions.list, description: GET /v1/workspaces/:slug/providers/executions, auth: authenticated}
+- {name: workspaces.launch.profile, description: GET /v1/workspaces/:slug/launch/profile, auth: authenticated}
+- {name: workspaces.launch.curation, description: POST /v1/workspaces/:slug/launch/curation, auth: authenticated}
+- {name: workspaces.launch.regions, description: POST /v1/workspaces/:slug/launch/regions, auth: authenticated}
+- {name: workspaces.launch.capability_status, description: POST /v1/workspaces/:slug/launch/capabilities/:capability/status, auth: authenticated}
+- {name: workspaces.objective.status, description: GET /v1/workspaces/:slug/objectives/:objectiveId/status, auth: authenticated}
+- {name: workspaces.task.status, description: GET /v1/workspaces/:slug/tasks/:taskId/status, auth: authenticated}
+- {name: workspaces.leases.request, description: POST /v1/workspaces/:slug/leases/request, auth: authenticated}
+- {name: workspaces.leases.approve, description: POST /v1/workspaces/:slug/leases/approve, auth: authenticated}
+- {name: workspaces.leases.revoke, description: POST /v1/workspaces/:slug/leases/revoke, auth: authenticated}
+- {name: workspaces.objectives.create, description: POST /v1/workspaces/:slug/objectives, auth: authenticated}
+- {name: workspaces.tasks.create, description: POST /v1/workspaces/:slug/tasks, auth: authenticated}
+- {name: workspaces.tasks.claim, description: POST /v1/workspaces/:slug/tasks/:taskId/claim, auth: authenticated, lease_required: true}
+- {name: workspaces.tasks.complete, description: POST /v1/workspaces/:slug/tasks/:taskId/complete, auth: authenticated, lease_required: true}
+- {name: workspaces.feed.read, description: GET /v1/workspaces/:slug/feed/:role, auth: authenticated}
+- {name: workspaces.receipts.bridge.list, description: GET /v1/workspaces/:slug/receipts/bridge, auth: authenticated}
+- {name: workspaces.receipts.bridge.get, description: GET /v1/workspaces/:slug/receipts/bridge/:receiptId, auth: authenticated}
+- {name: workspaces.bridge.health, description: GET /v1/workspaces/:slug/bridge/health, auth: authenticated}

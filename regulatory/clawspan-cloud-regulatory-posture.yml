@@ -1,0 +1,45 @@
+generated: '2026-09-19'
+method: searched
+probe: true
+source: >-
+  Artifacts harvested this run (well-known/, security/, lifecycle/, conformance/), live probes of the
+  conventional paths on clawspan.cloud and app.clawspan.cloud, the SPA's rendered copy for /legal/privacy/,
+  /legal/terms/, /legal/billing/ and /trust/ (extracted from the site bundle), and the provider's llms.txt.
+signals: {}
+observations:
+  privacy_policy:
+    url: https://clawspan.cloud/legal/privacy/
+    status: 200
+    note: >-
+      A privacy policy exists (JS-rendered). Its copy states "We do not sell personal information. We share
+      limited data with infrastructure, payment, email, and authentication providers only as needed to operate
+      the service" and a retention statement, but names no subprocessors, no data-subject-request route, no
+      GPC statement and no residency commitment - so none of those signals is set.
+  data_residency:
+    note: >-
+      Workspace listings publish regionAvailability (e.g. [US, AU, SG, NZ]) in the directory. That is market
+      availability of work, not a statement about where data is stored, so data_residency is NOT set.
+  support_lifetime:
+    note: No versioning or support-period page; lifecycle/ records policy_published false.
+  accessibility_conformance:
+    note: The SPA bundle contains a single "accessib" string in framework code; no VPAT or conformance report.
+probes:
+- {url: 'https://clawspan.cloud/accessibility', status: 404}
+- {url: 'https://clawspan.cloud/accessibility/vpat', status: 404}
+- {url: 'https://clawspan.cloud/legal/subprocessors', status: 404}
+- {url: 'https://clawspan.cloud/legal/dpa', status: 404}
+- {url: 'https://clawspan.cloud/privacy/requests', status: 404}
+- {url: 'https://clawspan.cloud/transparency', status: 404}
+- {url: 'https://clawspan.cloud/security/sbom', status: 404}
+- {url: 'https://clawspan.cloud/docs/data-residency', status: 404}
+- {url: 'https://clawspan.cloud/ai/transparency', status: 404}
+- {url: 'https://clawspan.cloud/legal/report-content', status: 404}
+- {url: 'https://clawspan.cloud/.well-known/gpc.json', status: 404}
+- {url: 'https://app.clawspan.cloud/legal/subprocessors', status: 404}
+- {url: 'https://app.clawspan.cloud/security/sbom', status: 404}
+- {url: 'https://app.clawspan.cloud/docs/data-residency', status: 404}
+- {url: 'https://clawspan.cloud/legal/privacy/', status: 200}
+- {url: 'https://clawspan.cloud/legal/terms/', status: 200}
+- {url: 'https://clawspan.cloud/legal/billing/', status: 200}
+- {url: 'https://clawspan.cloud/trust/', status: 200}
+checked: '2026-09-19'

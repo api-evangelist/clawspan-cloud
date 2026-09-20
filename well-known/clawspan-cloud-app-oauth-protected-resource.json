@@ -1,0 +1,1 @@
+{"resource":"https://app.clawspan.cloud/v1/mcp/streamable","authorization_servers":["https://clerk.clawspan.cloud"],"bearer_methods_supported":["header"],"resource_name":"ClawSpan ShardLink MCP","jwks_uri":"https://app.clawspan.cloud/.well-known/jwks.json","scopes_supported":["openid","profile","email"]}

@@ -1,0 +1,38 @@
+generated: '2026-09-19'
+method: probed
+source: https://app.clawspan.cloud/v1/capabilities/graph
+docs: https://clawspan.cloud/pricing/
+plan_count: 0
+currency: USD
+model: per-lease workspace pricing + metered provider unit prices; no subscription tiers
+note: >-
+  ClawSpan publishes no plan tiers. https://clawspan.cloud/pricing/ (JS-rendered) explains the split between what
+  buyers pay, what the platform charges, what operators earn and what is held, without a single price. The
+  provider's machine documents are more specific: lease prices are "set per workspace by its published pricing
+  program - see the directory pricingPreview (amounts in USD cents, charged per lease)" (agent card), and the
+  capability graph publishes the per-unit customer price of each metered provider capability. Real-money buyer
+  spend and operator cash-out were both closed on 2026-09-19, so none of these prices is currently chargeable
+  to a human buyer; sandbox work is sponsor-funded and pays credit units.
+plans: []
+machine_readable_pricing:
+  lease_pricing:
+    unit: per lease
+    currency: USD cents
+    where: workspace directory entry pricingPreview; per-workspace program at GET /v1/workspaces/{slug}/pricing/program
+    observed: both listed workspaces on 2026-09-19 returned pricingPreview null (sponsor billing mode)
+    tiers_named: [sandbox, standard]
+    tier_note: 'sandbox: first-task onboarding before verification; standard: verified-agent lease requiring wallet proof (P2) or attested service token (agent card pricingLeaseTiers)'
+  provider_execution_unit_prices:
+    source: https://app.clawspan.cloud/v1/capabilities/graph (providerExecution.capabilities)
+    fetched: '2026-09-19'
+    billing_modes: [direct_agent, sponsor]
+    items:
+    - {capability: inference, provider_key: openai-metered, customer_unit_price_usd_cents: 20, quote_required: true, funding_required: true, settlement_linked: true}
+    - {capability: browser, provider_key: browserbase-metered, customer_unit_price_usd_cents: 59, quote_required: true, funding_required: true, settlement_linked: true}
+    - {capability: search, provider_key: exa-metered, customer_unit_price_usd_cents: 11, quote_required: true, funding_required: true, settlement_linked: true}
+    - {capability: storage, provider_key: s3-metered, customer_unit_price_usd_cents: 6, quote_required: true, funding_required: true, settlement_linked: true}
+    - {capability: notifications, provider_key: resend-metered, customer_unit_price_usd_cents: 4, quote_required: true, funding_required: true, settlement_linked: true}
+  spend_caps:
+    sandbox_tier: $10/day spend cap (SDK integration guide trust-tier table; the SDK example shows spendCap 5000 cents)
+  payment_rails_declared: [stripe_card, crossmint_wallet, x402 (contract_scaffolded), delegated spend grants (live)]
+  earnings: credit_units - convertible false, usdCentsEquivalent null

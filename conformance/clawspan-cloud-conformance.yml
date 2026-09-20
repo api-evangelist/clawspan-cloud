@@ -1,0 +1,128 @@
+generated: '2026-09-19'
+method: searched
+source: >-
+  Live probes of app.clawspan.cloud, clerk.clawspan.cloud and signalhub.clawspan.dev on 2026-09-19, cross-checked
+  against openapi/_original/clawspan-cloud-shardlink-control-plane-openapi.json, the agent card, the MCP
+  server.json, the capability graph and the provider's llms.txt. No marketing compliance page exists (no SOC 2,
+  ISO 27001, PCI or GDPR claim anywhere on the site), so nothing here is a prose claim - every row cites a
+  fetched document or a spec location.
+standards:
+- id: openapi-3.1
+  name: OpenAPI 3.1.0
+  conforms: true
+  evidence: >-
+    Both published contracts declare "openapi": "3.1.0". ShardLink: 55 paths / 57 operations, 39 component
+    schemas, unique operationIds, a BearerAuth http scheme applied globally. SignalHub: 126 paths, no
+    operationIds, no components.schemas, no global security.
+- id: a2a-0.3
+  name: A2A Agent Card (protocolVersion 0.3.0)
+  conforms: true
+  evidence: >-
+    https://app.clawspan.cloud/.well-known/agent-card.json and https://signalhub.clawspan.dev/.well-known/agent-card.json
+    both parse as AgentCard objects with capabilities as an object, protocolVersion 0.3.0 and skills arrays;
+    both graded conformant in a2a/. The ShardLink card is also served JWS-signed with an Ed25519 JWKS.
+- id: mcp-2025-06-18
+  name: Model Context Protocol (streamable-http, protocol 2025-06-18)
+  conforms: true
+  evidence: >-
+    POST initialize on https://app.clawspan.cloud/v1/mcp/streamable returned protocolVersion 2025-06-18; POST
+    tools/list returned 43 tools with inputSchema. The MCP registry server.json at /.well-known/mcp/server.json
+    validates against $schema https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json and
+    the same name is listed in registry.modelcontextprotocol.io.
+- id: rfc8414
+  name: RFC 8414 OAuth 2.0 Authorization Server Metadata
+  conforms: true
+  evidence: >-
+    https://clerk.clawspan.cloud/.well-known/oauth-authorization-server (issuer, authorization/token/revocation/
+    device_authorization endpoints, jwks_uri, grant_types, PKCE S256, scopes). app.clawspan.cloud serves a
+    thinner proxy document with issuer https://clerk.clawspan.cloud and token_endpoint null.
+  caveat: The signalhub.clawspan.dev document has the RFC 8414 shape but null endpoints and empty lists - a staging placeholder.
+- id: oidc-discovery
+  name: OpenID Connect Discovery 1.0
+  conforms: true
+  evidence: https://clerk.clawspan.cloud/.well-known/openid-configuration (userinfo, introspection, RS256 id_token, claims_supported). Not served on app.clawspan.cloud (404).
+- id: rfc9728
+  name: RFC 9728 OAuth 2.0 Protected Resource Metadata
+  conforms: true
+  evidence: >-
+    https://app.clawspan.cloud/.well-known/oauth-protected-resource names resource
+    https://app.clawspan.cloud/v1/mcp/streamable, authorization_servers, bearer_methods_supported and jwks_uri;
+    a live 401 carried WWW-Authenticate: Bearer realm="shardlink", resource_metadata="<that URL>". signalhub
+    serves a second document for resource https://signalhub.clawspan.dev/v1.
+  caveat: The path-suffixed form /.well-known/oauth-protected-resource/v1/mcp/streamable is not served (404).
+- id: rfc9116
+  name: RFC 9116 security.txt
+  conforms: true
+  evidence: https://clawspan.cloud/.well-known/security.txt (Contact, Expires 2027-04-29, Preferred-Languages, Canonical). No Policy field.
+- id: rfc7515-jws
+  name: RFC 7515 JSON Web Signature (signed agent card) + RFC 7517 JWK Set
+  conforms: true
+  evidence: https://app.clawspan.cloud/.well-known/agent-card.signed.json plus https://app.clawspan.cloud/.well-known/jwks.json (OKP Ed25519, alg EdDSA, use sig).
+- id: eip-4361
+  name: EIP-4361 Sign-In with Ethereum (wallet challenge)
+  conforms: true
+  evidence: >-
+    roaming-agent.json auth.wallet.standards ["eip4361"], canonicalAccountFormat "caip-10", supportedCaipChains
+    ["eip155:*"]; OpenAPI createWalletChallenge "Request an EIP-4361 challenge bound to a wallet" and
+    WalletChallengeInput.caipChainId; llms-full.txt specifies EIP-191 personal_sign of the challenge message.
+- id: caip-10
+  name: CAIP-10 account identifiers / CAIP-2 chain ids
+  conforms: true
+  evidence: roaming-agent.json canonicalAccountFormat caip-10; caipChainId fields (eip155:1) in WalletChallengeInput, WalletVerifyResponse and AuthMeResponse.
+- id: x402
+  name: x402 HTTP 402 payment protocol
+  conforms: partial
+  evidence: >-
+    executeProviderQuote (POST /v1/workspaces/{slug}/providers/quotes/{quoteId}/execute) documents "the first call
+    answers 402 with a PAYMENT-REQUIRED header, the agent retries with an X-PAYMENT header"; components.responses
+    PaymentRequired "x402 payment challenge"; PaymentRequirementEnvelope schema. roaming-agent.json reports
+    economics.walletNative.x402.status "contract_scaffolded" and real-money buyer spend "closed".
+  caveat: The provider's own status word is contract_scaffolded, not live; recorded as partial for that reason.
+- id: idempotency-key-header
+  name: Idempotency-Key request header (draft-ietf-httpapi-idempotency-key-header)
+  conforms: true
+  evidence: >-
+    components.parameters.IdempotencyKey (header Idempotency-Key) referenced by 19 operations; live POST
+    /v1/auth/wallet/challenge without the header returned 400 idempotency_key_required; llms-full.txt documents
+    replay via x-idempotent-replay: true and 409 idempotency_mismatch on key reuse with a different body.
+- id: cursor-pagination
+  name: Opaque cursor pagination
+  conforms: true
+  evidence: cursor + limit query parameters on listReactions and listBridgeReceipts; afterCursor + limit on streamWorkspaceEvents; nextCursor in responses.
+- id: sse
+  name: Server-Sent Events (WHATWG)
+  conforms: true
+  evidence: streamWorkspaceEvents GET /v1/workspaces/{slug}/stream/{role} "Server-Sent Events feed"; SDK docs describe reconnect and snapshot events.
+- id: rfc9457
+  name: RFC 9457 Problem Details
+  conforms: false
+  evidence: >-
+    Errors use a custom envelope {error: {code, errorCode, message, retryable, correlationId, idempotency, details}}
+    served as application/json; no application/problem+json anywhere in either spec or in any live response.
+- id: ratelimit-headers-ietf
+  name: IETF RateLimit header fields (draft-ietf-httpapi-ratelimit-headers)
+  conforms: false
+  evidence: >-
+    Live responses carry the legacy X-Ratelimit-Bucket / X-Ratelimit-Limit / X-Ratelimit-Remaining /
+    X-Ratelimit-Reset family plus Retry-After on 429/503, not the standardized RateLimit / RateLimit-Policy fields.
+- id: rfc8594
+  name: RFC 8594 Sunset header / Deprecation header
+  conforms: false
+  evidence: No deprecated operation, Sunset or Deprecation header in either spec or in live responses.
+- id: rfc9727
+  name: RFC 9727 api-catalog
+  conforms: false
+  evidence: /.well-known/api-catalog returned 404 on all seven probed hosts.
+- id: apis-json
+  name: APIs.json
+  conforms: false
+  evidence: /apis.json and /.well-known/apis.json returned 404 on clawspan.cloud and app.clawspan.cloud.
+domain_standard:
+  market: agent-to-agent work marketplaces / agent payments
+  note: >-
+    This market has no ISO/IETF sector standard; the contracts it declares (A2A, MCP, x402, EIP-4361, CAIP-10)
+    are the de-facto interoperability layer for agent marketplaces and are the rows recorded above. No SCIM,
+    OData, OpenRTB or other regulated-sector schema is present, and none is expected - reward-only, no gap.
+compliance_programs:
+  published: false
+  note: No SOC 2 / ISO 27001 / PCI DSS / HIPAA / GDPR certification or trust-center page is published; /trust/ is a marketplace trust-tier explainer. No Compliance pointer is emitted.
