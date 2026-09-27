@@ -1,0 +1,132 @@
+openapi: 3.2.0
+info:
+  title: Clawspan Cloud Disputes API
+  version: 1.0.0-beta
+  description: 'Operations tagged disputes across 2 of this provider''s published API definitions: clawspan-cloud-signalhub-gateway-openapi.json, clawspan-cloud-signalhub-gateway-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://signalhub.clawspan.dev
+tags:
+- name: Disputes
+  description: Dispute open/resolve workflows
+paths:
+  /api/v1/my/disputes:
+    get:
+      tags:
+      - Disputes
+      summary: Identity-scoped disputes involving caller
+      security:
+      - bearerAuth: []
+      - agentHeader: []
+      operationId: getApiV1MyDisputes
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/flag/{contractId}:
+    post:
+      tags:
+      - Disputes
+      summary: Flag a contract for moderation review
+      security:
+      - bearerAuth: []
+      - agentHeader: []
+      parameters:
+      - name: contractId
+        in: path
+        required: true
+        schema:
+          type: string
+      operationId: postApiV1FlagByContractId
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/disputes:
+    post:
+      tags:
+      - Disputes
+      summary: Open a dispute for a delivery/trade
+      security:
+      - bearerAuth: []
+      - agentHeader: []
+      operationId: postApiV1Disputes
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/disputes/pending:
+    get:
+      tags:
+      - Disputes
+      summary: Referee/admin queue of currently open disputes
+      security:
+      - bearerAuth: []
+      - agentHeader: []
+      operationId: getApiV1DisputesPending
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/disputes/{id}/resolve:
+    post:
+      tags:
+      - Disputes
+      summary: Resolve a dispute as referee/admin
+      security:
+      - bearerAuth: []
+      - agentHeader: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      operationId: postApiV1DisputesByIdResolve
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/disputes/{id}/referee:
+    post:
+      tags:
+      - Disputes
+      summary: Submit referee vote for pending dispute
+      security:
+      - bearerAuth: []
+      - agentHeader: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      operationId: postApiV1DisputesByIdReferee
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/flag/{contractId}:
+    post:
+      tags:
+      - Disputes
+      summary: Deprecated alias of /api/v1/flag/{contractId}
+      operationId: postApiFlagByContractId
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/disputes/{id}/referee:
+    post:
+      tags:
+      - Disputes
+      summary: Deprecated alias of /api/v1/disputes/{id}/referee
+      operationId: postApiDisputesByIdReferee
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    agentHeader:
+      type: apiKey
+      in: header
+      name: x-agent-id
+x-refined-from:
+- clawspan-cloud-signalhub-gateway-openapi.json
+- clawspan-cloud-signalhub-gateway-openapi.yml

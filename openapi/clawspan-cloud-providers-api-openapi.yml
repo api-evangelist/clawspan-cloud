@@ -1,0 +1,528 @@
+openapi: 3.2.0
+info:
+  title: Clawspan Cloud Providers API
+  version: 1.1.0
+  contact:
+    name: ShardLink
+    url: https://clawspan.cloud/contact/
+    email: support@clawspan.cloud
+  license:
+    name: Proprietary
+  description: 'Operations tagged Providers across 2 of this provider''s published API definitions: clawspan-cloud-shardlink-control-plane-openapi.json, clawspan-cloud-shardlink-control-plane-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://app.clawspan.cloud
+  description: Live control plane
+- url: '{baseUrl}'
+  description: Control-plane deployment
+  variables:
+    baseUrl:
+      default: https://control-plane.example.com
+security:
+- BearerAuth: []
+tags:
+- name: Providers
+  description: Provider-backed capability catalog, quotes, and metered execution.
+paths:
+  /v1/workspaces/{slug}/providers/catalog:
+    get:
+      operationId: getProviderCatalog
+      tags:
+      - Providers
+      summary: List provider-backed capabilities for a workspace
+      description: 'Returns the provider-backed capabilities the workspace exposes
+
+        (e.g. `inference`, `browser`, `search`), each with a per-unit price
+
+        hint and an `active` / `suspended` status. Read access requires an
+
+        authenticated principal with workspace-read access.'
+      parameters:
+      - $ref: '#/components/parameters/WorkspaceSlug'
+      responses:
+        '200':
+          description: Provider capability catalog.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProviderCatalogResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    servers:
+    - url: https://app.clawspan.cloud
+      description: Live control plane
+    - url: '{baseUrl}'
+      description: Control-plane deployment
+      variables:
+        baseUrl:
+          default: https://control-plane.example.com
+  /v1/workspaces/{slug}/providers/quotes:
+    post:
+      operationId: createProviderQuote
+      tags:
+      - Providers
+      summary: Create a provider-execution quote
+      description: 'Prices a unit of a provider-backed capability and returns a quote
+
+        the agent can execute. Restricted to `agent` and `governor` actors;
+
+        authenticate with the workspace-scoped `sessionToken`.'
+      parameters:
+      - $ref: '#/components/parameters/WorkspaceSlug'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProviderQuoteInput'
+      responses:
+        '201':
+          description: Provider quote created.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProviderQuoteResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '409':
+          $ref: '#/components/responses/Conflict'
+    servers:
+    - url: https://app.clawspan.cloud
+      description: Live control plane
+    - url: '{baseUrl}'
+      description: Control-plane deployment
+      variables:
+        baseUrl:
+          default: https://control-plane.example.com
+  /v1/workspaces/{slug}/providers/quotes/{quoteId}/execute:
+    post:
+      operationId: executeProviderQuote
+      tags:
+      - Providers
+      summary: Execute a provider quote (metered, settlement-linked)
+      description: 'Runs the provider-backed capability priced by the quote. Requires
+
+        an `agent` actor with an active lease, and the quote''s owner. Pay
+
+        either by referencing a pre-funded spend `envelopeId` in the body,
+
+        or — when no envelope is supplied — via the x402 payment handshake:
+
+        the first call answers `402` with a `PAYMENT-REQUIRED` header, the
+
+        agent retries with an `X-PAYMENT` header carrying the settled
+
+        payment.'
+      parameters:
+      - $ref: '#/components/parameters/WorkspaceSlug'
+      - in: path
+        name: quoteId
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProviderExecuteInput'
+      responses:
+        '201':
+          description: Provider execution completed + settlement linked.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ProviderExecutionResponse'
+        '402':
+          $ref: '#/components/responses/PaymentRequired'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          $ref: '#/components/responses/Conflict'
+    servers:
+    - url: https://app.clawspan.cloud
+      description: Live control plane
+    - url: '{baseUrl}'
+      description: Control-plane deployment
+      variables:
+        baseUrl:
+          default: https://control-plane.example.com
+  /v1/workspaces/{slug}/providers/executions:
+    get:
+      operationId: listProviderExecutions
+      tags:
+      - Providers
+      summary: List provider executions for a workspace
+      parameters:
+      - $ref: '#/components/parameters/WorkspaceSlug'
+      - in: query
+        name: identity
+        schema:
+          type: string
+        description: Filter to a single agent identity.
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+      responses:
+        '200':
+          description: Provider execution list.
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                - executions
+                properties:
+                  executions:
+                    type: array
+                    items:
+                      type: object
+                      additionalProperties: true
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    servers:
+    - url: https://app.clawspan.cloud
+      description: Live control plane
+    - url: '{baseUrl}'
+      description: Control-plane deployment
+      variables:
+        baseUrl:
+          default: https://control-plane.example.com
+components:
+  schemas:
+    ProviderQuoteResponse:
+      type: object
+      required:
+      - quote
+      properties:
+        quote:
+          type: object
+          additionalProperties: true
+          description: Stored provider-quote record (quoteId, capability, providerKey, units, vendorCostUsdCents, customerPriceUsdCents, marginRatio, pricingVersion, expiresAt, status).
+        stagingGuardrail:
+          type: object
+          additionalProperties: true
+          description: Present only on staging deployments.
+    ProviderExecuteInput:
+      type: object
+      properties:
+        envelopeId:
+          type: string
+          description: Pre-funded spend envelope to charge. When omitted, payment runs via the x402 handshake instead.
+        metadata:
+          type: object
+          additionalProperties: true
+    ProviderCatalogResponse:
+      type: object
+      required:
+      - workspace
+      - catalog
+      properties:
+        workspace:
+          type: object
+          required:
+          - slug
+          - supportedAdapters
+          - supportedCapabilities
+          properties:
+            slug:
+              type: string
+            supportedAdapters:
+              type: array
+              items:
+                type: string
+                enum:
+                - openclaw
+                - http_worker
+                - workflow_runtime
+                - custom
+            supportedCapabilities:
+              type: array
+              items:
+                type: string
+                enum:
+                - inference
+                - browser
+                - search
+                - storage
+                - notifications
+        catalog:
+          type: array
+          items:
+            type: object
+            required:
+            - capability
+            - providerKey
+            - status
+            - priceHint
+            properties:
+              capability:
+                type: string
+                enum:
+                - inference
+                - browser
+                - search
+                - storage
+                - notifications
+              providerKey:
+                type: string
+              status:
+                type: string
+                enum:
+                - active
+                - suspended
+              priceHint:
+                type: object
+                required:
+                - vendorUnitCostUsdCents
+                - customerUnitPriceUsdCents
+                properties:
+                  vendorUnitCostUsdCents:
+                    type: integer
+                    minimum: 0
+                  customerUnitPriceUsdCents:
+                    type: integer
+                    minimum: 0
+                  pricingVersion:
+                    type:
+                    - string
+                    - 'null'
+    PaymentRequirementEnvelope:
+      type: object
+      required:
+      - paymentRequirement
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              enum:
+              - x402_payment_required
+        paymentRequirement:
+          type: object
+          additionalProperties: true
+          required:
+          - version
+          - status
+          - challenge
+          - accepts
+          properties:
+            version:
+              type: string
+              enum:
+              - x402_payment_requirement.v1
+            status:
+              type: string
+              enum:
+              - live
+              - contract_scaffolded
+            challenge:
+              type: object
+              required:
+              - paymentId
+              - quoteId
+              - amountUsdCents
+              properties:
+                paymentId:
+                  type: string
+                quoteId:
+                  type: string
+                workspaceSlug:
+                  type: string
+                identity:
+                  type: string
+                amountUsdCents:
+                  type: integer
+                  minimum: 0
+                currency:
+                  type: string
+                  enum:
+                  - USD
+                resource:
+                  type: string
+                method:
+                  type: string
+                  enum:
+                  - POST
+                issuedAt:
+                  type: string
+                  format: date-time
+                expiresAt:
+                  type: string
+                  format: date-time
+            accepts:
+              type: array
+              items:
+                type: object
+                required:
+                - scheme
+                - network
+                - asset
+                - payTo
+                - maxAmountRequiredUsdCents
+                properties:
+                  scheme:
+                    type: string
+                    enum:
+                    - exact
+                  network:
+                    type: string
+                  asset:
+                    type: string
+                  payTo:
+                    type: string
+                  maxAmountRequiredUsdCents:
+                    type: integer
+                    minimum: 0
+    ProviderQuoteInput:
+      type: object
+      required:
+      - capability
+      - units
+      properties:
+        capability:
+          type: string
+          enum:
+          - inference
+          - browser
+          - search
+          - storage
+          - notifications
+        units:
+          type: integer
+          minimum: 1
+          maximum: 100000
+        expiresInSeconds:
+          type: integer
+          minimum: 1
+          maximum: 3600
+        metadata:
+          type: object
+          additionalProperties: true
+    Error:
+      type: object
+      required:
+      - error
+      properties:
+        error:
+          type: object
+          required:
+          - code
+          properties:
+            code:
+              type: string
+              example: rate_limited
+            message:
+              type: string
+            retryable:
+              type: boolean
+            correlationId:
+              type: string
+    ProviderExecutionResponse:
+      type: object
+      required:
+      - execution
+      properties:
+        execution:
+          type: object
+          additionalProperties: true
+        envelope:
+          type: object
+          additionalProperties: true
+        settlement:
+          type: object
+          additionalProperties: true
+        lineage:
+          type: object
+          additionalProperties: true
+        x402:
+          type: object
+          properties:
+            paymentId:
+              type: string
+            requiredHeader:
+              type: string
+            paymentHeader:
+              type: string
+            responseHeader:
+              type: string
+        stagingGuardrail:
+          type: object
+          additionalProperties: true
+  responses:
+    PaymentRequired:
+      description: x402 payment challenge.
+      headers:
+        PAYMENT-REQUIRED:
+          description: Base64url-encoded x402 payment requirement envelope.
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PaymentRequirementEnvelope'
+    Unauthorized:
+      description: Missing or invalid bearer token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: Malformed request.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Resource not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Conflict:
+      description: Race or idempotency conflict.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: Authenticated but lacks role or capability.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  parameters:
+    IdempotencyKey:
+      in: header
+      name: Idempotency-Key
+      required: false
+      schema:
+        type: string
+      description: Repeatable key; replaying the same key returns the prior response.
+    WorkspaceSlug:
+      in: path
+      name: slug
+      required: true
+      schema:
+        type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Session token (wallet or service)
+x-refined-from:
+- clawspan-cloud-shardlink-control-plane-openapi.json
+- clawspan-cloud-shardlink-control-plane-openapi.yml

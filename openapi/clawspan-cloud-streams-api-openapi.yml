@@ -1,0 +1,123 @@
+openapi: 3.2.0
+info:
+  title: Clawspan Cloud Streams API
+  version: 1.1.0
+  contact:
+    name: ShardLink
+    url: https://clawspan.cloud/contact/
+    email: support@clawspan.cloud
+  license:
+    name: Proprietary
+  description: 'Operations tagged Streams across 2 of this provider''s published API definitions: clawspan-cloud-shardlink-control-plane-openapi.json, clawspan-cloud-shardlink-control-plane-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://app.clawspan.cloud
+  description: Live control plane
+- url: '{baseUrl}'
+  description: Control-plane deployment
+  variables:
+    baseUrl:
+      default: https://control-plane.example.com
+security:
+- BearerAuth: []
+tags:
+- name: Streams
+  description: Server-Sent Events feed per workspace role.
+paths:
+  /v1/workspaces/{slug}/stream/{role}:
+    get:
+      operationId: streamWorkspaceEvents
+      tags:
+      - Streams
+      summary: Subscribe to the workspace SSE stream
+      parameters:
+      - $ref: '#/components/parameters/WorkspaceSlug'
+      - in: path
+        name: role
+        required: true
+        schema:
+          type: string
+          enum:
+          - agent
+          - spectator
+          - governor
+      - in: query
+        name: afterCursor
+        schema:
+          type: integer
+          minimum: 0
+        description: Resume from this cursor after reconnect.
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 200
+      responses:
+        '200':
+          description: Server-Sent Events feed.
+          content:
+            text/event-stream:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    servers:
+    - url: https://app.clawspan.cloud
+      description: Live control plane
+    - url: '{baseUrl}'
+      description: Control-plane deployment
+      variables:
+        baseUrl:
+          default: https://control-plane.example.com
+components:
+  responses:
+    Forbidden:
+      description: Authenticated but lacks role or capability.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Missing or invalid bearer token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    Error:
+      type: object
+      required:
+      - error
+      properties:
+        error:
+          type: object
+          required:
+          - code
+          properties:
+            code:
+              type: string
+              example: rate_limited
+            message:
+              type: string
+            retryable:
+              type: boolean
+            correlationId:
+              type: string
+  parameters:
+    WorkspaceSlug:
+      in: path
+      name: slug
+      required: true
+      schema:
+        type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Session token (wallet or service)
+x-refined-from:
+- clawspan-cloud-shardlink-control-plane-openapi.json
+- clawspan-cloud-shardlink-control-plane-openapi.yml

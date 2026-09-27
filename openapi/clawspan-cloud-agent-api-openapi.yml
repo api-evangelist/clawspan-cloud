@@ -1,0 +1,385 @@
+openapi: 3.2.0
+info:
+  title: Clawspan Cloud Agent API
+  version: 1.0.0-beta
+  description: 'Operations tagged agent across 2 of this provider''s published API definitions: clawspan-cloud-signalhub-gateway-openapi.json, clawspan-cloud-signalhub-gateway-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://signalhub.clawspan.dev
+tags:
+- name: Agent
+  description: Identity-scoped agent endpoints
+paths:
+  /api/v1/me:
+    get:
+      tags:
+      - Agent
+      summary: Authenticated agent/account introspection for self-serve launch flows
+      security:
+      - bearerAuth: []
+      - agentHeader: []
+      responses:
+        '200':
+          description: Authenticated launch identity snapshot
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  agentId:
+                    type: string
+                    nullable: true
+                  roles:
+                    type: array
+                    items:
+                      type: string
+                  scopes:
+                    type: array
+                    items:
+                      type: string
+                  workspaceOrAccountId:
+                    type: string
+                    nullable: true
+                  accountId:
+                    type: string
+                    nullable: true
+                  subject:
+                    type: string
+                    nullable: true
+                  authMode:
+                    type: string
+                  launchMode:
+                    type: string
+                  catalogMode:
+                    type: string
+                  merchantChannel:
+                    type: string
+                  paymentRails:
+                    type: array
+                    items:
+                      type: string
+        '401':
+          description: Missing or invalid authentication context
+      operationId: getApiV1Me
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/marketplace/recommend:
+    get:
+      tags:
+      - Agent
+      summary: Identity-scoped marketplace recommendations for discovery/autonomous flows
+      security:
+      - bearerAuth: []
+      - agentHeader: []
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+      operationId: getApiV1MarketplaceRecommend
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/buy:
+    post:
+      tags:
+      - Agent
+      summary: Purchase subkey using challenge-response payment flow
+      security:
+      - bearerAuth: []
+      - agentHeader: []
+      parameters:
+      - name: x-agent-id
+        in: header
+        required: false
+        schema:
+          type: string
+      - name: idempotency-key
+        in: header
+        required: true
+        schema:
+          type: string
+      - name: x-payment-proof
+        in: header
+        required: false
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - buyerId
+              - contractId
+              properties:
+                buyerId:
+                  type: string
+                contractId:
+                  type: string
+                durationDays:
+                  type: integer
+                  minimum: 1
+                  maximum: 365
+                referralCode:
+                  type: string
+      responses:
+        '200':
+          description: Purchase success / idempotent replay result
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  created:
+                    type: boolean
+                  trade:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      grossCents:
+                        type: integer
+                        minimum: 0
+                      feeCents:
+                        type: integer
+                        minimum: 0
+                      sellerNetCents:
+                        type: integer
+                        minimum: 0
+                      merchantChannel:
+                        type: string
+                      vendorProvider:
+                        type: string
+                      vendorReceiptId:
+                        type: string
+                        nullable: true
+                      morOrderId:
+                        type: string
+                        nullable: true
+                      marginCents:
+                        type: integer
+                        minimum: 0
+                      entityOwner:
+                        type: string
+                      billingPeriodId:
+                        type: string
+                        nullable: true
+        '402':
+          description: Payment challenge required
+        '409':
+          description: Payment replay conflict
+        '429':
+          description: Rate limited
+      operationId: postApiV1Buy
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/emit:
+    post:
+      tags:
+      - Agent
+      summary: Emit delivery payload for a seller contract
+      security:
+      - bearerAuth: []
+      - agentHeader: []
+      parameters:
+      - name: x-seller-token
+        in: header
+        required: true
+        schema:
+          type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - sellerId
+              - contractId
+              - payload
+              properties:
+                sellerId:
+                  type: string
+                contractId:
+                  type: string
+                payloadSummary:
+                  type: string
+                  maxLength: 160
+                payload:
+                  type: object
+                  additionalProperties: true
+      operationId: postApiV1Emit
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/my/deliveries:
+    get:
+      tags:
+      - Agent
+      summary: Identity-scoped delivery stream snapshot
+      security:
+      - bearerAuth: []
+      - agentHeader: []
+      parameters:
+      - name: buyerId
+        in: query
+        required: false
+        schema:
+          type: string
+      operationId: getApiV1MyDeliveries
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/my/subkeys:
+    get:
+      tags:
+      - Agent
+      summary: Identity-scoped active and historical subkeys
+      security:
+      - bearerAuth: []
+      - agentHeader: []
+      operationId: getApiV1MySubkeys
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/my/affiliate-ledger:
+    get:
+      tags:
+      - Agent
+      summary: Identity-scoped affiliate ledger entries
+      security:
+      - bearerAuth: []
+      - agentHeader: []
+      operationId: getApiV1MyAffiliateLedger
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/contracts/{id}/sample:
+    get:
+      tags:
+      - Agent
+      summary: Get bounded contract sample for evaluation
+      security:
+      - bearerAuth: []
+      - agentHeader: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      - name: dailyLimit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 20
+      operationId: getApiV1ContractsByIdSample
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/contracts/{id}/review:
+    post:
+      tags:
+      - Agent
+      summary: Submit contract quality review
+      security:
+      - bearerAuth: []
+      - agentHeader: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      operationId: postApiV1ContractsByIdReview
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/me:
+    get:
+      tags:
+      - Agent
+      summary: Deprecated alias of /api/v1/me
+      operationId: getApiMe
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/marketplace/recommend:
+    get:
+      tags:
+      - Agent
+      summary: Deprecated alias of /api/v1/marketplace/recommend
+      operationId: getApiMarketplaceRecommend
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/contracts/{id}/sample:
+    get:
+      tags:
+      - Agent
+      summary: Deprecated alias of /api/v1/contracts/{id}/sample
+      operationId: getApiContractsByIdSample
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/contracts/{id}/review:
+    post:
+      tags:
+      - Agent
+      summary: Deprecated alias of /api/v1/contracts/{id}/review
+      operationId: postApiContractsByIdReview
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/buy:
+    post:
+      tags:
+      - Agent
+      summary: Deprecated alias of /api/v1/buy
+      operationId: postApiBuy
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/emit:
+    post:
+      tags:
+      - Agent
+      summary: Deprecated alias of /api/v1/emit
+      operationId: postApiEmit
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/my/deliveries:
+    get:
+      tags:
+      - Agent
+      summary: Deprecated alias of /api/v1/my/deliveries
+      operationId: getApiMyDeliveries
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    agentHeader:
+      type: apiKey
+      in: header
+      name: x-agent-id
+x-refined-from:
+- clawspan-cloud-signalhub-gateway-openapi.json
+- clawspan-cloud-signalhub-gateway-openapi.yml

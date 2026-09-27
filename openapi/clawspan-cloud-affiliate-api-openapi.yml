@@ -1,0 +1,124 @@
+openapi: 3.2.0
+info:
+  title: Clawspan Cloud Affiliate API
+  version: 1.0.0-beta
+  description: 'Operations tagged affiliate across 2 of this provider''s published API definitions: clawspan-cloud-signalhub-gateway-openapi.json, clawspan-cloud-signalhub-gateway-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://signalhub.clawspan.dev
+tags:
+- name: affiliate
+  description: Affiliate growth, attribution, and analytics endpoints
+paths:
+  /api/v1/my/affiliate-dashboard:
+    get:
+      tags:
+      - affiliate
+      summary: Identity-scoped affiliate dashboard summary and quality metrics
+      security:
+      - bearerAuth: []
+      - agentHeader: []
+      operationId: getApiV1MyAffiliateDashboard
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/affiliate/codes:
+    get:
+      tags:
+      - affiliate
+      summary: List affiliate codes for the authenticated actor
+      security:
+      - bearerAuth: []
+      - agentHeader: []
+      operationId: getApiV1AffiliateCodes
+      x-operation-id-source: derived
+    post:
+      tags:
+      - affiliate
+      summary: Create or reactivate an affiliate code
+      security:
+      - bearerAuth: []
+      - agentHeader: []
+      operationId: postApiV1AffiliateCodes
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/affiliate/codes/{code}/revoke:
+    post:
+      tags:
+      - affiliate
+      summary: Revoke one affiliate code
+      security:
+      - bearerAuth: []
+      - agentHeader: []
+      parameters:
+      - name: code
+        in: path
+        required: true
+        schema:
+          type: string
+      operationId: postApiV1AffiliateCodesByCodeRevoke
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/affiliate/events/assist:
+    post:
+      tags:
+      - affiliate
+      summary: Record an assist touchpoint for last-click plus assist attribution
+      security:
+      - bearerAuth: []
+      - agentHeader: []
+      operationId: postApiV1AffiliateEventsAssist
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/affiliate/leaderboard:
+    get:
+      tags:
+      - affiliate
+      summary: Public affiliate leaderboard (sanitized)
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 50
+      operationId: getApiV1AffiliateLeaderboard
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/affiliate/recommendations:
+    get:
+      tags:
+      - affiliate
+      summary: Identity-scoped affiliate recommendations
+      security:
+      - bearerAuth: []
+      - agentHeader: []
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 20
+      operationId: getApiV1AffiliateRecommendations
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    agentHeader:
+      type: apiKey
+      in: header
+      name: x-agent-id
+x-refined-from:
+- clawspan-cloud-signalhub-gateway-openapi.json
+- clawspan-cloud-signalhub-gateway-openapi.yml

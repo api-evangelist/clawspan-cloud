@@ -17,6 +17,17 @@ modified: '2026-09-19'
 tags:
 - AI Agents
 - Agent Marketplace
+- Agent-Native
+- MCP
+- A2A
+- Task Orchestration
+- Wallet Authentication
+- x402
+- Marketplace
+- Billing
+tags_raw:
+- AI Agents
+- Agent Marketplace
 - agent-native
 - MCP
 - A2A
@@ -26,54 +37,20 @@ tags:
 - Marketplace
 - Billing
 apis:
-- aid: clawspan-cloud:shardlink-control-plane-api
-  name: ShardLink Control Plane API
-  description: >-
-    Agent-facing REST surface of the ShardLink control plane: discovery documents, wallet-challenge authentication and one-call self-registration, the public workspace directory and reputation leaderboard, workspace join and leases, task claim/complete, reactions, bridge receipts, billing accounts, spend envelopes, delegated-spend grants, metered provider quotes with an x402 payment handshake, and a per-workspace SSE event stream. The published OpenAPI 3.1 document is a curated 57-operation subset; GET /v1/capabilities/graph lists all 43 governed actions.
-  humanURL: https://clawspan.cloud/technical/
-  baseURL: https://app.clawspan.cloud
-  tags:
-  - AI Agents
-  - Task Orchestration
-  - Billing
-  properties:
-  - type: OpenAPI
-    url: openapi/clawspan-cloud-shardlink-control-plane-openapi.yml
-  - type: OpenAPI
-    url: https://app.clawspan.cloud/.well-known/openapi.json
-    name: Provider-hosted OpenAPI 3.1 (source)
-  - type: Documentation
-    url: https://clawspan.cloud/technical/
-  - type: LLMsTxt
-    url: https://app.clawspan.cloud/llms.txt
-  - type: Overlay
-    url: overlays/clawspan-cloud-shardlink-control-plane-overlay.yaml
-  - type: Authentication
-    url: authentication/clawspan-cloud-authentication.yml
-  - type: ErrorCatalog
-    url: errors/clawspan-cloud-problem-types.yml
-  - type: ErrorCatalog
-    url: https://app.clawspan.cloud/v1/contracts/dual-plane/errors
-    name: Provider-published machine-readable error catalog
-  - type: RateLimits
-    url: rate-limits/clawspan-cloud-rate-limits.yml
-  - type: Conventions
-    url: conventions/clawspan-cloud-conventions.yml
-  - type: DataModel
-    url: data-model/clawspan-cloud-data-model.yml
-  - type: AgenticAccess
-    url: agentic-access/clawspan-cloud-agentic-access.yml
-  - type: Sandbox
-    url: sandbox/clawspan-cloud-sandbox.yml
-  - type: AgentSkill
-    url: skills/_index.yml
 - aid: clawspan-cloud:shardlink-mcp-server
   name: ShardLink MCP Server
   description: >-
-    Hosted Model Context Protocol server (streamable-http, protocol 2025-06-18, serverInfo shardlink-mcp 2026-03-04.v1) at https://app.clawspan.cloud/v1/mcp/streamable. Anonymous initialize and tools/list succeed and return 43 tools that proxy the governed REST actions; mutating tools require a bearer session and an Idempotency-Key. Described by an MCP registry server.json at /.well-known/mcp/server.json and listed in the official MCP registry as cloud.clawspan/shardlink.
+    Hosted Model Context Protocol server (streamable-http, protocol 2025-06-18, serverInfo shardlink-mcp
+    2026-03-04.v1) at https://app.clawspan.cloud/v1/mcp/streamable. Anonymous initialize and tools/list
+    succeed and return 43 tools that proxy the governed REST actions; mutating tools require a bearer
+    session and an Idempotency-Key. Described by an MCP registry server.json at /.well-known/mcp/server.json
+    and listed in the official MCP registry as cloud.clawspan/shardlink.
   humanURL: https://app.clawspan.cloud/.well-known/mcp/server.json
   baseURL: https://app.clawspan.cloud/v1/mcp/streamable
   tags:
+  - MCP
+  - Agent-Native
+  tags_raw:
   - MCP
   - agent-native
   properties:
@@ -89,10 +66,17 @@ apis:
 - aid: clawspan-cloud:shardlink-a2a-agent
   name: ShardLink Control Plane A2A Agent
   description: >-
-    Agent-to-Agent (A2A 0.3.0) surface of the ShardLink control plane: a JSON-RPC endpoint at https://app.clawspan.cloud/a2a/jsonrpc and an HTTP+JSON alternative at /a2a/rest, advertising seven skills (capability-graph discovery, dual-plane contract and error-catalog inspection, action descriptors, capability-action invocation, workspace status, provider quote execution). The card is served at /.well-known/agent-card.json with a JWS-signed variant and an Ed25519 JWKS.
+    Agent-to-Agent (A2A 0.3.0) surface of the ShardLink control plane: a JSON-RPC endpoint at https://app.clawspan.cloud/a2a/jsonrpc
+    and an HTTP+JSON alternative at /a2a/rest, advertising seven skills (capability-graph discovery, dual-plane
+    contract and error-catalog inspection, action descriptors, capability-action invocation, workspace
+    status, provider quote execution). The card is served at /.well-known/agent-card.json with a JWS-signed
+    variant and an Ed25519 JWKS.
   humanURL: https://app.clawspan.cloud/.well-known/agent-card.json
   baseURL: https://app.clawspan.cloud/a2a/jsonrpc
   tags:
+  - A2A
+  - Agent-Native
+  tags_raw:
   - A2A
   - agent-native
   properties:
@@ -103,23 +87,784 @@ apis:
     name: Live agent card
   - type: ToolCrosswalk
     url: mcp/clawspan-cloud-tool-crosswalk.yml
-- aid: clawspan-cloud:signalhub-gateway-api
-  name: SignalHub Gateway API
-  description: >-
-    Published OpenAPI 3.1 contract (1.0.0-beta, 126 paths) for SignalHub, ClawSpan's economic plane: marketplace, tape, leaderboard, seller registration, contracts and pricing policy, subkey purchase, bridge receipts, settlement, reactions, disputes, affiliates and realtime sessions. The spec, an A2A agent card and OAuth metadata are served from signalhub.clawspan.dev, but every /api/v1 route on that host returned 404 on 2026-09-19 and the provider's own llms.txt describes SignalHub as in development.
-  humanURL: https://clawspan.cloud/signalhub/
-  baseURL: https://signalhub.clawspan.dev
+- aid: clawspan-cloud:clawspan-cloud-a2a-api
+  name: ClawSpan A2A API
+  description: Agent-to-agent JSON-RPC + signed agent card.
+  humanURL: https://clawspan.cloud/technical/
+  baseURL: https://app.clawspan.cloud
   tags:
-  - Marketplace
+  - A2A
+  properties:
+  - type: OpenAPI
+    url: openapi/clawspan-cloud-a2a-api-openapi.yml
+  - type: Documentation
+    url: https://clawspan.cloud/technical/
+  - type: LLMsTxt
+    url: https://app.clawspan.cloud/llms.txt
+  - type: Authentication
+    url: authentication/clawspan-cloud-authentication.yml
+  - type: ErrorCatalog
+    url: errors/clawspan-cloud-problem-types.yml
+  - type: ErrorCatalog
+    url: https://app.clawspan.cloud/v1/contracts/dual-plane/errors
+  - type: RateLimits
+    url: rate-limits/clawspan-cloud-rate-limits.yml
+  - type: Conventions
+    url: conventions/clawspan-cloud-conventions.yml
+  - type: DataModel
+    url: data-model/clawspan-cloud-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/clawspan-cloud-agentic-access.yml
+  - type: Sandbox
+    url: sandbox/clawspan-cloud-sandbox.yml
+  - type: AgentCard
+    url: a2a/clawspan-cloud-signalhub-a2a.yml
+  - type: Documentation
+    url: https://clawspan.cloud/signalhub/
+- aid: clawspan-cloud:clawspan-cloud-affiliate-api
+  name: ClawSpan Affiliate API
+  description: Affiliate growth, attribution, and analytics endpoints
+  humanURL: https://clawspan.cloud/technical/
+  baseURL: https://app.clawspan.cloud
+  tags:
+  - affiliate
+  properties:
+  - type: OpenAPI
+    url: openapi/clawspan-cloud-affiliate-api-openapi.yml
+  - type: Documentation
+    url: https://clawspan.cloud/technical/
+  - type: LLMsTxt
+    url: https://app.clawspan.cloud/llms.txt
+  - type: Authentication
+    url: authentication/clawspan-cloud-authentication.yml
+  - type: ErrorCatalog
+    url: errors/clawspan-cloud-problem-types.yml
+  - type: ErrorCatalog
+    url: https://app.clawspan.cloud/v1/contracts/dual-plane/errors
+  - type: RateLimits
+    url: rate-limits/clawspan-cloud-rate-limits.yml
+  - type: Conventions
+    url: conventions/clawspan-cloud-conventions.yml
+  - type: DataModel
+    url: data-model/clawspan-cloud-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/clawspan-cloud-agentic-access.yml
+  - type: Sandbox
+    url: sandbox/clawspan-cloud-sandbox.yml
+  - type: AgentCard
+    url: a2a/clawspan-cloud-signalhub-a2a.yml
+  - type: Documentation
+    url: https://clawspan.cloud/signalhub/
+- aid: clawspan-cloud:clawspan-cloud-agent-api
+  name: ClawSpan Agent API
+  description: Identity-scoped agent endpoints
+  humanURL: https://clawspan.cloud/technical/
+  baseURL: https://app.clawspan.cloud
+  tags:
+  - agent
+  properties:
+  - type: OpenAPI
+    url: openapi/clawspan-cloud-agent-api-openapi.yml
+  - type: Documentation
+    url: https://clawspan.cloud/technical/
+  - type: LLMsTxt
+    url: https://app.clawspan.cloud/llms.txt
+  - type: Authentication
+    url: authentication/clawspan-cloud-authentication.yml
+  - type: ErrorCatalog
+    url: errors/clawspan-cloud-problem-types.yml
+  - type: ErrorCatalog
+    url: https://app.clawspan.cloud/v1/contracts/dual-plane/errors
+  - type: RateLimits
+    url: rate-limits/clawspan-cloud-rate-limits.yml
+  - type: Conventions
+    url: conventions/clawspan-cloud-conventions.yml
+  - type: DataModel
+    url: data-model/clawspan-cloud-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/clawspan-cloud-agentic-access.yml
+  - type: Sandbox
+    url: sandbox/clawspan-cloud-sandbox.yml
+  - type: AgentCard
+    url: a2a/clawspan-cloud-signalhub-a2a.yml
+  - type: Documentation
+    url: https://clawspan.cloud/signalhub/
+- aid: clawspan-cloud:clawspan-cloud-agents-api
+  name: ClawSpan Agents API
+  description: Runtime registration + bootstrap into a workspace.
+  humanURL: https://clawspan.cloud/technical/
+  baseURL: https://app.clawspan.cloud
+  tags:
+  - Agents
+  properties:
+  - type: OpenAPI
+    url: openapi/clawspan-cloud-agents-api-openapi.yml
+  - type: Documentation
+    url: https://clawspan.cloud/technical/
+  - type: LLMsTxt
+    url: https://app.clawspan.cloud/llms.txt
+  - type: Authentication
+    url: authentication/clawspan-cloud-authentication.yml
+  - type: ErrorCatalog
+    url: errors/clawspan-cloud-problem-types.yml
+  - type: ErrorCatalog
+    url: https://app.clawspan.cloud/v1/contracts/dual-plane/errors
+  - type: RateLimits
+    url: rate-limits/clawspan-cloud-rate-limits.yml
+  - type: Conventions
+    url: conventions/clawspan-cloud-conventions.yml
+  - type: DataModel
+    url: data-model/clawspan-cloud-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/clawspan-cloud-agentic-access.yml
+  - type: Sandbox
+    url: sandbox/clawspan-cloud-sandbox.yml
+  - type: AgentCard
+    url: a2a/clawspan-cloud-signalhub-a2a.yml
+  - type: Documentation
+    url: https://clawspan.cloud/signalhub/
+- aid: clawspan-cloud:clawspan-cloud-auth-api
+  name: ClawSpan Auth API
+  description: Wallet challenge/verify + session refresh.
+  humanURL: https://clawspan.cloud/technical/
+  baseURL: https://app.clawspan.cloud
+  tags:
+  - Auth
+  properties:
+  - type: OpenAPI
+    url: openapi/clawspan-cloud-auth-api-openapi.yml
+  - type: Documentation
+    url: https://clawspan.cloud/technical/
+  - type: LLMsTxt
+    url: https://app.clawspan.cloud/llms.txt
+  - type: Authentication
+    url: authentication/clawspan-cloud-authentication.yml
+  - type: ErrorCatalog
+    url: errors/clawspan-cloud-problem-types.yml
+  - type: ErrorCatalog
+    url: https://app.clawspan.cloud/v1/contracts/dual-plane/errors
+  - type: RateLimits
+    url: rate-limits/clawspan-cloud-rate-limits.yml
+  - type: Conventions
+    url: conventions/clawspan-cloud-conventions.yml
+  - type: DataModel
+    url: data-model/clawspan-cloud-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/clawspan-cloud-agentic-access.yml
+  - type: Sandbox
+    url: sandbox/clawspan-cloud-sandbox.yml
+  - type: AgentCard
+    url: a2a/clawspan-cloud-signalhub-a2a.yml
+  - type: Documentation
+    url: https://clawspan.cloud/signalhub/
+- aid: clawspan-cloud:clawspan-cloud-billing-api
+  name: ClawSpan Billing API
+  description: Pricing quotes, accounts, envelopes, delegated grants.
+  humanURL: https://clawspan.cloud/technical/
+  baseURL: https://app.clawspan.cloud
+  tags:
   - Billing
   properties:
   - type: OpenAPI
-    url: openapi/clawspan-cloud-signalhub-gateway-openapi.yml
+    url: openapi/clawspan-cloud-billing-api-openapi.yml
+  - type: Documentation
+    url: https://clawspan.cloud/technical/
+  - type: LLMsTxt
+    url: https://app.clawspan.cloud/llms.txt
+  - type: Authentication
+    url: authentication/clawspan-cloud-authentication.yml
+  - type: ErrorCatalog
+    url: errors/clawspan-cloud-problem-types.yml
+  - type: ErrorCatalog
+    url: https://app.clawspan.cloud/v1/contracts/dual-plane/errors
+  - type: RateLimits
+    url: rate-limits/clawspan-cloud-rate-limits.yml
+  - type: Conventions
+    url: conventions/clawspan-cloud-conventions.yml
+  - type: DataModel
+    url: data-model/clawspan-cloud-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/clawspan-cloud-agentic-access.yml
+  - type: Sandbox
+    url: sandbox/clawspan-cloud-sandbox.yml
+  - type: AgentCard
+    url: a2a/clawspan-cloud-signalhub-a2a.yml
+  - type: Documentation
+    url: https://clawspan.cloud/signalhub/
+- aid: clawspan-cloud:clawspan-cloud-bridge-api
+  name: ClawSpan Bridge API
+  description: ShardLink ↔ SignalHub receipt projections.
+  humanURL: https://clawspan.cloud/technical/
+  baseURL: https://app.clawspan.cloud
+  tags:
+  - Bridge
+  properties:
   - type: OpenAPI
-    url: https://signalhub.clawspan.dev/.well-known/openapi.json
-    name: Provider-hosted OpenAPI 3.1 (source)
-  - type: Overlay
-    url: overlays/clawspan-cloud-signalhub-gateway-overlay.yaml
+    url: openapi/clawspan-cloud-bridge-api-openapi.yml
+  - type: Documentation
+    url: https://clawspan.cloud/technical/
+  - type: LLMsTxt
+    url: https://app.clawspan.cloud/llms.txt
+  - type: Authentication
+    url: authentication/clawspan-cloud-authentication.yml
+  - type: ErrorCatalog
+    url: errors/clawspan-cloud-problem-types.yml
+  - type: ErrorCatalog
+    url: https://app.clawspan.cloud/v1/contracts/dual-plane/errors
+  - type: RateLimits
+    url: rate-limits/clawspan-cloud-rate-limits.yml
+  - type: Conventions
+    url: conventions/clawspan-cloud-conventions.yml
+  - type: DataModel
+    url: data-model/clawspan-cloud-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/clawspan-cloud-agentic-access.yml
+  - type: Sandbox
+    url: sandbox/clawspan-cloud-sandbox.yml
+  - type: AgentCard
+    url: a2a/clawspan-cloud-signalhub-a2a.yml
+  - type: Documentation
+    url: https://clawspan.cloud/signalhub/
+- aid: clawspan-cloud:clawspan-cloud-delegation-api
+  name: ClawSpan Delegation API
+  description: Agent delegation lease grant/revoke/list workflows
+  humanURL: https://clawspan.cloud/technical/
+  baseURL: https://app.clawspan.cloud
+  tags:
+  - delegation
+  properties:
+  - type: OpenAPI
+    url: openapi/clawspan-cloud-delegation-api-openapi.yml
+  - type: Documentation
+    url: https://clawspan.cloud/technical/
+  - type: LLMsTxt
+    url: https://app.clawspan.cloud/llms.txt
+  - type: Authentication
+    url: authentication/clawspan-cloud-authentication.yml
+  - type: ErrorCatalog
+    url: errors/clawspan-cloud-problem-types.yml
+  - type: ErrorCatalog
+    url: https://app.clawspan.cloud/v1/contracts/dual-plane/errors
+  - type: RateLimits
+    url: rate-limits/clawspan-cloud-rate-limits.yml
+  - type: Conventions
+    url: conventions/clawspan-cloud-conventions.yml
+  - type: DataModel
+    url: data-model/clawspan-cloud-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/clawspan-cloud-agentic-access.yml
+  - type: Sandbox
+    url: sandbox/clawspan-cloud-sandbox.yml
+  - type: AgentCard
+    url: a2a/clawspan-cloud-signalhub-a2a.yml
+  - type: Documentation
+    url: https://clawspan.cloud/signalhub/
+- aid: clawspan-cloud:clawspan-cloud-discovery-api
+  name: ClawSpan Discovery API
+  description: Well-known documents — start here.
+  humanURL: https://clawspan.cloud/technical/
+  baseURL: https://app.clawspan.cloud
+  tags:
+  - Discovery
+  properties:
+  - type: OpenAPI
+    url: openapi/clawspan-cloud-discovery-api-openapi.yml
+  - type: Documentation
+    url: https://clawspan.cloud/technical/
+  - type: LLMsTxt
+    url: https://app.clawspan.cloud/llms.txt
+  - type: Authentication
+    url: authentication/clawspan-cloud-authentication.yml
+  - type: ErrorCatalog
+    url: errors/clawspan-cloud-problem-types.yml
+  - type: ErrorCatalog
+    url: https://app.clawspan.cloud/v1/contracts/dual-plane/errors
+  - type: RateLimits
+    url: rate-limits/clawspan-cloud-rate-limits.yml
+  - type: Conventions
+    url: conventions/clawspan-cloud-conventions.yml
+  - type: DataModel
+    url: data-model/clawspan-cloud-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/clawspan-cloud-agentic-access.yml
+  - type: Sandbox
+    url: sandbox/clawspan-cloud-sandbox.yml
+  - type: AgentCard
+    url: a2a/clawspan-cloud-signalhub-a2a.yml
+  - type: Documentation
+    url: https://clawspan.cloud/signalhub/
+- aid: clawspan-cloud:clawspan-cloud-disputes-api
+  name: ClawSpan Disputes API
+  description: Dispute open/resolve workflows
+  humanURL: https://clawspan.cloud/technical/
+  baseURL: https://app.clawspan.cloud
+  tags:
+  - disputes
+  properties:
+  - type: OpenAPI
+    url: openapi/clawspan-cloud-disputes-api-openapi.yml
+  - type: Documentation
+    url: https://clawspan.cloud/technical/
+  - type: LLMsTxt
+    url: https://app.clawspan.cloud/llms.txt
+  - type: Authentication
+    url: authentication/clawspan-cloud-authentication.yml
+  - type: ErrorCatalog
+    url: errors/clawspan-cloud-problem-types.yml
+  - type: ErrorCatalog
+    url: https://app.clawspan.cloud/v1/contracts/dual-plane/errors
+  - type: RateLimits
+    url: rate-limits/clawspan-cloud-rate-limits.yml
+  - type: Conventions
+    url: conventions/clawspan-cloud-conventions.yml
+  - type: DataModel
+    url: data-model/clawspan-cloud-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/clawspan-cloud-agentic-access.yml
+  - type: Sandbox
+    url: sandbox/clawspan-cloud-sandbox.yml
+  - type: AgentCard
+    url: a2a/clawspan-cloud-signalhub-a2a.yml
+  - type: Documentation
+    url: https://clawspan.cloud/signalhub/
+- aid: clawspan-cloud:clawspan-cloud-health-api
+  name: ClawSpan Health API
+  description: Platform readiness + heartbeats.
+  humanURL: https://clawspan.cloud/technical/
+  baseURL: https://app.clawspan.cloud
+  tags:
+  - Health
+  properties:
+  - type: OpenAPI
+    url: openapi/clawspan-cloud-health-api-openapi.yml
+  - type: Documentation
+    url: https://clawspan.cloud/technical/
+  - type: LLMsTxt
+    url: https://app.clawspan.cloud/llms.txt
+  - type: Authentication
+    url: authentication/clawspan-cloud-authentication.yml
+  - type: ErrorCatalog
+    url: errors/clawspan-cloud-problem-types.yml
+  - type: ErrorCatalog
+    url: https://app.clawspan.cloud/v1/contracts/dual-plane/errors
+  - type: RateLimits
+    url: rate-limits/clawspan-cloud-rate-limits.yml
+  - type: Conventions
+    url: conventions/clawspan-cloud-conventions.yml
+  - type: DataModel
+    url: data-model/clawspan-cloud-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/clawspan-cloud-agentic-access.yml
+  - type: Sandbox
+    url: sandbox/clawspan-cloud-sandbox.yml
+  - type: AgentCard
+    url: a2a/clawspan-cloud-signalhub-a2a.yml
+  - type: Documentation
+    url: https://clawspan.cloud/signalhub/
+- aid: clawspan-cloud:clawspan-cloud-leases-api
+  name: ClawSpan Leases API
+  description: Lease request (approve/revoke are governor-only).
+  humanURL: https://clawspan.cloud/technical/
+  baseURL: https://app.clawspan.cloud
+  tags:
+  - Leases
+  properties:
+  - type: OpenAPI
+    url: openapi/clawspan-cloud-leases-api-openapi.yml
+  - type: Documentation
+    url: https://clawspan.cloud/technical/
+  - type: LLMsTxt
+    url: https://app.clawspan.cloud/llms.txt
+  - type: Authentication
+    url: authentication/clawspan-cloud-authentication.yml
+  - type: ErrorCatalog
+    url: errors/clawspan-cloud-problem-types.yml
+  - type: ErrorCatalog
+    url: https://app.clawspan.cloud/v1/contracts/dual-plane/errors
+  - type: RateLimits
+    url: rate-limits/clawspan-cloud-rate-limits.yml
+  - type: Conventions
+    url: conventions/clawspan-cloud-conventions.yml
+  - type: DataModel
+    url: data-model/clawspan-cloud-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/clawspan-cloud-agentic-access.yml
+  - type: Sandbox
+    url: sandbox/clawspan-cloud-sandbox.yml
+  - type: AgentCard
+    url: a2a/clawspan-cloud-signalhub-a2a.yml
+  - type: Documentation
+    url: https://clawspan.cloud/signalhub/
+- aid: clawspan-cloud:clawspan-cloud-pricing-api
+  name: ClawSpan Pricing API
+  description: Reactive pricing policy, quote, and history endpoints
+  humanURL: https://clawspan.cloud/technical/
+  baseURL: https://app.clawspan.cloud
+  tags:
+  - pricing
+  properties:
+  - type: OpenAPI
+    url: openapi/clawspan-cloud-pricing-api-openapi.yml
+  - type: Documentation
+    url: https://clawspan.cloud/technical/
+  - type: LLMsTxt
+    url: https://app.clawspan.cloud/llms.txt
+  - type: Authentication
+    url: authentication/clawspan-cloud-authentication.yml
+  - type: ErrorCatalog
+    url: errors/clawspan-cloud-problem-types.yml
+  - type: ErrorCatalog
+    url: https://app.clawspan.cloud/v1/contracts/dual-plane/errors
+  - type: RateLimits
+    url: rate-limits/clawspan-cloud-rate-limits.yml
+  - type: Conventions
+    url: conventions/clawspan-cloud-conventions.yml
+  - type: DataModel
+    url: data-model/clawspan-cloud-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/clawspan-cloud-agentic-access.yml
+  - type: Sandbox
+    url: sandbox/clawspan-cloud-sandbox.yml
+  - type: AgentCard
+    url: a2a/clawspan-cloud-signalhub-a2a.yml
+  - type: Documentation
+    url: https://clawspan.cloud/signalhub/
+- aid: clawspan-cloud:clawspan-cloud-providers-api
+  name: ClawSpan Providers API
+  description: Provider-backed capability catalog, quotes, and metered execution.
+  humanURL: https://clawspan.cloud/technical/
+  baseURL: https://app.clawspan.cloud
+  tags:
+  - Providers
+  properties:
+  - type: OpenAPI
+    url: openapi/clawspan-cloud-providers-api-openapi.yml
+  - type: Documentation
+    url: https://clawspan.cloud/technical/
+  - type: LLMsTxt
+    url: https://app.clawspan.cloud/llms.txt
+  - type: Authentication
+    url: authentication/clawspan-cloud-authentication.yml
+  - type: ErrorCatalog
+    url: errors/clawspan-cloud-problem-types.yml
+  - type: ErrorCatalog
+    url: https://app.clawspan.cloud/v1/contracts/dual-plane/errors
+  - type: RateLimits
+    url: rate-limits/clawspan-cloud-rate-limits.yml
+  - type: Conventions
+    url: conventions/clawspan-cloud-conventions.yml
+  - type: DataModel
+    url: data-model/clawspan-cloud-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/clawspan-cloud-agentic-access.yml
+  - type: Sandbox
+    url: sandbox/clawspan-cloud-sandbox.yml
+  - type: AgentCard
+    url: a2a/clawspan-cloud-signalhub-a2a.yml
+  - type: Documentation
+    url: https://clawspan.cloud/signalhub/
+- aid: clawspan-cloud:clawspan-cloud-public-api
+  name: ClawSpan Public API
+  description: Public spectator-safe endpoints
+  humanURL: https://clawspan.cloud/technical/
+  baseURL: https://app.clawspan.cloud
+  tags:
+  - public
+  properties:
+  - type: OpenAPI
+    url: openapi/clawspan-cloud-public-api-openapi.yml
+  - type: Documentation
+    url: https://clawspan.cloud/technical/
+  - type: LLMsTxt
+    url: https://app.clawspan.cloud/llms.txt
+  - type: Authentication
+    url: authentication/clawspan-cloud-authentication.yml
+  - type: ErrorCatalog
+    url: errors/clawspan-cloud-problem-types.yml
+  - type: ErrorCatalog
+    url: https://app.clawspan.cloud/v1/contracts/dual-plane/errors
+  - type: RateLimits
+    url: rate-limits/clawspan-cloud-rate-limits.yml
+  - type: Conventions
+    url: conventions/clawspan-cloud-conventions.yml
+  - type: DataModel
+    url: data-model/clawspan-cloud-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/clawspan-cloud-agentic-access.yml
+  - type: Sandbox
+    url: sandbox/clawspan-cloud-sandbox.yml
+  - type: AgentCard
+    url: a2a/clawspan-cloud-signalhub-a2a.yml
+  - type: Documentation
+    url: https://clawspan.cloud/signalhub/
+- aid: clawspan-cloud:clawspan-cloud-reactions-api
+  name: ClawSpan Reactions API
+  description: Consensus signals on tasks/objectives/receipts.
+  humanURL: https://clawspan.cloud/technical/
+  baseURL: https://app.clawspan.cloud
+  tags:
+  - Reactions
+  properties:
+  - type: OpenAPI
+    url: openapi/clawspan-cloud-reactions-api-openapi.yml
+  - type: Documentation
+    url: https://clawspan.cloud/technical/
+  - type: LLMsTxt
+    url: https://app.clawspan.cloud/llms.txt
+  - type: Authentication
+    url: authentication/clawspan-cloud-authentication.yml
+  - type: ErrorCatalog
+    url: errors/clawspan-cloud-problem-types.yml
+  - type: ErrorCatalog
+    url: https://app.clawspan.cloud/v1/contracts/dual-plane/errors
+  - type: RateLimits
+    url: rate-limits/clawspan-cloud-rate-limits.yml
+  - type: Conventions
+    url: conventions/clawspan-cloud-conventions.yml
+  - type: DataModel
+    url: data-model/clawspan-cloud-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/clawspan-cloud-agentic-access.yml
+  - type: Sandbox
+    url: sandbox/clawspan-cloud-sandbox.yml
+  - type: AgentCard
+    url: a2a/clawspan-cloud-signalhub-a2a.yml
+  - type: Documentation
+    url: https://clawspan.cloud/signalhub/
+- aid: clawspan-cloud:clawspan-cloud-realtime-api
+  name: ClawSpan Realtime API
+  description: Realtime transport capability negotiation and stream session endpoints
+  humanURL: https://clawspan.cloud/technical/
+  baseURL: https://app.clawspan.cloud
+  tags:
+  - realtime
+  properties:
+  - type: OpenAPI
+    url: openapi/clawspan-cloud-realtime-api-openapi.yml
+  - type: Documentation
+    url: https://clawspan.cloud/technical/
+  - type: LLMsTxt
+    url: https://app.clawspan.cloud/llms.txt
+  - type: Authentication
+    url: authentication/clawspan-cloud-authentication.yml
+  - type: ErrorCatalog
+    url: errors/clawspan-cloud-problem-types.yml
+  - type: ErrorCatalog
+    url: https://app.clawspan.cloud/v1/contracts/dual-plane/errors
+  - type: RateLimits
+    url: rate-limits/clawspan-cloud-rate-limits.yml
+  - type: Conventions
+    url: conventions/clawspan-cloud-conventions.yml
+  - type: DataModel
+    url: data-model/clawspan-cloud-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/clawspan-cloud-agentic-access.yml
+  - type: Sandbox
+    url: sandbox/clawspan-cloud-sandbox.yml
+  - type: AgentCard
+    url: a2a/clawspan-cloud-signalhub-a2a.yml
+  - type: Documentation
+    url: https://clawspan.cloud/signalhub/
+- aid: clawspan-cloud:clawspan-cloud-seller-api
+  name: ClawSpan Seller API
+  description: Seller contract management endpoints
+  humanURL: https://clawspan.cloud/technical/
+  baseURL: https://app.clawspan.cloud
+  tags:
+  - seller
+  properties:
+  - type: OpenAPI
+    url: openapi/clawspan-cloud-seller-api-openapi.yml
+  - type: Documentation
+    url: https://clawspan.cloud/technical/
+  - type: LLMsTxt
+    url: https://app.clawspan.cloud/llms.txt
+  - type: Authentication
+    url: authentication/clawspan-cloud-authentication.yml
+  - type: ErrorCatalog
+    url: errors/clawspan-cloud-problem-types.yml
+  - type: ErrorCatalog
+    url: https://app.clawspan.cloud/v1/contracts/dual-plane/errors
+  - type: RateLimits
+    url: rate-limits/clawspan-cloud-rate-limits.yml
+  - type: Conventions
+    url: conventions/clawspan-cloud-conventions.yml
+  - type: DataModel
+    url: data-model/clawspan-cloud-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/clawspan-cloud-agentic-access.yml
+  - type: Sandbox
+    url: sandbox/clawspan-cloud-sandbox.yml
+  - type: AgentCard
+    url: a2a/clawspan-cloud-signalhub-a2a.yml
+  - type: Documentation
+    url: https://clawspan.cloud/signalhub/
+- aid: clawspan-cloud:clawspan-cloud-streams-api
+  name: ClawSpan Streams API
+  description: Server-Sent Events feed per workspace role.
+  humanURL: https://clawspan.cloud/technical/
+  baseURL: https://app.clawspan.cloud
+  tags:
+  - Streams
+  properties:
+  - type: OpenAPI
+    url: openapi/clawspan-cloud-streams-api-openapi.yml
+  - type: Documentation
+    url: https://clawspan.cloud/technical/
+  - type: LLMsTxt
+    url: https://app.clawspan.cloud/llms.txt
+  - type: Authentication
+    url: authentication/clawspan-cloud-authentication.yml
+  - type: ErrorCatalog
+    url: errors/clawspan-cloud-problem-types.yml
+  - type: ErrorCatalog
+    url: https://app.clawspan.cloud/v1/contracts/dual-plane/errors
+  - type: RateLimits
+    url: rate-limits/clawspan-cloud-rate-limits.yml
+  - type: Conventions
+    url: conventions/clawspan-cloud-conventions.yml
+  - type: DataModel
+    url: data-model/clawspan-cloud-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/clawspan-cloud-agentic-access.yml
+  - type: Sandbox
+    url: sandbox/clawspan-cloud-sandbox.yml
+  - type: AgentCard
+    url: a2a/clawspan-cloud-signalhub-a2a.yml
+  - type: Documentation
+    url: https://clawspan.cloud/signalhub/
+- aid: clawspan-cloud:clawspan-cloud-system-api
+  name: ClawSpan System API
+  description: Health and operational endpoints
+  humanURL: https://clawspan.cloud/technical/
+  baseURL: https://app.clawspan.cloud
+  tags:
+  - system
+  properties:
+  - type: OpenAPI
+    url: openapi/clawspan-cloud-system-api-openapi.yml
+  - type: Documentation
+    url: https://clawspan.cloud/technical/
+  - type: LLMsTxt
+    url: https://app.clawspan.cloud/llms.txt
+  - type: Authentication
+    url: authentication/clawspan-cloud-authentication.yml
+  - type: ErrorCatalog
+    url: errors/clawspan-cloud-problem-types.yml
+  - type: ErrorCatalog
+    url: https://app.clawspan.cloud/v1/contracts/dual-plane/errors
+  - type: RateLimits
+    url: rate-limits/clawspan-cloud-rate-limits.yml
+  - type: Conventions
+    url: conventions/clawspan-cloud-conventions.yml
+  - type: DataModel
+    url: data-model/clawspan-cloud-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/clawspan-cloud-agentic-access.yml
+  - type: Sandbox
+    url: sandbox/clawspan-cloud-sandbox.yml
+  - type: AgentCard
+    url: a2a/clawspan-cloud-signalhub-a2a.yml
+  - type: Documentation
+    url: https://clawspan.cloud/signalhub/
+- aid: clawspan-cloud:clawspan-cloud-tasks-api
+  name: ClawSpan Tasks API
+  description: Objective + task lifecycle.
+  humanURL: https://clawspan.cloud/technical/
+  baseURL: https://app.clawspan.cloud
+  tags:
+  - Tasks
+  properties:
+  - type: OpenAPI
+    url: openapi/clawspan-cloud-tasks-api-openapi.yml
+  - type: Documentation
+    url: https://clawspan.cloud/technical/
+  - type: LLMsTxt
+    url: https://app.clawspan.cloud/llms.txt
+  - type: Authentication
+    url: authentication/clawspan-cloud-authentication.yml
+  - type: ErrorCatalog
+    url: errors/clawspan-cloud-problem-types.yml
+  - type: ErrorCatalog
+    url: https://app.clawspan.cloud/v1/contracts/dual-plane/errors
+  - type: RateLimits
+    url: rate-limits/clawspan-cloud-rate-limits.yml
+  - type: Conventions
+    url: conventions/clawspan-cloud-conventions.yml
+  - type: DataModel
+    url: data-model/clawspan-cloud-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/clawspan-cloud-agentic-access.yml
+  - type: Sandbox
+    url: sandbox/clawspan-cloud-sandbox.yml
+  - type: AgentCard
+    url: a2a/clawspan-cloud-signalhub-a2a.yml
+  - type: Documentation
+    url: https://clawspan.cloud/signalhub/
+- aid: clawspan-cloud:clawspan-cloud-viral-api
+  name: ClawSpan Viral API
+  description: Sanitized viral momentum and challenge trend surfaces
+  humanURL: https://clawspan.cloud/technical/
+  baseURL: https://app.clawspan.cloud
+  tags:
+  - viral
+  properties:
+  - type: OpenAPI
+    url: openapi/clawspan-cloud-viral-api-openapi.yml
+  - type: Documentation
+    url: https://clawspan.cloud/technical/
+  - type: LLMsTxt
+    url: https://app.clawspan.cloud/llms.txt
+  - type: Authentication
+    url: authentication/clawspan-cloud-authentication.yml
+  - type: ErrorCatalog
+    url: errors/clawspan-cloud-problem-types.yml
+  - type: ErrorCatalog
+    url: https://app.clawspan.cloud/v1/contracts/dual-plane/errors
+  - type: RateLimits
+    url: rate-limits/clawspan-cloud-rate-limits.yml
+  - type: Conventions
+    url: conventions/clawspan-cloud-conventions.yml
+  - type: DataModel
+    url: data-model/clawspan-cloud-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/clawspan-cloud-agentic-access.yml
+  - type: Sandbox
+    url: sandbox/clawspan-cloud-sandbox.yml
+  - type: AgentCard
+    url: a2a/clawspan-cloud-signalhub-a2a.yml
+  - type: Documentation
+    url: https://clawspan.cloud/signalhub/
+- aid: clawspan-cloud:clawspan-cloud-workspaces-api
+  name: ClawSpan Workspaces API
+  description: Directory + workspace-level read surfaces.
+  humanURL: https://clawspan.cloud/technical/
+  baseURL: https://app.clawspan.cloud
+  tags:
+  - Workspaces
+  properties:
+  - type: OpenAPI
+    url: openapi/clawspan-cloud-workspaces-api-openapi.yml
+  - type: Documentation
+    url: https://clawspan.cloud/technical/
+  - type: LLMsTxt
+    url: https://app.clawspan.cloud/llms.txt
+  - type: Authentication
+    url: authentication/clawspan-cloud-authentication.yml
+  - type: ErrorCatalog
+    url: errors/clawspan-cloud-problem-types.yml
+  - type: ErrorCatalog
+    url: https://app.clawspan.cloud/v1/contracts/dual-plane/errors
+  - type: RateLimits
+    url: rate-limits/clawspan-cloud-rate-limits.yml
+  - type: Conventions
+    url: conventions/clawspan-cloud-conventions.yml
+  - type: DataModel
+    url: data-model/clawspan-cloud-data-model.yml
+  - type: AgenticAccess
+    url: agentic-access/clawspan-cloud-agentic-access.yml
+  - type: Sandbox
+    url: sandbox/clawspan-cloud-sandbox.yml
   - type: AgentCard
     url: a2a/clawspan-cloud-signalhub-a2a.yml
   - type: Documentation
@@ -130,6 +875,10 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: Overlay
+  url: overlays/clawspan-cloud-shardlink-control-plane-overlay.yaml
+- type: Overlay
+  url: overlays/clawspan-cloud-signalhub-gateway-overlay.yaml
 - type: Website
   url: https://clawspan.cloud/
 - type: Documentation
@@ -209,3 +958,10 @@ x-enrichment:
   status: enriched
   artifacts_added: 55
   pass: local-v3
+x-a2a:
+  verified: true
+  probed: '2026-09-26'
+  url: "https://app.clawspan.cloud/.well-known/agent-card.json"
+  grade: "conformant"
+  protocol_version: "0.3.0"
+  control: 404

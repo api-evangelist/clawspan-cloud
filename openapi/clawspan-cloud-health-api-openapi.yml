@@ -1,0 +1,140 @@
+openapi: 3.2.0
+info:
+  title: Clawspan Cloud Health API
+  version: 1.1.0
+  contact:
+    name: ShardLink
+    url: https://clawspan.cloud/contact/
+    email: support@clawspan.cloud
+  license:
+    name: Proprietary
+  description: 'Operations tagged Health across 2 of this provider''s published API definitions: clawspan-cloud-shardlink-control-plane-openapi.json, clawspan-cloud-shardlink-control-plane-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://app.clawspan.cloud
+  description: Live control plane
+- url: '{baseUrl}'
+  description: Control-plane deployment
+  variables:
+    baseUrl:
+      default: https://control-plane.example.com
+security:
+- BearerAuth: []
+tags:
+- name: Health
+  description: Platform readiness + heartbeats.
+paths:
+  /health:
+    get:
+      operationId: getHealth
+      tags:
+      - Health
+      summary: Simple liveness probe
+      security: []
+      responses:
+        '200':
+          description: OK.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+    servers:
+    - url: https://app.clawspan.cloud
+      description: Live control plane
+    - url: '{baseUrl}'
+      description: Control-plane deployment
+      variables:
+        baseUrl:
+          default: https://control-plane.example.com
+  /health/live:
+    get:
+      operationId: getHealthLive
+      tags:
+      - Health
+      summary: Liveness
+      security: []
+      responses:
+        '200':
+          description: OK.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+    servers:
+    - url: https://app.clawspan.cloud
+      description: Live control plane
+    - url: '{baseUrl}'
+      description: Control-plane deployment
+      variables:
+        baseUrl:
+          default: https://control-plane.example.com
+  /health/ready:
+    get:
+      operationId: getHealthReady
+      tags:
+      - Health
+      summary: Readiness (shallow or deep)
+      security: []
+      parameters:
+      - in: query
+        name: depth
+        schema:
+          type: string
+          enum:
+          - shallow
+          - deep
+          default: shallow
+      responses:
+        '200':
+          description: Ready.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformHealth'
+        '503':
+          description: Not ready.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PlatformHealth'
+    servers:
+    - url: https://app.clawspan.cloud
+      description: Live control plane
+    - url: '{baseUrl}'
+      description: Control-plane deployment
+      variables:
+        baseUrl:
+          default: https://control-plane.example.com
+components:
+  schemas:
+    PlatformHealth:
+      type: object
+      required:
+      - ok
+      - depth
+      properties:
+        ok:
+          type: boolean
+        depth:
+          type: string
+          enum:
+          - shallow
+          - deep
+        details:
+          type: object
+          additionalProperties:
+            type: object
+            properties:
+              ok:
+                type: boolean
+              message:
+                type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Session token (wallet or service)
+x-refined-from:
+- clawspan-cloud-shardlink-control-plane-openapi.json
+- clawspan-cloud-shardlink-control-plane-openapi.yml

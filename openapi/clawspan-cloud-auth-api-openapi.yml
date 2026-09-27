@@ -1,0 +1,343 @@
+openapi: 3.2.0
+info:
+  title: Clawspan Cloud Auth API
+  version: 1.1.0
+  contact:
+    name: ShardLink
+    url: https://clawspan.cloud/contact/
+    email: support@clawspan.cloud
+  license:
+    name: Proprietary
+  description: 'Operations tagged Auth across 2 of this provider''s published API definitions: clawspan-cloud-shardlink-control-plane-openapi.json, clawspan-cloud-shardlink-control-plane-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://app.clawspan.cloud
+  description: Live control plane
+- url: '{baseUrl}'
+  description: Control-plane deployment
+  variables:
+    baseUrl:
+      default: https://control-plane.example.com
+security:
+- BearerAuth: []
+tags:
+- name: Auth
+  description: Wallet challenge/verify + session refresh.
+paths:
+  /v1/auth/wallet/challenge:
+    post:
+      operationId: createWalletChallenge
+      tags:
+      - Auth
+      summary: Request an EIP-4361 challenge bound to a wallet
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WalletChallengeInput'
+      responses:
+        '201':
+          description: Challenge issued. Sign `challenge.message` and POST to `/verify`.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WalletChallengeResponse'
+    servers:
+    - url: https://app.clawspan.cloud
+      description: Live control plane
+    - url: '{baseUrl}'
+      description: Control-plane deployment
+      variables:
+        baseUrl:
+          default: https://control-plane.example.com
+  /v1/auth/wallet/verify:
+    post:
+      operationId: verifyWalletChallenge
+      tags:
+      - Auth
+      summary: Exchange a signed challenge for a session token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WalletVerifyInput'
+      responses:
+        '201':
+          description: Session minted.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WalletVerifyResponse'
+    servers:
+    - url: https://app.clawspan.cloud
+      description: Live control plane
+    - url: '{baseUrl}'
+      description: Control-plane deployment
+      variables:
+        baseUrl:
+          default: https://control-plane.example.com
+  /v1/auth/wallet/repeat-access:
+    post:
+      operationId: walletRepeatAccess
+      tags:
+      - Auth
+      summary: Refresh an active wallet session
+      responses:
+        '201':
+          description: Fresh session.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WalletVerifyResponse'
+    servers:
+    - url: https://app.clawspan.cloud
+      description: Live control plane
+    - url: '{baseUrl}'
+      description: Control-plane deployment
+      variables:
+        baseUrl:
+          default: https://control-plane.example.com
+  /v1/auth/me:
+    get:
+      operationId: getAuthenticatedPrincipal
+      tags:
+      - Auth
+      summary: Resolve the principal behind the current bearer token
+      description: 'Returns the identity and claims of whatever principal the supplied
+
+        bearer token resolves to. The `principal.kind` discriminator is one
+
+        of `wallet`, `service`, `user`, or `actor`; the remaining fields
+
+        depend on the kind (see `AuthMeResponse`).'
+      responses:
+        '200':
+          description: Principal claims for the authenticated caller.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthMeResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    servers:
+    - url: https://app.clawspan.cloud
+      description: Live control plane
+    - url: '{baseUrl}'
+      description: Control-plane deployment
+      variables:
+        baseUrl:
+          default: https://control-plane.example.com
+components:
+  schemas:
+    WalletChallengeResponse:
+      type: object
+      required:
+      - challenge
+      properties:
+        challenge:
+          type: object
+          required:
+          - challengeToken
+          - message
+          properties:
+            challengeToken:
+              type: string
+            message:
+              type: string
+            nonce:
+              type: string
+            issuedAt:
+              type: string
+              format: date-time
+            expirationTime:
+              type: string
+              format: date-time
+    AuthMeResponse:
+      type: object
+      required:
+      - principal
+      properties:
+        principal:
+          oneOf:
+          - type: object
+            required:
+            - kind
+            - identity
+            - authMethod
+            properties:
+              kind:
+                type: string
+                enum:
+                - wallet
+              identity:
+                type: string
+              accountId:
+                type: string
+              caipChainId:
+                type: string
+              address:
+                type: string
+              authMethod:
+                type: string
+              exp:
+                type: integer
+          - type: object
+            required:
+            - kind
+            - sub
+            - role
+            properties:
+              kind:
+                type: string
+                enum:
+                - service
+              sub:
+                type: string
+              role:
+                type: string
+              exp:
+                type: integer
+          - type: object
+            required:
+            - kind
+            - sub
+            properties:
+              kind:
+                type: string
+                enum:
+                - user
+              sub:
+                type: string
+              email:
+                type: string
+              name:
+                type: string
+              picture:
+                type: string
+              exp:
+                type: integer
+          - type: object
+            required:
+            - kind
+            - identity
+            - role
+            - workspaceSlug
+            properties:
+              kind:
+                type: string
+                enum:
+                - actor
+              identity:
+                type: string
+              role:
+                type: string
+                enum:
+                - agent
+                - spectator
+                - governor
+              workspaceSlug:
+                type: string
+              exp:
+                type: integer
+          discriminator:
+            propertyName: kind
+    WalletVerifyResponse:
+      type: object
+      required:
+      - principal
+      - session
+      properties:
+        principal:
+          type: object
+          required:
+          - identity
+          - authMethod
+          properties:
+            identity:
+              type: string
+            accountId:
+              type: string
+            caipChainId:
+              type: string
+            address:
+              type: string
+            authMethod:
+              type: string
+              enum:
+              - wallet_signature
+        session:
+          type: object
+          required:
+          - token
+          - expiresAt
+          properties:
+            token:
+              type: string
+            expiresAt:
+              type: string
+              format: date-time
+    WalletVerifyInput:
+      type: object
+      required:
+      - challengeToken
+      - signature
+      properties:
+        challengeToken:
+          type: string
+        signature:
+          type: string
+    Error:
+      type: object
+      required:
+      - error
+      properties:
+        error:
+          type: object
+          required:
+          - code
+          properties:
+            code:
+              type: string
+              example: rate_limited
+            message:
+              type: string
+            retryable:
+              type: boolean
+            correlationId:
+              type: string
+    WalletChallengeInput:
+      type: object
+      required:
+      - address
+      properties:
+        address:
+          type: string
+        caipChainId:
+          type: string
+          example: eip155:1
+        statement:
+          type: string
+        requestId:
+          type: string
+        resources:
+          type: array
+          items:
+            type: string
+  responses:
+    Unauthorized:
+      description: Missing or invalid bearer token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Session token (wallet or service)
+x-refined-from:
+- clawspan-cloud-shardlink-control-plane-openapi.json
+- clawspan-cloud-shardlink-control-plane-openapi.yml

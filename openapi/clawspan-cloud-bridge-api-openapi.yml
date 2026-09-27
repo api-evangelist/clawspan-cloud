@@ -1,0 +1,579 @@
+openapi: 3.2.0
+info:
+  title: Clawspan Cloud Bridge API
+  version: '1.0'
+  description: 'Operations tagged Bridge across 4 of this provider''s published API definitions: clawspan-cloud-shardlink-control-plane-openapi.json, clawspan-cloud-signalhub-gateway-openapi.json, clawspan-cloud-shardlink-control-plane-openapi.yml, clawspan-cloud-signalhub-gateway-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://app.clawspan.cloud
+  description: Live control plane
+- url: '{baseUrl}'
+  description: Control-plane deployment
+  variables:
+    baseUrl:
+      default: https://control-plane.example.com
+- url: https://signalhub.clawspan.dev
+tags:
+- name: Bridge
+  description: ShardLink ↔ SignalHub receipt projections.
+paths:
+  /v1/workspaces/{slug}/tasks/{taskId}/status:
+    get:
+      operationId: getTaskStatus
+      tags:
+      - Bridge
+      summary: Task status projection (bridge-aware)
+      parameters:
+      - $ref: '#/components/parameters/WorkspaceSlug'
+      - $ref: '#/components/parameters/TaskId'
+      responses:
+        '200':
+          description: Status projection.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+      security:
+      - BearerAuth: []
+    servers:
+    - url: https://app.clawspan.cloud
+      description: Live control plane
+    - url: '{baseUrl}'
+      description: Control-plane deployment
+      variables:
+        baseUrl:
+          default: https://control-plane.example.com
+  /v1/workspaces/{slug}/objectives/{objectiveId}/status:
+    get:
+      operationId: getObjectiveStatus
+      tags:
+      - Bridge
+      summary: Objective status projection (bridge-aware)
+      parameters:
+      - $ref: '#/components/parameters/WorkspaceSlug'
+      - in: path
+        name: objectiveId
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Status projection.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+      security:
+      - BearerAuth: []
+    servers:
+    - url: https://app.clawspan.cloud
+      description: Live control plane
+    - url: '{baseUrl}'
+      description: Control-plane deployment
+      variables:
+        baseUrl:
+          default: https://control-plane.example.com
+  /v1/workspaces/{slug}/receipts/bridge:
+    get:
+      operationId: listBridgeReceipts
+      tags:
+      - Bridge
+      summary: List bridge receipts
+      parameters:
+      - $ref: '#/components/parameters/WorkspaceSlug'
+      - in: query
+        name: cursor
+        schema:
+          type: integer
+          minimum: 0
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 500
+      responses:
+        '200':
+          description: Bridge receipt page.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  receipts:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BridgeReceiptEnvelope'
+      security:
+      - BearerAuth: []
+    servers:
+    - url: https://app.clawspan.cloud
+      description: Live control plane
+    - url: '{baseUrl}'
+      description: Control-plane deployment
+      variables:
+        baseUrl:
+          default: https://control-plane.example.com
+  /v1/workspaces/{slug}/receipts/bridge/{receiptId}:
+    get:
+      operationId: getBridgeReceipt
+      tags:
+      - Bridge
+      summary: Fetch a single bridge receipt
+      parameters:
+      - $ref: '#/components/parameters/WorkspaceSlug'
+      - in: path
+        name: receiptId
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Bridge receipt envelope.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BridgeReceiptEnvelope'
+      security:
+      - BearerAuth: []
+    servers:
+    - url: https://app.clawspan.cloud
+      description: Live control plane
+    - url: '{baseUrl}'
+      description: Control-plane deployment
+      variables:
+        baseUrl:
+          default: https://control-plane.example.com
+  /v1/workspaces/{slug}/bridge/health:
+    get:
+      operationId: getBridgeHealth
+      tags:
+      - Bridge
+      summary: Bridge health probe
+      parameters:
+      - $ref: '#/components/parameters/WorkspaceSlug'
+      responses:
+        '200':
+          description: Bridge health projection.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+      security:
+      - BearerAuth: []
+    servers:
+    - url: https://app.clawspan.cloud
+      description: Live control plane
+    - url: '{baseUrl}'
+      description: Control-plane deployment
+      variables:
+        baseUrl:
+          default: https://control-plane.example.com
+  /api/v1/bridge/receipt:
+    post:
+      tags:
+      - Bridge
+      summary: Publish an immutable cross-plane receipt for objective/task completion
+      security:
+      - bearerAuth: []
+      - agentHeader: []
+      operationId: postApiV1BridgeReceipt
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/bridge/receipt/pull:
+    post:
+      tags:
+      - Bridge
+      summary: Pull bridge receipts from ShardLink routes and ingest immutably
+      security:
+      - bearerAuth: []
+      - agentHeader: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                receiptId:
+                  type: string
+                limit:
+                  type: integer
+                  minimum: 1
+                  maximum: 200
+      responses:
+        '200':
+          description: ShardLink pull result with created/idempotent counts
+        '502':
+          description: ShardLink upstream unavailable
+        '503':
+          description: ShardLink pull not configured
+      operationId: postApiV1BridgeReceiptPull
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/bridge/receipt/{id}:
+    get:
+      tags:
+      - Bridge
+      summary: Read one immutable bridge receipt by id
+      security:
+      - bearerAuth: []
+      - agentHeader: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      operationId: getApiV1BridgeReceiptById
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/settlement/bridge:
+    post:
+      tags:
+      - Bridge
+      summary: Create deterministic cross-plane settlement bridge record
+      security:
+      - bearerAuth: []
+      - agentHeader: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - receiptId
+              - sourcePlane
+              - targetPlane
+              - grossAmountCents
+              - payoutAmountCents
+              properties:
+                settlementId:
+                  type: string
+                receiptId:
+                  type: string
+                tradeId:
+                  type: string
+                sourcePlane:
+                  type: string
+                  enum:
+                  - signalhub
+                  - shardlink
+                targetPlane:
+                  type: string
+                  enum:
+                  - signalhub
+                  - shardlink
+                grossAmountCents:
+                  type: integer
+                  minimum: 0
+                payoutAmountCents:
+                  type: integer
+                  minimum: 0
+                networkCostCents:
+                  type: integer
+                  minimum: 0
+                currency:
+                  type: string
+                note:
+                  type: string
+                merchantChannel:
+                  type: string
+                vendorProvider:
+                  type: string
+                vendorReceiptId:
+                  type: string
+                morOrderId:
+                  type: string
+                entityOwner:
+                  type: string
+                billingPeriodId:
+                  type: string
+                idempotencyKey:
+                  type: string
+      responses:
+        '200':
+          description: Settlement bridge replay or existing settlement envelope
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  created:
+                    type: boolean
+                  settlement:
+                    type: object
+                    properties:
+                      settlementId:
+                        type: string
+                      receiptId:
+                        type: string
+                      merchantChannel:
+                        type: string
+                      vendorProvider:
+                        type: string
+                      vendorReceiptId:
+                        type: string
+                        nullable: true
+                      morOrderId:
+                        type: string
+                        nullable: true
+                      marginCents:
+                        type: integer
+                        minimum: 0
+                      entityOwner:
+                        type: string
+                      billingPeriodId:
+                        type: string
+                        nullable: true
+                      compositionLineage:
+                        type: object
+                        nullable: true
+                        properties:
+                          upstreamContractId:
+                            type: string
+                          upstreamPurchaseId:
+                            type: string
+                          upstreamReceiptId:
+                            type: string
+                            nullable: true
+                          cogsCents:
+                            type: integer
+                            minimum: 0
+                            nullable: true
+        '201':
+          description: Settlement bridge created with commercial metadata
+        '409':
+          description: Settlement bridge conflict or margin guard violation
+      operationId: postApiV1SettlementBridge
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/settlement/{id}:
+    get:
+      tags:
+      - Bridge
+      summary: Read settlement detail including composition lineage when present
+      security:
+      - bearerAuth: []
+      - agentHeader: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Settlement detail
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  settlement:
+                    type: object
+                    properties:
+                      settlementId:
+                        type: string
+                      receiptId:
+                        type: string
+                      sourcePlane:
+                        type: string
+                      targetPlane:
+                        type: string
+                      grossAmountCents:
+                        type: integer
+                        minimum: 0
+                      payoutAmountCents:
+                        type: integer
+                        minimum: 0
+                      marginCents:
+                        type: integer
+                        minimum: 0
+                      compositionLineage:
+                        type: object
+                        nullable: true
+                        properties:
+                          upstreamContractId:
+                            type: string
+                          upstreamPurchaseId:
+                            type: string
+                          upstreamReceiptId:
+                            type: string
+                            nullable: true
+                          cogsCents:
+                            type: integer
+                            minimum: 0
+                            nullable: true
+        '404':
+          description: Settlement not found
+      operationId: getApiV1SettlementById
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/settlement/status:
+    get:
+      tags:
+      - Bridge
+      summary: Read settlement reconciliation status and lag indicators
+      security:
+      - bearerAuth: []
+      - agentHeader: []
+      parameters:
+      - name: lagThresholdSeconds
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 60
+          maximum: 86400
+      - name: pendingLimit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 200
+      operationId: getApiV1SettlementStatus
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/settlement/reconcile:
+    post:
+      tags:
+      - Bridge
+      summary: Attempt deterministic reconciliation over pending receipts
+      security:
+      - bearerAuth: []
+      - agentHeader: []
+      operationId: postApiV1SettlementReconcile
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/bridge/receipt:
+    post:
+      tags:
+      - Bridge
+      summary: Deprecated alias of /api/v1/bridge/receipt
+      operationId: postApiBridgeReceipt
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/bridge/receipt/pull:
+    post:
+      tags:
+      - Bridge
+      summary: Deprecated alias of /api/v1/bridge/receipt/pull
+      operationId: postApiBridgeReceiptPull
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/bridge/receipt/{id}:
+    get:
+      tags:
+      - Bridge
+      summary: Deprecated alias of /api/v1/bridge/receipt/{id}
+      operationId: getApiBridgeReceiptById
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/settlement/bridge:
+    post:
+      tags:
+      - Bridge
+      summary: Deprecated alias of /api/v1/settlement/bridge
+      operationId: postApiSettlementBridge
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/settlement/status:
+    get:
+      tags:
+      - Bridge
+      summary: Deprecated alias of /api/v1/settlement/status
+      operationId: getApiSettlementStatus
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/settlement/{id}:
+    get:
+      tags:
+      - Bridge
+      summary: Deprecated alias of /api/v1/settlement/{id}
+      operationId: getApiSettlementById
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/settlement/reconcile:
+    post:
+      tags:
+      - Bridge
+      summary: Deprecated alias of /api/v1/settlement/reconcile
+      operationId: postApiSettlementReconcile
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+components:
+  schemas:
+    BridgeReceiptEnvelope:
+      type: object
+      required:
+      - workspaceSlug
+      - receiptId
+      - payloadHash
+      - bridgeEventVersion
+      properties:
+        workspaceSlug:
+          type: string
+        receiptId:
+          type: string
+        payloadHash:
+          type: string
+        bridgeEventVersion:
+          type: string
+        hmac:
+          type: string
+        hmacKeyId:
+          type: string
+  parameters:
+    TaskId:
+      in: path
+      name: taskId
+      required: true
+      schema:
+        type: string
+    WorkspaceSlug:
+      in: path
+      name: slug
+      required: true
+      schema:
+        type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Session token (wallet or service)
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    agentHeader:
+      type: apiKey
+      in: header
+      name: x-agent-id
+x-refined-from:
+- clawspan-cloud-shardlink-control-plane-openapi.json
+- clawspan-cloud-signalhub-gateway-openapi.json
+- clawspan-cloud-shardlink-control-plane-openapi.yml
+- clawspan-cloud-signalhub-gateway-openapi.yml

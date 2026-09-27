@@ -1,0 +1,231 @@
+openapi: 3.2.0
+info:
+  title: Clawspan Cloud Leases API
+  version: 1.1.0
+  contact:
+    name: ShardLink
+    url: https://clawspan.cloud/contact/
+    email: support@clawspan.cloud
+  license:
+    name: Proprietary
+  description: 'Operations tagged Leases across 2 of this provider''s published API definitions: clawspan-cloud-shardlink-control-plane-openapi.json, clawspan-cloud-shardlink-control-plane-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://app.clawspan.cloud
+  description: Live control plane
+- url: '{baseUrl}'
+  description: Control-plane deployment
+  variables:
+    baseUrl:
+      default: https://control-plane.example.com
+security:
+- BearerAuth: []
+tags:
+- name: Leases
+  description: Lease request (approve/revoke are governor-only).
+paths:
+  /v1/workspaces/{slug}/leases/request:
+    post:
+      operationId: requestLease
+      tags:
+      - Leases
+      summary: Request a lease for this workspace
+      description: 'Authenticated with the **workspace-scoped** `sessionToken` returned by
+
+        the `/bootstrap` call, not the top-level session token.'
+      parameters:
+      - $ref: '#/components/parameters/WorkspaceSlug'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LeaseRequestInput'
+      responses:
+        '201':
+          description: Lease approved or pending.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeaseResponse'
+        '402':
+          $ref: '#/components/responses/PaymentRequired'
+        '409':
+          $ref: '#/components/responses/Conflict'
+    servers:
+    - url: https://app.clawspan.cloud
+      description: Live control plane
+    - url: '{baseUrl}'
+      description: Control-plane deployment
+      variables:
+        baseUrl:
+          default: https://control-plane.example.com
+components:
+  schemas:
+    LeaseRequestInput:
+      type: object
+      properties:
+        tier:
+          type: string
+          example: sandbox
+        quoteId:
+          type: string
+        envelopeId:
+          type: string
+    LeaseResponse:
+      type: object
+      properties:
+        intentId:
+          type: string
+        autoApproved:
+          type: boolean
+        lease:
+          type: object
+          additionalProperties: true
+    PaymentRequirementEnvelope:
+      type: object
+      required:
+      - paymentRequirement
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              enum:
+              - x402_payment_required
+        paymentRequirement:
+          type: object
+          additionalProperties: true
+          required:
+          - version
+          - status
+          - challenge
+          - accepts
+          properties:
+            version:
+              type: string
+              enum:
+              - x402_payment_requirement.v1
+            status:
+              type: string
+              enum:
+              - live
+              - contract_scaffolded
+            challenge:
+              type: object
+              required:
+              - paymentId
+              - quoteId
+              - amountUsdCents
+              properties:
+                paymentId:
+                  type: string
+                quoteId:
+                  type: string
+                workspaceSlug:
+                  type: string
+                identity:
+                  type: string
+                amountUsdCents:
+                  type: integer
+                  minimum: 0
+                currency:
+                  type: string
+                  enum:
+                  - USD
+                resource:
+                  type: string
+                method:
+                  type: string
+                  enum:
+                  - POST
+                issuedAt:
+                  type: string
+                  format: date-time
+                expiresAt:
+                  type: string
+                  format: date-time
+            accepts:
+              type: array
+              items:
+                type: object
+                required:
+                - scheme
+                - network
+                - asset
+                - payTo
+                - maxAmountRequiredUsdCents
+                properties:
+                  scheme:
+                    type: string
+                    enum:
+                    - exact
+                  network:
+                    type: string
+                  asset:
+                    type: string
+                  payTo:
+                    type: string
+                  maxAmountRequiredUsdCents:
+                    type: integer
+                    minimum: 0
+    Error:
+      type: object
+      required:
+      - error
+      properties:
+        error:
+          type: object
+          required:
+          - code
+          properties:
+            code:
+              type: string
+              example: rate_limited
+            message:
+              type: string
+            retryable:
+              type: boolean
+            correlationId:
+              type: string
+  responses:
+    PaymentRequired:
+      description: x402 payment challenge.
+      headers:
+        PAYMENT-REQUIRED:
+          description: Base64url-encoded x402 payment requirement envelope.
+          schema:
+            type: string
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/PaymentRequirementEnvelope'
+    Conflict:
+      description: Race or idempotency conflict.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  parameters:
+    IdempotencyKey:
+      in: header
+      name: Idempotency-Key
+      required: false
+      schema:
+        type: string
+      description: Repeatable key; replaying the same key returns the prior response.
+    WorkspaceSlug:
+      in: path
+      name: slug
+      required: true
+      schema:
+        type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Session token (wallet or service)
+x-refined-from:
+- clawspan-cloud-shardlink-control-plane-openapi.json
+- clawspan-cloud-shardlink-control-plane-openapi.yml

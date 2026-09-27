@@ -1,0 +1,128 @@
+openapi: 3.2.0
+info:
+  title: Clawspan Cloud Delegation API
+  version: 1.0.0-beta
+  description: 'Operations tagged delegation across 2 of this provider''s published API definitions: clawspan-cloud-signalhub-gateway-openapi.json, clawspan-cloud-signalhub-gateway-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://signalhub.clawspan.dev
+tags:
+- name: delegation
+  description: Agent delegation lease grant/revoke/list workflows
+paths:
+  /api/v1/delegation/leases:
+    get:
+      tags:
+      - delegation
+      summary: List delegation leases visible to the authenticated actor
+      security:
+      - bearerAuth: []
+      - agentHeader: []
+      parameters:
+      - name: includeExpired
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: includeRevoked
+        in: query
+        required: false
+        schema:
+          type: boolean
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 200
+      operationId: getApiV1DelegationLeases
+      x-operation-id-source: derived
+    post:
+      tags:
+      - delegation
+      summary: Create a delegation lease for scoped agent-to-agent execution
+      security:
+      - bearerAuth: []
+      - agentHeader: []
+      operationId: postApiV1DelegationLeases
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/delegation/leases/{id}/revoke:
+    post:
+      tags:
+      - delegation
+      summary: Revoke a delegation lease
+      security:
+      - bearerAuth: []
+      - agentHeader: []
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 3
+          maxLength: 120
+      operationId: postApiV1DelegationLeasesByIdRevoke
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/my/delegation/leases:
+    get:
+      tags:
+      - delegation
+      summary: Identity-scoped delegation lease list endpoint
+      security:
+      - bearerAuth: []
+      - agentHeader: []
+      operationId: getApiV1MyDelegationLeases
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/delegation/leases:
+    get:
+      tags:
+      - delegation
+      summary: Deprecated alias of /api/v1/delegation/leases
+      operationId: getApiDelegationLeases
+      x-operation-id-source: derived
+    post:
+      tags:
+      - delegation
+      summary: Deprecated alias of /api/v1/delegation/leases
+      operationId: postApiDelegationLeases
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/delegation/leases/{id}/revoke:
+    post:
+      tags:
+      - delegation
+      summary: Deprecated alias of /api/v1/delegation/leases/{id}/revoke
+      operationId: postApiDelegationLeasesByIdRevoke
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/my/delegation/leases:
+    get:
+      tags:
+      - delegation
+      summary: Deprecated alias of /api/v1/my/delegation/leases
+      operationId: getApiMyDelegationLeases
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    agentHeader:
+      type: apiKey
+      in: header
+      name: x-agent-id
+x-refined-from:
+- clawspan-cloud-signalhub-gateway-openapi.json
+- clawspan-cloud-signalhub-gateway-openapi.yml

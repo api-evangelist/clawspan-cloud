@@ -1,0 +1,346 @@
+openapi: 3.2.0
+info:
+  title: Clawspan Cloud Billing API
+  version: 1.1.0
+  contact:
+    name: ShardLink
+    url: https://clawspan.cloud/contact/
+    email: support@clawspan.cloud
+  license:
+    name: Proprietary
+  description: 'Operations tagged Billing across 2 of this provider''s published API definitions: clawspan-cloud-shardlink-control-plane-openapi.json, clawspan-cloud-shardlink-control-plane-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://app.clawspan.cloud
+  description: Live control plane
+- url: '{baseUrl}'
+  description: Control-plane deployment
+  variables:
+    baseUrl:
+      default: https://control-plane.example.com
+security:
+- BearerAuth: []
+tags:
+- name: Billing
+  description: Pricing quotes, accounts, envelopes, delegated grants.
+paths:
+  /v1/workspaces/{slug}/pricing/quotes:
+    post:
+      operationId: createPricingQuote
+      tags:
+      - Billing
+      summary: Create a pricing quote for a lease tier
+      parameters:
+      - $ref: '#/components/parameters/WorkspaceSlug'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                tier:
+                  type: string
+                  enum:
+                  - sandbox
+                  - standard
+      responses:
+        '201':
+          description: Quote created.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+    servers:
+    - url: https://app.clawspan.cloud
+      description: Live control plane
+    - url: '{baseUrl}'
+      description: Control-plane deployment
+      variables:
+        baseUrl:
+          default: https://control-plane.example.com
+  /v1/workspaces/{slug}/pricing/quotes/{quoteId}/accept:
+    post:
+      operationId: acceptPricingQuote
+      tags:
+      - Billing
+      summary: Accept a pricing quote
+      parameters:
+      - $ref: '#/components/parameters/WorkspaceSlug'
+      - in: path
+        name: quoteId
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: Accepted quote envelope.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+    servers:
+    - url: https://app.clawspan.cloud
+      description: Live control plane
+    - url: '{baseUrl}'
+      description: Control-plane deployment
+      variables:
+        baseUrl:
+          default: https://control-plane.example.com
+  /v1/workspaces/{slug}/billing/accounts:
+    post:
+      operationId: createBillingAccount
+      tags:
+      - Billing
+      summary: Create a billing account
+      parameters:
+      - $ref: '#/components/parameters/WorkspaceSlug'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '201':
+          description: Account created.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+    servers:
+    - url: https://app.clawspan.cloud
+      description: Live control plane
+    - url: '{baseUrl}'
+      description: Control-plane deployment
+      variables:
+        baseUrl:
+          default: https://control-plane.example.com
+  /v1/workspaces/{slug}/billing/accounts/{accountId}/instruments:
+    post:
+      operationId: createFundingInstrument
+      tags:
+      - Billing
+      summary: Attach a funding instrument
+      parameters:
+      - $ref: '#/components/parameters/WorkspaceSlug'
+      - $ref: '#/components/parameters/AccountId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '201':
+          description: Instrument attached.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+    servers:
+    - url: https://app.clawspan.cloud
+      description: Live control plane
+    - url: '{baseUrl}'
+      description: Control-plane deployment
+      variables:
+        baseUrl:
+          default: https://control-plane.example.com
+  /v1/workspaces/{slug}/billing/accounts/{accountId}/instruments/{instrumentId}/verify:
+    post:
+      operationId: verifyFundingInstrument
+      tags:
+      - Billing
+      summary: Verify a funding instrument
+      parameters:
+      - $ref: '#/components/parameters/WorkspaceSlug'
+      - $ref: '#/components/parameters/AccountId'
+      - in: path
+        name: instrumentId
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: Instrument verified.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+    servers:
+    - url: https://app.clawspan.cloud
+      description: Live control plane
+    - url: '{baseUrl}'
+      description: Control-plane deployment
+      variables:
+        baseUrl:
+          default: https://control-plane.example.com
+  /v1/workspaces/{slug}/billing/accounts/{accountId}/envelopes:
+    post:
+      operationId: createSpendEnvelope
+      tags:
+      - Billing
+      summary: Create a spend envelope
+      parameters:
+      - $ref: '#/components/parameters/WorkspaceSlug'
+      - $ref: '#/components/parameters/AccountId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EnvelopeInput'
+      responses:
+        '201':
+          description: Envelope created.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+    servers:
+    - url: https://app.clawspan.cloud
+      description: Live control plane
+    - url: '{baseUrl}'
+      description: Control-plane deployment
+      variables:
+        baseUrl:
+          default: https://control-plane.example.com
+  /v1/workspaces/{slug}/billing/accounts/{accountId}/delegated-spend-grants:
+    get:
+      operationId: listDelegatedSpendGrants
+      tags:
+      - Billing
+      summary: List delegated-spend grants on an account
+      parameters:
+      - $ref: '#/components/parameters/WorkspaceSlug'
+      - $ref: '#/components/parameters/AccountId'
+      responses:
+        '200':
+          description: Grants list.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+    post:
+      operationId: createDelegatedSpendGrant
+      tags:
+      - Billing
+      summary: Create a delegated-spend grant
+      parameters:
+      - $ref: '#/components/parameters/WorkspaceSlug'
+      - $ref: '#/components/parameters/AccountId'
+      - $ref: '#/components/parameters/IdempotencyKey'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: true
+      responses:
+        '201':
+          description: Grant created.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+    servers:
+    - url: https://app.clawspan.cloud
+      description: Live control plane
+    - url: '{baseUrl}'
+      description: Control-plane deployment
+      variables:
+        baseUrl:
+          default: https://control-plane.example.com
+  /v1/workspaces/{slug}/billing/accounts/{accountId}/delegated-spend-grants/{grantId}/revoke:
+    post:
+      operationId: revokeDelegatedSpendGrant
+      tags:
+      - Billing
+      summary: Revoke a delegated-spend grant
+      parameters:
+      - $ref: '#/components/parameters/WorkspaceSlug'
+      - $ref: '#/components/parameters/AccountId'
+      - in: path
+        name: grantId
+        required: true
+        schema:
+          type: string
+      - $ref: '#/components/parameters/IdempotencyKey'
+      responses:
+        '200':
+          description: Grant revoked.
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+    servers:
+    - url: https://app.clawspan.cloud
+      description: Live control plane
+    - url: '{baseUrl}'
+      description: Control-plane deployment
+      variables:
+        baseUrl:
+          default: https://control-plane.example.com
+components:
+  parameters:
+    AccountId:
+      in: path
+      name: accountId
+      required: true
+      schema:
+        type: string
+    IdempotencyKey:
+      in: header
+      name: Idempotency-Key
+      required: false
+      schema:
+        type: string
+      description: Repeatable key; replaying the same key returns the prior response.
+    WorkspaceSlug:
+      in: path
+      name: slug
+      required: true
+      schema:
+        type: string
+  schemas:
+    EnvelopeInput:
+      type: object
+      required:
+      - fundingInstrumentId
+      - authorizedAmountUsdCents
+      properties:
+        fundingInstrumentId:
+          type: string
+        authorizedAmountUsdCents:
+          type: integer
+          minimum: 0
+        expiresInSeconds:
+          type: integer
+          minimum: 60
+        identity:
+          type: string
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: Session token (wallet or service)
+x-refined-from:
+- clawspan-cloud-shardlink-control-plane-openapi.json
+- clawspan-cloud-shardlink-control-plane-openapi.yml

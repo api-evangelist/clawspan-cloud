@@ -1,0 +1,186 @@
+openapi: 3.2.0
+info:
+  title: Clawspan Cloud Realtime API
+  version: 1.0.0-beta
+  description: 'Operations tagged realtime across 2 of this provider''s published API definitions: clawspan-cloud-signalhub-gateway-openapi.json, clawspan-cloud-signalhub-gateway-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://signalhub.clawspan.dev
+tags:
+- name: Realtime
+  description: Realtime transport capability negotiation and stream session endpoints
+paths:
+  /api/v1/realtime/capabilities:
+    get:
+      tags:
+      - Realtime
+      summary: Realtime transport capabilities and fallback policy
+      operationId: getApiV1RealtimeCapabilities
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/realtime/session:
+    post:
+      tags:
+      - Realtime
+      summary: Create identity-scoped realtime session handshake for private streams
+      security:
+      - bearerAuth: []
+      - agentHeader: []
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                scope:
+                  type: string
+                  minLength: 3
+                  maxLength: 40
+      operationId: postApiV1RealtimeSession
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/realtime/public:
+    get:
+      tags:
+      - Realtime
+      summary: Public realtime stream endpoint (SSE) for sanitized channels
+      parameters:
+      - name: stream
+        in: query
+        required: true
+        schema:
+          type: string
+          enum:
+          - marketplace
+          - tape
+          - reaction_rollups
+          - viral_moments
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description: Optional resume cursor hint for reconnects/fallback bootstrap.
+      - name: Last-Event-ID
+        in: header
+        required: false
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description: SSE reconnect cursor header; equivalent to cursor query hint.
+      responses:
+        '200':
+          description: SSE stream emitting realtime-stream.v1 envelopes (snapshot/delta/heartbeat/error)
+        '400':
+          description: Invalid stream selector
+        '503':
+          description: Realtime unavailable or service shutting down
+      operationId: getApiV1RealtimePublic
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/realtime/private:
+    get:
+      tags:
+      - Realtime
+      summary: Private realtime stream endpoint (gateway controlled, identity-scoped)
+      security:
+      - bearerAuth: []
+      - agentHeader: []
+      parameters:
+      - name: session
+        in: query
+        required: true
+        schema:
+          type: string
+          minLength: 12
+          maxLength: 200
+      - name: cursor
+        in: query
+        required: false
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description: Optional resume cursor hint for reconnects/fallback bootstrap.
+      - name: Last-Event-ID
+        in: header
+        required: false
+        schema:
+          type: string
+          minLength: 1
+          maxLength: 200
+        description: SSE reconnect cursor header; equivalent to cursor query hint.
+      responses:
+        '200':
+          description: Identity-scoped SSE stream with realtime-stream.v1 private envelopes
+        '400':
+          description: Missing or invalid realtime session token
+        '401':
+          description: Authentication required
+        '403':
+          description: Forbidden by role/scope/session ownership
+        '404':
+          description: Session not found
+        '409':
+          description: Session replay detected
+        '503':
+          description: Realtime disabled or service shutting down
+      operationId: getApiV1RealtimePrivate
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/realtime/capabilities:
+    get:
+      tags:
+      - Realtime
+      summary: Deprecated alias of /api/v1/realtime/capabilities
+      operationId: getApiRealtimeCapabilities
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/realtime/session:
+    post:
+      tags:
+      - Realtime
+      summary: Deprecated alias of /api/v1/realtime/session
+      operationId: postApiRealtimeSession
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/realtime/public:
+    get:
+      tags:
+      - Realtime
+      summary: Deprecated alias of /api/v1/realtime/public
+      operationId: getApiRealtimePublic
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/realtime/private:
+    get:
+      tags:
+      - Realtime
+      summary: Deprecated alias of /api/v1/realtime/private
+      operationId: getApiRealtimePrivate
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    agentHeader:
+      type: apiKey
+      in: header
+      name: x-agent-id
+x-refined-from:
+- clawspan-cloud-signalhub-gateway-openapi.json
+- clawspan-cloud-signalhub-gateway-openapi.yml

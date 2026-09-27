@@ -1,0 +1,878 @@
+openapi: 3.2.0
+info:
+  title: Clawspan Cloud System API
+  version: 1.0.0-beta
+  description: 'Operations tagged system across 2 of this provider''s published API definitions: clawspan-cloud-signalhub-gateway-openapi.json, clawspan-cloud-signalhub-gateway-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://signalhub.clawspan.dev
+tags:
+- name: System
+  description: Health and operational endpoints
+paths:
+  /api/v1/health:
+    get:
+      tags:
+      - System
+      summary: Gateway health and runtime mode
+      operationId: getApiV1Health
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/readiness:
+    get:
+      tags:
+      - System
+      summary: Readiness probes (backend/auth/redis/payment checks)
+      parameters:
+      - name: x-metrics-token
+        in: header
+        required: false
+        schema:
+          type: string
+      operationId: getApiV1Readiness
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/auth/bootstrap:
+    get:
+      tags:
+      - System
+      summary: Authentication bootstrap and JWKS/OIDC readiness metadata
+      parameters:
+      - name: refresh
+        in: query
+        required: false
+        schema:
+          type: boolean
+      operationId: getApiV1AuthBootstrap
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/metrics:
+    get:
+      tags:
+      - System
+      summary: In-process gateway metrics snapshot
+      parameters:
+      - name: x-metrics-token
+        in: header
+        required: false
+        schema:
+          type: string
+      operationId: getApiV1Metrics
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/metrics/prometheus:
+    get:
+      tags:
+      - System
+      summary: Prometheus metrics scrape endpoint
+      parameters:
+      - name: x-metrics-token
+        in: header
+        required: false
+        schema:
+          type: string
+      operationId: getApiV1MetricsPrometheus
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/control/plane:
+    get:
+      tags:
+      - System
+      summary: Control-plane autoscaling/backpressure/fail-safe recommendation snapshot
+      parameters:
+      - name: x-metrics-token
+        in: header
+        required: false
+        schema:
+          type: string
+      responses:
+        '200':
+          description: Deterministic control-plane signal snapshot for reliability automation
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  controlPlane:
+                    type: object
+                    properties:
+                      signals:
+                        type: object
+                        properties:
+                          scalePressureScore:
+                            type: number
+                          queuePressure:
+                            type: number
+                          realtimeFallbackRate:
+                            type: number
+                          realtimeDirectContractMissRate:
+                            type: number
+                          realtimeProjectionRefreshCount:
+                            type: number
+                          realtimeProjectionRefreshRate:
+                            type: number
+                          realtimeSuccessRate:
+                            type: number
+                          bridgeLagSeconds:
+                            type: number
+                          marginRiskScore:
+                            type: number
+                          trendWindowSize:
+                            type: number
+                          trendAccelerationScore:
+                            type: number
+                          scalePressureDelta:
+                            type: number
+                          queuePressureDelta:
+                            type: number
+                          marginRiskDelta:
+                            type: number
+                          realtimeFallbackRateDelta:
+                            type: number
+                          realtimeDirectContractMissRateDelta:
+                            type: number
+                          realtimeProjectionRefreshRateDelta:
+                            type: number
+                          bridgeFailureRateDelta:
+                            type: number
+                          errorRateDelta:
+                            type: number
+                      autoscaling:
+                        type: object
+                        properties:
+                          recommendation:
+                            type: string
+                          desiredReplicaMultiplier:
+                            type: number
+                      backpressure:
+                        type: object
+                        properties:
+                          mode:
+                            type: string
+                          dropNonCriticalStreams:
+                            type: boolean
+                          deferPricingSweep:
+                            type: boolean
+                          throttleWriteRoutes:
+                            type: boolean
+                      failsafe:
+                        type: object
+                        properties:
+                          realtimeDegraded:
+                            type: boolean
+                          pricingFrozenRecommended:
+                            type: boolean
+                          settlementPauseRecommended:
+                            type: boolean
+                          abuseStrictRecommended:
+                            type: boolean
+                      actionQueue:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            action:
+                              type: string
+                            severity:
+                              type: string
+                            reasonCode:
+                              type: string
+                      marginProtection:
+                        type: object
+                        properties:
+                          health:
+                            type: string
+                          pricingGuardrailEvents:
+                            type: number
+                          negativeMarginEvents:
+                            type: number
+                          marginRiskScore:
+                            type: number
+                          affiliateFraudTransitions:
+                            type: number
+                          reactionAbuseBlocks:
+                            type: number
+      operationId: getApiV1ControlPlane
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/control/plane/history:
+    get:
+      tags:
+      - System
+      summary: Control-plane snapshot history for reliability-policy agents
+      parameters:
+      - name: x-metrics-token
+        in: header
+        required: false
+        schema:
+          type: string
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 200
+      - name: refresh
+        in: query
+        required: false
+        schema:
+          type: boolean
+      responses:
+        '200':
+          description: Deterministic control-plane history envelope
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  history:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                      limit:
+                        type: integer
+                      entries:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            recordedAt:
+                              type: string
+                            source:
+                              type: string
+                            snapshot:
+                              type: object
+      operationId: getApiV1ControlPlaneHistory
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/control/plane/actions:
+    get:
+      tags:
+      - System
+      summary: List privileged control-plane action audit log and current execution state
+      security:
+      - bearerAuth: []
+      - agentHeader: []
+      parameters:
+      - name: x-metrics-token
+        in: header
+        required: false
+        schema:
+          type: string
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 200
+      responses:
+        '200':
+          description: Control-plane action audit and execution-state snapshot
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  allowedActions:
+                    type: array
+                    items:
+                      type: string
+                  state:
+                    type: object
+                    properties:
+                      schemaVersion:
+                        type: string
+                      gatewayReplicaMultiplier:
+                        type: integer
+                      nonCriticalStreamsThrottled:
+                        type: boolean
+                      realtimeDegradedModeEnabled:
+                        type: boolean
+                      pricingFrozenModeEnabled:
+                        type: boolean
+                      affiliatePayoutsFrozen:
+                        type: boolean
+                      affiliateHoldbacksTightened:
+                        type: boolean
+                      settlementBridgePaused:
+                        type: boolean
+                      abuseStrictModeEnabled:
+                        type: boolean
+                      updatedAt:
+                        type: string
+                        nullable: true
+                  cooldowns:
+                    type: object
+                    additionalProperties:
+                      type: object
+                      properties:
+                        action:
+                          type: string
+                        inCooldown:
+                          type: boolean
+                        retryAfterSeconds:
+                          type: integer
+                        cooldownSeconds:
+                          type: integer
+                        lastRecordedAt:
+                          type: string
+                          nullable: true
+                  audit:
+                    type: object
+                    properties:
+                      total:
+                        type: integer
+                      limit:
+                        type: integer
+                      entries:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            executionId:
+                              type: string
+                            actorId:
+                              type: string
+                            action:
+                              type: string
+                            reasonCode:
+                              type: string
+                            source:
+                              type: string
+                            dryRun:
+                              type: boolean
+                            outcome:
+                              type: string
+                            applied:
+                              type: boolean
+                            recordedAt:
+                              type: string
+      operationId: getApiV1ControlPlaneActions
+      x-operation-id-source: derived
+    post:
+      tags:
+      - System
+      summary: Execute one privileged control-plane action with deterministic idempotency
+      security:
+      - bearerAuth: []
+      - agentHeader: []
+      parameters:
+      - name: x-metrics-token
+        in: header
+        required: false
+        schema:
+          type: string
+      - name: x-control-plane-apply-token
+        in: header
+        required: false
+        schema:
+          type: string
+        description: Required for non-dry-run action execution in non-development environments when control-plane apply mode is enabled.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+              - action
+              properties:
+                action:
+                  type: string
+                reasonCode:
+                  type: string
+                source:
+                  type: string
+                dryRun:
+                  type: boolean
+                idempotencyKey:
+                  type: string
+      responses:
+        '200':
+          description: Control-plane action execution envelope
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  execution:
+                    type: object
+                    properties:
+                      executionId:
+                        type: string
+                      action:
+                        type: string
+                      outcome:
+                        type: string
+                      applied:
+                        type: boolean
+                      idempotencyReplayed:
+                        type: boolean
+                      recordedAt:
+                        type: string
+                  state:
+                    type: object
+                    properties:
+                      schemaVersion:
+                        type: string
+                      gatewayReplicaMultiplier:
+                        type: integer
+                      nonCriticalStreamsThrottled:
+                        type: boolean
+                      realtimeDegradedModeEnabled:
+                        type: boolean
+                      pricingFrozenModeEnabled:
+                        type: boolean
+                      affiliatePayoutsFrozen:
+                        type: boolean
+                      affiliateHoldbacksTightened:
+                        type: boolean
+                      settlementBridgePaused:
+                        type: boolean
+                      abuseStrictModeEnabled:
+                        type: boolean
+                      updatedAt:
+                        type: string
+                        nullable: true
+        '400':
+          description: Invalid control-plane action request payload
+        '401':
+          description: Missing or invalid authentication context
+        '403':
+          description: Missing metrics token, insufficient role claims, apply mode disabled, or missing/invalid control-plane apply token
+        '409':
+          description: Idempotency conflict for control-plane action replay
+        '429':
+          description: Action rejected by control-plane cooldown guardrail
+      operationId: postApiV1ControlPlaneActions
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/control/plane/reconcile:
+    post:
+      tags:
+      - System
+      summary: Execute control-plane remediation queue in one privileged operation
+      security:
+      - bearerAuth: []
+      - agentHeader: []
+      parameters:
+      - name: x-metrics-token
+        in: header
+        required: false
+        schema:
+          type: string
+      - name: x-control-plane-apply-token
+        in: header
+        required: false
+        schema:
+          type: string
+        description: Required for mode=apply in non-development environments when control-plane apply mode is enabled.
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                profile:
+                  type: string
+                  enum:
+                  - balanced
+                  - safety_first
+                  - throughput_first
+                mode:
+                  type: string
+                  enum:
+                  - dry-run
+                  - apply
+                source:
+                  type: string
+                strictFailures:
+                  type: boolean
+                maxActions:
+                  type: integer
+                  minimum: 1
+                  maximum: 100
+                minSeverity:
+                  type: string
+                  enum:
+                  - low
+                  - medium
+                  - high
+                allowedActions:
+                  type: array
+                  items:
+                    type: string
+                idempotencyKeyPrefix:
+                  type: string
+      responses:
+        '200':
+          description: Control-plane reconciliation plan/execution envelope
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  reconciliation:
+                    type: object
+                    properties:
+                      profile:
+                        type: string
+                        enum:
+                        - balanced
+                        - safety_first
+                        - throughput_first
+                      mode:
+                        type: string
+                      strictFailures:
+                        type: boolean
+                      source:
+                        type: string
+                      maxActions:
+                        type: integer
+                      droppedActions:
+                        type: integer
+                      snapshotGeneratedAt:
+                        type: string
+                      snapshot:
+                        type: object
+                      plan:
+                        type: object
+                      summary:
+                        type: object
+                      state:
+                        type: object
+                      results:
+                        type: array
+                        items:
+                          type: object
+        '400':
+          description: Invalid control-plane reconcile request payload
+        '401':
+          description: Missing or invalid authentication context
+        '403':
+          description: Missing metrics token, insufficient role claims, apply mode disabled, or missing/invalid control-plane apply token
+        '409':
+          description: Strict reconcile mode reported one or more action failures
+      operationId: postApiV1ControlPlaneReconcile
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/capabilities:
+    get:
+      tags:
+      - System
+      summary: Machine-readable runtime capabilities
+      operationId: getApiV1Capabilities
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/capabilities/graph:
+    get:
+      tags:
+      - System
+      summary: Canonical versioned capability graph for agent discoverability
+      parameters:
+      - name: version
+        in: query
+        required: false
+        schema:
+          type: string
+          minLength: 3
+          maxLength: 80
+      responses:
+        '200':
+          description: Capability graph envelope with machine-executable node contracts
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  latestVersion:
+                    type: string
+                  versions:
+                    type: array
+                    items:
+                      type: string
+                  graph:
+                    type: object
+                    properties:
+                      graphVersion:
+                        type: string
+                      nodes:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            method:
+                              type: string
+                            path:
+                              type: string
+                            executionContract:
+                              type: object
+                              properties:
+                                retry:
+                                  type: object
+                                idempotency:
+                                  type: object
+                                deterministicErrors:
+                                  type: array
+                                  items:
+                                    type: object
+                                transport:
+                                  type: object
+                                request:
+                                  type: object
+                                response:
+                                  type: object
+                      edges:
+                        type: array
+                        items:
+                          type: object
+                      intentToAction:
+                        type: array
+                        items:
+                          type: object
+      operationId: getApiV1CapabilitiesGraph
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/capabilities/graph/{version}:
+    get:
+      tags:
+      - System
+      summary: Fetch one capability graph version
+      parameters:
+      - name: version
+        in: path
+        required: true
+        schema:
+          type: string
+          minLength: 3
+          maxLength: 80
+      responses:
+        '200':
+          description: Pinned capability graph version with deterministic execution contracts
+        '404':
+          description: Capability graph version not found
+      operationId: getApiV1CapabilitiesGraphByVersion
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/contracts/dual-plane:
+    get:
+      tags:
+      - System
+      summary: Dual-plane authority and bridge contract for machine discoverability
+      operationId: getApiV1ContractsDualPlane
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/contracts/dual-plane/errors:
+    get:
+      tags:
+      - System
+      summary: Deterministic error catalog aggregated from capability execution contracts
+      operationId: getApiV1ContractsDualPlaneErrors
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/openapi:
+    get:
+      tags:
+      - System
+      summary: OpenAPI description of this gateway
+      operationId: getApiV1Openapi
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/maintenance/payload-ttl/prune:
+    post:
+      tags:
+      - System
+      summary: Prune/redact expired payloads based on TTL policy (admin/system)
+      security:
+      - bearerAuth: []
+      - agentHeader: []
+      operationId: postApiV1MaintenancePayloadTtlPrune
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/health:
+    get:
+      tags:
+      - System
+      summary: Deprecated alias of /api/v1/health
+      operationId: getApiHealth
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/readiness:
+    get:
+      tags:
+      - System
+      summary: Deprecated alias of /api/v1/readiness
+      operationId: getApiReadiness
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/auth/bootstrap:
+    get:
+      tags:
+      - System
+      summary: Deprecated alias of /api/v1/auth/bootstrap
+      operationId: getApiAuthBootstrap
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/metrics:
+    get:
+      tags:
+      - System
+      summary: Deprecated alias of /api/v1/metrics
+      operationId: getApiMetrics
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/control/plane:
+    get:
+      tags:
+      - System
+      summary: Deprecated alias of /api/v1/control/plane
+      operationId: getApiControlPlane
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/control/plane/history:
+    get:
+      tags:
+      - System
+      summary: Deprecated alias of /api/v1/control/plane/history
+      operationId: getApiControlPlaneHistory
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/control/plane/actions:
+    get:
+      tags:
+      - System
+      summary: Deprecated alias of /api/v1/control/plane/actions
+      operationId: getApiControlPlaneActions
+      x-operation-id-source: derived
+    post:
+      tags:
+      - System
+      summary: Deprecated alias of /api/v1/control/plane/actions
+      operationId: postApiControlPlaneActions
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/control/plane/reconcile:
+    post:
+      tags:
+      - System
+      summary: Deprecated alias of /api/v1/control/plane/reconcile
+      operationId: postApiControlPlaneReconcile
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/capabilities:
+    get:
+      tags:
+      - System
+      summary: Deprecated alias of /api/v1/capabilities
+      operationId: getApiCapabilities
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/capabilities/graph:
+    get:
+      tags:
+      - System
+      summary: Deprecated alias of /api/v1/capabilities/graph
+      operationId: getApiCapabilitiesGraph
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/capabilities/graph/{version}:
+    get:
+      tags:
+      - System
+      summary: Deprecated alias of /api/v1/capabilities/graph/{version}
+      operationId: getApiCapabilitiesGraphByVersion
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/contracts/dual-plane:
+    get:
+      tags:
+      - System
+      summary: Deprecated alias of /api/v1/contracts/dual-plane
+      operationId: getApiContractsDualPlane
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/contracts/dual-plane/errors:
+    get:
+      tags:
+      - System
+      summary: Deprecated alias of /api/v1/contracts/dual-plane/errors
+      operationId: getApiContractsDualPlaneErrors
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/openapi:
+    get:
+      tags:
+      - System
+      summary: Deprecated alias of /api/v1/openapi
+      operationId: getApiOpenapi
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/maintenance/payload-ttl/prune:
+    post:
+      tags:
+      - System
+      summary: Deprecated alias of /api/v1/maintenance/payload-ttl/prune
+      operationId: postApiMaintenancePayloadTtlPrune
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    agentHeader:
+      type: apiKey
+      in: header
+      name: x-agent-id
+x-refined-from:
+- clawspan-cloud-signalhub-gateway-openapi.json
+- clawspan-cloud-signalhub-gateway-openapi.yml

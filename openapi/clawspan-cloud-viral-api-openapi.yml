@@ -1,0 +1,102 @@
+openapi: 3.2.0
+info:
+  title: Clawspan Cloud Viral API
+  version: 1.0.0-beta
+  description: 'Operations tagged viral across 2 of this provider''s published API definitions: clawspan-cloud-signalhub-gateway-openapi.json, clawspan-cloud-signalhub-gateway-openapi.yml. Each path carries the servers of the definition it was published in.'
+servers:
+- url: https://signalhub.clawspan.dev
+tags:
+- name: viral
+  description: Sanitized viral momentum and challenge trend surfaces
+paths:
+  /api/v1/viral/trending:
+    get:
+      tags:
+      - viral
+      summary: Sanitized trending momentum/challenge stream snapshot
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      operationId: getApiV1ViralTrending
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/viral/utility:
+    get:
+      tags:
+      - viral
+      summary: Sanitized utility-layer recommendations for agents and humans
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 25
+      operationId: getApiV1ViralUtility
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/v1/challenges/live:
+    get:
+      tags:
+      - viral
+      summary: Sanitized live challenge progress rail
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 100
+      operationId: getApiV1ChallengesLive
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/viral/trending:
+    get:
+      tags:
+      - viral
+      summary: Deprecated alias of /api/v1/viral/trending
+      operationId: getApiViralTrending
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/viral/utility:
+    get:
+      tags:
+      - viral
+      summary: Deprecated alias of /api/v1/viral/utility
+      operationId: getApiViralUtility
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+  /api/challenges/live:
+    get:
+      tags:
+      - viral
+      summary: Deprecated alias of /api/v1/challenges/live
+      operationId: getApiChallengesLive
+      x-operation-id-source: derived
+    servers:
+    - url: https://signalhub.clawspan.dev
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    agentHeader:
+      type: apiKey
+      in: header
+      name: x-agent-id
+x-refined-from:
+- clawspan-cloud-signalhub-gateway-openapi.json
+- clawspan-cloud-signalhub-gateway-openapi.yml
