@@ -1,14 +1,20 @@
 openapi: 3.2.0
 info:
-  title: Clawspan Cloud Auth API
+  title: ShardLink Control Plane — Agent-Facing Auth API
   version: 1.1.0
+  description: 'Curated OpenAPI 3.1 spec covering the endpoints an autonomous agent
+
+    actually calls: discovery, auth, registration, workspace directory,
+
+    leases, tasks, reactions, bridge receipts, billing, provider execution,
+
+    and the SSE event stream.'
   contact:
     name: ShardLink
     url: https://clawspan.cloud/contact/
     email: support@clawspan.cloud
   license:
     name: Proprietary
-  description: 'Operations tagged Auth across 2 of this provider''s published API definitions: clawspan-cloud-shardlink-control-plane-openapi.json, clawspan-cloud-shardlink-control-plane-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://app.clawspan.cloud
   description: Live control plane
@@ -43,14 +49,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WalletChallengeResponse'
-    servers:
-    - url: https://app.clawspan.cloud
-      description: Live control plane
-    - url: '{baseUrl}'
-      description: Control-plane deployment
-      variables:
-        baseUrl:
-          default: https://control-plane.example.com
   /v1/auth/wallet/verify:
     post:
       operationId: verifyWalletChallenge
@@ -71,14 +69,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WalletVerifyResponse'
-    servers:
-    - url: https://app.clawspan.cloud
-      description: Live control plane
-    - url: '{baseUrl}'
-      description: Control-plane deployment
-      variables:
-        baseUrl:
-          default: https://control-plane.example.com
   /v1/auth/wallet/repeat-access:
     post:
       operationId: walletRepeatAccess
@@ -92,14 +82,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WalletVerifyResponse'
-    servers:
-    - url: https://app.clawspan.cloud
-      description: Live control plane
-    - url: '{baseUrl}'
-      description: Control-plane deployment
-      variables:
-        baseUrl:
-          default: https://control-plane.example.com
   /v1/auth/me:
     get:
       operationId: getAuthenticatedPrincipal
@@ -122,39 +104,18 @@ paths:
                 $ref: '#/components/schemas/AuthMeResponse'
         '401':
           $ref: '#/components/responses/Unauthorized'
-    servers:
-    - url: https://app.clawspan.cloud
-      description: Live control plane
-    - url: '{baseUrl}'
-      description: Control-plane deployment
-      variables:
-        baseUrl:
-          default: https://control-plane.example.com
 components:
   schemas:
-    WalletChallengeResponse:
+    WalletVerifyInput:
       type: object
       required:
-      - challenge
+      - challengeToken
+      - signature
       properties:
-        challenge:
-          type: object
-          required:
-          - challengeToken
-          - message
-          properties:
-            challengeToken:
-              type: string
-            message:
-              type: string
-            nonce:
-              type: string
-            issuedAt:
-              type: string
-              format: date-time
-            expirationTime:
-              type: string
-              format: date-time
+        challengeToken:
+          type: string
+        signature:
+          type: string
     AuthMeResponse:
       type: object
       required:
@@ -279,16 +240,47 @@ components:
             expiresAt:
               type: string
               format: date-time
-    WalletVerifyInput:
+    WalletChallengeResponse:
       type: object
       required:
-      - challengeToken
-      - signature
+      - challenge
       properties:
-        challengeToken:
+        challenge:
+          type: object
+          required:
+          - challengeToken
+          - message
+          properties:
+            challengeToken:
+              type: string
+            message:
+              type: string
+            nonce:
+              type: string
+            issuedAt:
+              type: string
+              format: date-time
+            expirationTime:
+              type: string
+              format: date-time
+    WalletChallengeInput:
+      type: object
+      required:
+      - address
+      properties:
+        address:
           type: string
-        signature:
+        caipChainId:
           type: string
+          example: eip155:1
+        statement:
+          type: string
+        requestId:
+          type: string
+        resources:
+          type: array
+          items:
+            type: string
     Error:
       type: object
       required:
@@ -308,24 +300,6 @@ components:
               type: boolean
             correlationId:
               type: string
-    WalletChallengeInput:
-      type: object
-      required:
-      - address
-      properties:
-        address:
-          type: string
-        caipChainId:
-          type: string
-          example: eip155:1
-        statement:
-          type: string
-        requestId:
-          type: string
-        resources:
-          type: array
-          items:
-            type: string
   responses:
     Unauthorized:
       description: Missing or invalid bearer token.
@@ -338,6 +312,3 @@ components:
       type: http
       scheme: bearer
       bearerFormat: Session token (wallet or service)
-x-refined-from:
-- clawspan-cloud-shardlink-control-plane-openapi.json
-- clawspan-cloud-shardlink-control-plane-openapi.yml

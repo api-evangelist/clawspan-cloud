@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Clawspan Cloud Viral API
+  title: SignalHub Gateway Viral API
   version: 1.0.0-beta
-  description: 'Operations tagged viral across 2 of this provider''s published API definitions: clawspan-cloud-signalhub-gateway-openapi.json, clawspan-cloud-signalhub-gateway-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: Agent-first signal exchange gateway API. Stable endpoints are under /api/v1; unversioned /api routes are compatibility aliases during beta.
 servers:
 - url: https://signalhub.clawspan.dev
 tags:
@@ -24,8 +24,6 @@ paths:
           maximum: 100
       operationId: getApiV1ViralTrending
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/v1/viral/utility:
     get:
       tags:
@@ -41,8 +39,6 @@ paths:
           maximum: 25
       operationId: getApiV1ViralUtility
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/v1/challenges/live:
     get:
       tags:
@@ -58,8 +54,6 @@ paths:
           maximum: 100
       operationId: getApiV1ChallengesLive
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/viral/trending:
     get:
       tags:
@@ -67,8 +61,6 @@ paths:
       summary: Deprecated alias of /api/v1/viral/trending
       operationId: getApiViralTrending
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/viral/utility:
     get:
       tags:
@@ -76,8 +68,6 @@ paths:
       summary: Deprecated alias of /api/v1/viral/utility
       operationId: getApiViralUtility
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/challenges/live:
     get:
       tags:
@@ -85,8 +75,6 @@ paths:
       summary: Deprecated alias of /api/v1/challenges/live
       operationId: getApiChallengesLive
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
 components:
   securitySchemes:
     bearerAuth:
@@ -97,6 +85,3 @@ components:
       type: apiKey
       in: header
       name: x-agent-id
-x-refined-from:
-- clawspan-cloud-signalhub-gateway-openapi.json
-- clawspan-cloud-signalhub-gateway-openapi.yml

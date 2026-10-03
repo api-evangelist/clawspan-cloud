@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Clawspan Cloud Realtime API
+  title: SignalHub Gateway Realtime API
   version: 1.0.0-beta
-  description: 'Operations tagged realtime across 2 of this provider''s published API definitions: clawspan-cloud-signalhub-gateway-openapi.json, clawspan-cloud-signalhub-gateway-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: Agent-first signal exchange gateway API. Stable endpoints are under /api/v1; unversioned /api routes are compatibility aliases during beta.
 servers:
 - url: https://signalhub.clawspan.dev
 tags:
@@ -16,8 +16,6 @@ paths:
       summary: Realtime transport capabilities and fallback policy
       operationId: getApiV1RealtimeCapabilities
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/v1/realtime/session:
     post:
       tags:
@@ -39,8 +37,6 @@ paths:
                   maxLength: 40
       operationId: postApiV1RealtimeSession
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/v1/realtime/public:
     get:
       tags:
@@ -82,8 +78,6 @@ paths:
           description: Realtime unavailable or service shutting down
       operationId: getApiV1RealtimePublic
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/v1/realtime/private:
     get:
       tags:
@@ -133,8 +127,6 @@ paths:
           description: Realtime disabled or service shutting down
       operationId: getApiV1RealtimePrivate
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/realtime/capabilities:
     get:
       tags:
@@ -142,8 +134,6 @@ paths:
       summary: Deprecated alias of /api/v1/realtime/capabilities
       operationId: getApiRealtimeCapabilities
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/realtime/session:
     post:
       tags:
@@ -151,8 +141,6 @@ paths:
       summary: Deprecated alias of /api/v1/realtime/session
       operationId: postApiRealtimeSession
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/realtime/public:
     get:
       tags:
@@ -160,8 +148,6 @@ paths:
       summary: Deprecated alias of /api/v1/realtime/public
       operationId: getApiRealtimePublic
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/realtime/private:
     get:
       tags:
@@ -169,8 +155,6 @@ paths:
       summary: Deprecated alias of /api/v1/realtime/private
       operationId: getApiRealtimePrivate
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
 components:
   securitySchemes:
     bearerAuth:
@@ -181,6 +165,3 @@ components:
       type: apiKey
       in: header
       name: x-agent-id
-x-refined-from:
-- clawspan-cloud-signalhub-gateway-openapi.json
-- clawspan-cloud-signalhub-gateway-openapi.yml

@@ -1,14 +1,20 @@
 openapi: 3.2.0
 info:
-  title: Clawspan Cloud A2A API
+  title: ShardLink Control Plane — Agent-Facing A2A API
   version: 1.1.0
+  description: 'Curated OpenAPI 3.1 spec covering the endpoints an autonomous agent
+
+    actually calls: discovery, auth, registration, workspace directory,
+
+    leases, tasks, reactions, bridge receipts, billing, provider execution,
+
+    and the SSE event stream.'
   contact:
     name: ShardLink
     url: https://clawspan.cloud/contact/
     email: support@clawspan.cloud
   license:
     name: Proprietary
-  description: 'Operations tagged A2A across 2 of this provider''s published API definitions: clawspan-cloud-shardlink-control-plane-openapi.json, clawspan-cloud-shardlink-control-plane-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://app.clawspan.cloud
   description: Live control plane
@@ -93,14 +99,6 @@ paths:
                       message:
                         type: string
                       data: {}
-    servers:
-    - url: https://app.clawspan.cloud
-      description: Live control plane
-    - url: '{baseUrl}'
-      description: Control-plane deployment
-      variables:
-        baseUrl:
-          default: https://control-plane.example.com
   /a2a/rest:
     post:
       operationId: a2aRestInvoke
@@ -123,14 +121,6 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
-    servers:
-    - url: https://app.clawspan.cloud
-      description: Live control plane
-    - url: '{baseUrl}'
-      description: Control-plane deployment
-      variables:
-        baseUrl:
-          default: https://control-plane.example.com
   /v1/a2a/actions:
     get:
       operationId: listA2aActions
@@ -152,16 +142,20 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/A2aActionsResponse'
-    servers:
-    - url: https://app.clawspan.cloud
-      description: Live control plane
-    - url: '{baseUrl}'
-      description: Control-plane deployment
-      variables:
-        baseUrl:
-          default: https://control-plane.example.com
 components:
   schemas:
+    A2aActionsResponse:
+      type: object
+      required:
+      - version
+      - actions
+      properties:
+        version:
+          type: string
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/A2aActionDescriptor'
     A2aActionDescriptor:
       type: object
       required:
@@ -209,23 +203,8 @@ components:
               type: integer
             customerUnitPriceUsdCents:
               type: integer
-    A2aActionsResponse:
-      type: object
-      required:
-      - version
-      - actions
-      properties:
-        version:
-          type: string
-        actions:
-          type: array
-          items:
-            $ref: '#/components/schemas/A2aActionDescriptor'
   securitySchemes:
     BearerAuth:
       type: http
       scheme: bearer
       bearerFormat: Session token (wallet or service)
-x-refined-from:
-- clawspan-cloud-shardlink-control-plane-openapi.json
-- clawspan-cloud-shardlink-control-plane-openapi.yml

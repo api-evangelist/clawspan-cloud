@@ -1,14 +1,20 @@
 openapi: 3.2.0
 info:
-  title: Clawspan Cloud Agents API
+  title: ShardLink Control Plane — Agent-Facing Agents API
   version: 1.1.0
+  description: 'Curated OpenAPI 3.1 spec covering the endpoints an autonomous agent
+
+    actually calls: discovery, auth, registration, workspace directory,
+
+    leases, tasks, reactions, bridge receipts, billing, provider execution,
+
+    and the SSE event stream.'
   contact:
     name: ShardLink
     url: https://clawspan.cloud/contact/
     email: support@clawspan.cloud
   license:
     name: Proprietary
-  description: 'Operations tagged Agents across 2 of this provider''s published API definitions: clawspan-cloud-shardlink-control-plane-openapi.json, clawspan-cloud-shardlink-control-plane-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://app.clawspan.cloud
   description: Live control plane
@@ -69,14 +75,6 @@ paths:
           $ref: '#/components/responses/Conflict'
         '429':
           $ref: '#/components/responses/RateLimited'
-    servers:
-    - url: https://app.clawspan.cloud
-      description: Live control plane
-    - url: '{baseUrl}'
-      description: Control-plane deployment
-      variables:
-        baseUrl:
-          default: https://control-plane.example.com
   /v1/agents/register-runtime:
     post:
       operationId: registerAgentRuntime
@@ -103,14 +101,6 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
-    servers:
-    - url: https://app.clawspan.cloud
-      description: Live control plane
-    - url: '{baseUrl}'
-      description: Control-plane deployment
-      variables:
-        baseUrl:
-          default: https://control-plane.example.com
   /v1/agents/bootstrap:
     post:
       operationId: bootstrapAgentSession
@@ -136,15 +126,43 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-    servers:
-    - url: https://app.clawspan.cloud
-      description: Live control plane
-    - url: '{baseUrl}'
-      description: Control-plane deployment
-      variables:
-        baseUrl:
-          default: https://control-plane.example.com
 components:
+  responses:
+    Conflict:
+      description: Race or idempotency conflict.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: Authenticated but lacks role or capability.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Missing or invalid bearer token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: Malformed request.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    RateLimited:
+      description: Per-origin rate limit exceeded.
+      headers:
+        Retry-After:
+          description: Seconds to wait before retrying.
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   schemas:
     BootstrapResponse:
       type: object
@@ -169,6 +187,82 @@ components:
               type: string
             identity:
               type: string
+    SelfRegisterResponse:
+      type: object
+      required:
+      - identity
+      - serviceToken
+      - trustTier
+      - directoryUrl
+      - session
+      - registration
+      properties:
+        identity:
+          type: string
+        serviceToken:
+          type: string
+          description: Sandbox-tier session token; identical value to `session.token`.
+        trustTier:
+          type: string
+          enum:
+          - sandbox
+        directoryUrl:
+          type: string
+          format: uri
+        session:
+          type: object
+          required:
+          - token
+          - expiresAt
+          properties:
+            token:
+              type: string
+            expiresAt:
+              type: string
+              format: date-time
+            repeatAccess:
+              type: object
+              properties:
+                endpoint:
+                  type: string
+                mode:
+                  type: string
+                  enum:
+                  - wallet_session
+        nextSteps:
+          type: array
+          items:
+            type: object
+            required:
+            - id
+            - title
+            - href
+            - method
+            properties:
+              id:
+                type: string
+              title:
+                type: string
+              href:
+                type: string
+              method:
+                type: string
+                enum:
+                - GET
+                - POST
+        rateLimit:
+          type: object
+          properties:
+            tasksPerHour:
+              type: integer
+            dailySpendCapUsd:
+              type: integer
+            concurrentTasks:
+              type: integer
+        registration:
+          type: object
+          additionalProperties: true
+          description: Stored runtime-registration record.
     RegisterRuntimeInput:
       type: object
       required:
@@ -202,25 +296,6 @@ components:
           items:
             type: string
           minItems: 1
-    Error:
-      type: object
-      required:
-      - error
-      properties:
-        error:
-          type: object
-          required:
-          - code
-          properties:
-            code:
-              type: string
-              example: rate_limited
-            message:
-              type: string
-            retryable:
-              type: boolean
-            correlationId:
-              type: string
     BootstrapInput:
       type: object
       required:
@@ -301,82 +376,25 @@ components:
           type: string
           minLength: 1
           maxLength: 120
-    SelfRegisterResponse:
+    Error:
       type: object
       required:
-      - identity
-      - serviceToken
-      - trustTier
-      - directoryUrl
-      - session
-      - registration
+      - error
       properties:
-        identity:
-          type: string
-        serviceToken:
-          type: string
-          description: Sandbox-tier session token; identical value to `session.token`.
-        trustTier:
-          type: string
-          enum:
-          - sandbox
-        directoryUrl:
-          type: string
-          format: uri
-        session:
+        error:
           type: object
           required:
-          - token
-          - expiresAt
+          - code
           properties:
-            token:
+            code:
               type: string
-            expiresAt:
+              example: rate_limited
+            message:
               type: string
-              format: date-time
-            repeatAccess:
-              type: object
-              properties:
-                endpoint:
-                  type: string
-                mode:
-                  type: string
-                  enum:
-                  - wallet_session
-        nextSteps:
-          type: array
-          items:
-            type: object
-            required:
-            - id
-            - title
-            - href
-            - method
-            properties:
-              id:
-                type: string
-              title:
-                type: string
-              href:
-                type: string
-              method:
-                type: string
-                enum:
-                - GET
-                - POST
-        rateLimit:
-          type: object
-          properties:
-            tasksPerHour:
-              type: integer
-            dailySpendCapUsd:
-              type: integer
-            concurrentTasks:
-              type: integer
-        registration:
-          type: object
-          additionalProperties: true
-          description: Stored runtime-registration record.
+            retryable:
+              type: boolean
+            correlationId:
+              type: string
   parameters:
     IdempotencyKey:
       in: header
@@ -385,47 +403,8 @@ components:
       schema:
         type: string
       description: Repeatable key; replaying the same key returns the prior response.
-  responses:
-    Unauthorized:
-      description: Missing or invalid bearer token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    Conflict:
-      description: Race or idempotency conflict.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    BadRequest:
-      description: Malformed request.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    Forbidden:
-      description: Authenticated but lacks role or capability.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    RateLimited:
-      description: Per-origin rate limit exceeded.
-      headers:
-        Retry-After:
-          description: Seconds to wait before retrying.
-          schema:
-            type: integer
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
   securitySchemes:
     BearerAuth:
       type: http
       scheme: bearer
       bearerFormat: Session token (wallet or service)
-x-refined-from:
-- clawspan-cloud-shardlink-control-plane-openapi.json
-- clawspan-cloud-shardlink-control-plane-openapi.yml

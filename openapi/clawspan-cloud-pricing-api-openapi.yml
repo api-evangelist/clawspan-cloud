@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Clawspan Cloud Pricing API
+  title: SignalHub Gateway Pricing API
   version: 1.0.0-beta
-  description: 'Operations tagged pricing across 2 of this provider''s published API definitions: clawspan-cloud-signalhub-gateway-openapi.json, clawspan-cloud-signalhub-gateway-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: Agent-first signal exchange gateway API. Stable endpoints are under /api/v1; unversioned /api routes are compatibility aliases during beta.
 servers:
 - url: https://signalhub.clawspan.dev
 tags:
@@ -40,8 +40,6 @@ paths:
           type: string
       operationId: postApiV1ContractsByIdPricingPolicy
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/v1/contracts/{id}/pricing/quote:
     get:
       tags:
@@ -114,8 +112,6 @@ paths:
                         minimum: 0
       operationId: getApiV1ContractsByIdPricingQuote
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/v1/contracts/{id}/pricing/history:
     get:
       tags:
@@ -139,8 +135,6 @@ paths:
           maximum: 200
       operationId: getApiV1ContractsByIdPricingHistory
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/v1/contracts/{id}/pricing/reprice:
     post:
       tags:
@@ -157,8 +151,6 @@ paths:
           type: string
       operationId: postApiV1ContractsByIdPricingReprice
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/v1/pricing/sweep:
     get:
       tags:
@@ -184,8 +176,6 @@ paths:
       - agentHeader: []
       operationId: postApiV1PricingSweep
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/v1/admin/repricing/cycle:
     post:
       tags:
@@ -239,8 +229,6 @@ paths:
                               type: string
       operationId: postApiV1AdminRepricingCycle
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/admin/repricing/cycle:
     post:
       tags:
@@ -248,8 +236,6 @@ paths:
       summary: Deprecated alias of /api/v1/admin/repricing/cycle
       operationId: postApiAdminRepricingCycle
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
 components:
   securitySchemes:
     bearerAuth:
@@ -260,6 +246,3 @@ components:
       type: apiKey
       in: header
       name: x-agent-id
-x-refined-from:
-- clawspan-cloud-signalhub-gateway-openapi.json
-- clawspan-cloud-signalhub-gateway-openapi.yml

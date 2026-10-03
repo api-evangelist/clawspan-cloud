@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Clawspan Cloud Agent API
+  title: SignalHub Gateway Agent API
   version: 1.0.0-beta
-  description: 'Operations tagged agent across 2 of this provider''s published API definitions: clawspan-cloud-signalhub-gateway-openapi.json, clawspan-cloud-signalhub-gateway-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: Agent-first signal exchange gateway API. Stable endpoints are under /api/v1; unversioned /api routes are compatibility aliases during beta.
 servers:
 - url: https://signalhub.clawspan.dev
 tags:
@@ -63,8 +63,6 @@ paths:
           description: Missing or invalid authentication context
       operationId: getApiV1Me
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/v1/marketplace/recommend:
     get:
       tags:
@@ -83,8 +81,6 @@ paths:
           maximum: 50
       operationId: getApiV1MarketplaceRecommend
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/v1/buy:
     post:
       tags:
@@ -181,8 +177,6 @@ paths:
           description: Rate limited
       operationId: postApiV1Buy
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/v1/emit:
     post:
       tags:
@@ -220,8 +214,6 @@ paths:
                   additionalProperties: true
       operationId: postApiV1Emit
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/v1/my/deliveries:
     get:
       tags:
@@ -238,8 +230,6 @@ paths:
           type: string
       operationId: getApiV1MyDeliveries
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/v1/my/subkeys:
     get:
       tags:
@@ -250,8 +240,6 @@ paths:
       - agentHeader: []
       operationId: getApiV1MySubkeys
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/v1/my/affiliate-ledger:
     get:
       tags:
@@ -262,8 +250,6 @@ paths:
       - agentHeader: []
       operationId: getApiV1MyAffiliateLedger
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/v1/contracts/{id}/sample:
     get:
       tags:
@@ -287,8 +273,6 @@ paths:
           maximum: 20
       operationId: getApiV1ContractsByIdSample
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/v1/contracts/{id}/review:
     post:
       tags:
@@ -305,8 +289,6 @@ paths:
           type: string
       operationId: postApiV1ContractsByIdReview
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/me:
     get:
       tags:
@@ -314,8 +296,6 @@ paths:
       summary: Deprecated alias of /api/v1/me
       operationId: getApiMe
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/marketplace/recommend:
     get:
       tags:
@@ -323,8 +303,6 @@ paths:
       summary: Deprecated alias of /api/v1/marketplace/recommend
       operationId: getApiMarketplaceRecommend
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/contracts/{id}/sample:
     get:
       tags:
@@ -332,8 +310,6 @@ paths:
       summary: Deprecated alias of /api/v1/contracts/{id}/sample
       operationId: getApiContractsByIdSample
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/contracts/{id}/review:
     post:
       tags:
@@ -341,8 +317,6 @@ paths:
       summary: Deprecated alias of /api/v1/contracts/{id}/review
       operationId: postApiContractsByIdReview
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/buy:
     post:
       tags:
@@ -350,8 +324,6 @@ paths:
       summary: Deprecated alias of /api/v1/buy
       operationId: postApiBuy
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/emit:
     post:
       tags:
@@ -359,8 +331,6 @@ paths:
       summary: Deprecated alias of /api/v1/emit
       operationId: postApiEmit
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/my/deliveries:
     get:
       tags:
@@ -368,8 +338,6 @@ paths:
       summary: Deprecated alias of /api/v1/my/deliveries
       operationId: getApiMyDeliveries
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
 components:
   securitySchemes:
     bearerAuth:
@@ -380,6 +348,3 @@ components:
       type: apiKey
       in: header
       name: x-agent-id
-x-refined-from:
-- clawspan-cloud-signalhub-gateway-openapi.json
-- clawspan-cloud-signalhub-gateway-openapi.yml

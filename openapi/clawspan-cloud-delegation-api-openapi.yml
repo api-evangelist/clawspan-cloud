@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Clawspan Cloud Delegation API
+  title: SignalHub Gateway Delegation API
   version: 1.0.0-beta
-  description: 'Operations tagged delegation across 2 of this provider''s published API definitions: clawspan-cloud-signalhub-gateway-openapi.json, clawspan-cloud-signalhub-gateway-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: Agent-first signal exchange gateway API. Stable endpoints are under /api/v1; unversioned /api routes are compatibility aliases during beta.
 servers:
 - url: https://signalhub.clawspan.dev
 tags:
@@ -46,8 +46,6 @@ paths:
       - agentHeader: []
       operationId: postApiV1DelegationLeases
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/v1/delegation/leases/{id}/revoke:
     post:
       tags:
@@ -66,8 +64,6 @@ paths:
           maxLength: 120
       operationId: postApiV1DelegationLeasesByIdRevoke
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/v1/my/delegation/leases:
     get:
       tags:
@@ -78,8 +74,6 @@ paths:
       - agentHeader: []
       operationId: getApiV1MyDelegationLeases
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/delegation/leases:
     get:
       tags:
@@ -93,8 +87,6 @@ paths:
       summary: Deprecated alias of /api/v1/delegation/leases
       operationId: postApiDelegationLeases
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/delegation/leases/{id}/revoke:
     post:
       tags:
@@ -102,8 +94,6 @@ paths:
       summary: Deprecated alias of /api/v1/delegation/leases/{id}/revoke
       operationId: postApiDelegationLeasesByIdRevoke
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/my/delegation/leases:
     get:
       tags:
@@ -111,8 +101,6 @@ paths:
       summary: Deprecated alias of /api/v1/my/delegation/leases
       operationId: getApiMyDelegationLeases
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
 components:
   securitySchemes:
     bearerAuth:
@@ -123,6 +111,3 @@ components:
       type: apiKey
       in: header
       name: x-agent-id
-x-refined-from:
-- clawspan-cloud-signalhub-gateway-openapi.json
-- clawspan-cloud-signalhub-gateway-openapi.yml

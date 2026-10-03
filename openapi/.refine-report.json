@@ -2,9 +2,7 @@
   "provider": "clawspan-cloud",
   "sources": [
     "_original/clawspan-cloud-shardlink-control-plane-openapi.json",
-    "_original/clawspan-cloud-signalhub-gateway-openapi.json",
-    "clawspan-cloud-shardlink-control-plane-openapi.yml",
-    "clawspan-cloud-signalhub-gateway-openapi.yml"
+    "_original/clawspan-cloud-signalhub-gateway-openapi.json"
   ],
   "outputs": [
     "clawspan-cloud-a2a-api-openapi.yml",
@@ -31,42 +29,43 @@
     "clawspan-cloud-system-api-openapi.yml",
     "clawspan-cloud-viral-api-openapi.yml"
   ],
-  "archived": [
-    "archived openapi/clawspan-cloud-shardlink-control-plane-openapi.yml",
-    "archived openapi/clawspan-cloud-signalhub-gateway-openapi.yml"
-  ],
+  "archived": [],
   "errors": [],
   "warnings": [],
   "notes": [
+    "2 archived document(s) dropped as subsets of other archived documents",
     "sourced from openapi/_original/ (2 archived document(s)); previously refined output at the top level was skipped rather than re-split",
     "clawspan-cloud-shardlink-control-plane-openapi.json: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
     "clawspan-cloud-signalhub-gateway-openapi.json: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
-    "clawspan-cloud-shardlink-control-plane-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
-    "clawspan-cloud-signalhub-gateway-openapi.yml: upgraded openapi 3.1.0 -> OpenAPI 3.2.0",
-    "tag 'A2A' spans 2 source specs (clawspan-cloud-shardlink-control-plane-openapi.json, clawspan-cloud-shardlink-control-plane-openapi.yml): per-path servers applied",
-    "tag 'Agents' spans 2 source specs (clawspan-cloud-shardlink-control-plane-openapi.json, clawspan-cloud-shardlink-control-plane-openapi.yml): per-path servers applied",
-    "tag 'Auth' spans 2 source specs (clawspan-cloud-shardlink-control-plane-openapi.json, clawspan-cloud-shardlink-control-plane-openapi.yml): per-path servers applied",
-    "tag 'Billing' spans 2 source specs (clawspan-cloud-shardlink-control-plane-openapi.json, clawspan-cloud-shardlink-control-plane-openapi.yml): per-path servers applied",
-    "tag 'Bridge' spans 4 source specs (clawspan-cloud-shardlink-control-plane-openapi.json, clawspan-cloud-signalhub-gateway-openapi.json, clawspan-cloud-shardlink-control-plane-openapi.yml, clawspan-cloud-signalhub-gateway-openapi.yml): per-path servers applied",
-    "tag 'Discovery' spans 2 source specs (clawspan-cloud-shardlink-control-plane-openapi.json, clawspan-cloud-shardlink-control-plane-openapi.yml): per-path servers applied",
-    "tag 'Health' spans 2 source specs (clawspan-cloud-shardlink-control-plane-openapi.json, clawspan-cloud-shardlink-control-plane-openapi.yml): per-path servers applied",
-    "tag 'Leases' spans 2 source specs (clawspan-cloud-shardlink-control-plane-openapi.json, clawspan-cloud-shardlink-control-plane-openapi.yml): per-path servers applied",
-    "tag 'Providers' spans 2 source specs (clawspan-cloud-shardlink-control-plane-openapi.json, clawspan-cloud-shardlink-control-plane-openapi.yml): per-path servers applied",
-    "tag 'Reactions' spans 4 source specs (clawspan-cloud-shardlink-control-plane-openapi.json, clawspan-cloud-signalhub-gateway-openapi.json, clawspan-cloud-shardlink-control-plane-openapi.yml, clawspan-cloud-signalhub-gateway-openapi.yml): per-path servers applied",
-    "tag 'Streams' spans 2 source specs (clawspan-cloud-shardlink-control-plane-openapi.json, clawspan-cloud-shardlink-control-plane-openapi.yml): per-path servers applied",
-    "tag 'Tasks' spans 2 source specs (clawspan-cloud-shardlink-control-plane-openapi.json, clawspan-cloud-shardlink-control-plane-openapi.yml): per-path servers applied",
-    "tag 'Workspaces' spans 2 source specs (clawspan-cloud-shardlink-control-plane-openapi.json, clawspan-cloud-shardlink-control-plane-openapi.yml): per-path servers applied",
-    "tag 'affiliate' spans 2 source specs (clawspan-cloud-signalhub-gateway-openapi.json, clawspan-cloud-signalhub-gateway-openapi.yml): per-path servers applied",
-    "tag 'agent' spans 2 source specs (clawspan-cloud-signalhub-gateway-openapi.json, clawspan-cloud-signalhub-gateway-openapi.yml): per-path servers applied",
-    "tag 'delegation' spans 2 source specs (clawspan-cloud-signalhub-gateway-openapi.json, clawspan-cloud-signalhub-gateway-openapi.yml): per-path servers applied",
-    "tag 'disputes' spans 2 source specs (clawspan-cloud-signalhub-gateway-openapi.json, clawspan-cloud-signalhub-gateway-openapi.yml): per-path servers applied",
-    "tag 'pricing' spans 2 source specs (clawspan-cloud-signalhub-gateway-openapi.json, clawspan-cloud-signalhub-gateway-openapi.yml): per-path servers applied",
-    "tag 'public' spans 2 source specs (clawspan-cloud-signalhub-gateway-openapi.json, clawspan-cloud-signalhub-gateway-openapi.yml): per-path servers applied",
-    "tag 'realtime' spans 2 source specs (clawspan-cloud-signalhub-gateway-openapi.json, clawspan-cloud-signalhub-gateway-openapi.yml): per-path servers applied",
-    "tag 'seller' spans 2 source specs (clawspan-cloud-signalhub-gateway-openapi.json, clawspan-cloud-signalhub-gateway-openapi.yml): per-path servers applied",
-    "tag 'system' spans 2 source specs (clawspan-cloud-signalhub-gateway-openapi.json, clawspan-cloud-signalhub-gateway-openapi.yml): per-path servers applied",
-    "tag 'viral' spans 2 source specs (clawspan-cloud-signalhub-gateway-openapi.json, clawspan-cloud-signalhub-gateway-openapi.yml): per-path servers applied",
-    "apis.yml register: written (+23 apis, 25 total)"
+    "tag 'Bridge' spans 2 source specs (clawspan-cloud-shardlink-control-plane-openapi.json, clawspan-cloud-signalhub-gateway-openapi.json): per-path servers applied",
+    "tag 'Reactions' spans 2 source specs (clawspan-cloud-shardlink-control-plane-openapi.json, clawspan-cloud-signalhub-gateway-openapi.json): per-path servers applied",
+    "apis.yml register: already-registered"
   ],
-  "skipped": []
+  "skipped": [
+    "_original/clawspan-cloud-signalhub-gateway-openapi.yml: archived document superseded by a larger archived document",
+    "_original/clawspan-cloud-shardlink-control-plane-openapi.yml: archived document superseded by a larger archived document",
+    "clawspan-cloud-a2a-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "clawspan-cloud-affiliate-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "clawspan-cloud-agent-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "clawspan-cloud-agents-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "clawspan-cloud-auth-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "clawspan-cloud-billing-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "clawspan-cloud-bridge-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "clawspan-cloud-delegation-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "clawspan-cloud-discovery-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "clawspan-cloud-disputes-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "clawspan-cloud-health-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "clawspan-cloud-leases-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "clawspan-cloud-pricing-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "clawspan-cloud-providers-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "clawspan-cloud-public-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "clawspan-cloud-reactions-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "clawspan-cloud-realtime-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "clawspan-cloud-seller-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "clawspan-cloud-streams-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "clawspan-cloud-system-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "clawspan-cloud-tasks-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "clawspan-cloud-viral-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "clawspan-cloud-workspaces-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
 }

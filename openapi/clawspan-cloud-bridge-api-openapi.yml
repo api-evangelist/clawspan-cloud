@@ -2,7 +2,7 @@ openapi: 3.2.0
 info:
   title: Clawspan Cloud Bridge API
   version: '1.0'
-  description: 'Operations tagged Bridge across 4 of this provider''s published API definitions: clawspan-cloud-shardlink-control-plane-openapi.json, clawspan-cloud-signalhub-gateway-openapi.json, clawspan-cloud-shardlink-control-plane-openapi.yml, clawspan-cloud-signalhub-gateway-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: 'Operations tagged Bridge across 2 of this provider''s published API definitions: clawspan-cloud-shardlink-control-plane-openapi.json, clawspan-cloud-signalhub-gateway-openapi.json. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://app.clawspan.cloud
   description: Live control plane
@@ -525,6 +525,19 @@ paths:
     servers:
     - url: https://signalhub.clawspan.dev
 components:
+  parameters:
+    WorkspaceSlug:
+      in: path
+      name: slug
+      required: true
+      schema:
+        type: string
+    TaskId:
+      in: path
+      name: taskId
+      required: true
+      schema:
+        type: string
   schemas:
     BridgeReceiptEnvelope:
       type: object
@@ -546,19 +559,6 @@ components:
           type: string
         hmacKeyId:
           type: string
-  parameters:
-    TaskId:
-      in: path
-      name: taskId
-      required: true
-      schema:
-        type: string
-    WorkspaceSlug:
-      in: path
-      name: slug
-      required: true
-      schema:
-        type: string
   securitySchemes:
     BearerAuth:
       type: http
@@ -575,5 +575,3 @@ components:
 x-refined-from:
 - clawspan-cloud-shardlink-control-plane-openapi.json
 - clawspan-cloud-signalhub-gateway-openapi.json
-- clawspan-cloud-shardlink-control-plane-openapi.yml
-- clawspan-cloud-signalhub-gateway-openapi.yml

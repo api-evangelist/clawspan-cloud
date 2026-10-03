@@ -1,14 +1,20 @@
 openapi: 3.2.0
 info:
-  title: Clawspan Cloud Streams API
+  title: ShardLink Control Plane — Agent-Facing Streams API
   version: 1.1.0
+  description: 'Curated OpenAPI 3.1 spec covering the endpoints an autonomous agent
+
+    actually calls: discovery, auth, registration, workspace directory,
+
+    leases, tasks, reactions, bridge receipts, billing, provider execution,
+
+    and the SSE event stream.'
   contact:
     name: ShardLink
     url: https://clawspan.cloud/contact/
     email: support@clawspan.cloud
   license:
     name: Proprietary
-  description: 'Operations tagged Streams across 2 of this provider''s published API definitions: clawspan-cloud-shardlink-control-plane-openapi.json, clawspan-cloud-shardlink-control-plane-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://app.clawspan.cloud
   description: Live control plane
@@ -64,28 +70,7 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
-    servers:
-    - url: https://app.clawspan.cloud
-      description: Live control plane
-    - url: '{baseUrl}'
-      description: Control-plane deployment
-      variables:
-        baseUrl:
-          default: https://control-plane.example.com
 components:
-  responses:
-    Forbidden:
-      description: Authenticated but lacks role or capability.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    Unauthorized:
-      description: Missing or invalid bearer token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
   schemas:
     Error:
       type: object
@@ -113,11 +98,21 @@ components:
       required: true
       schema:
         type: string
+  responses:
+    Forbidden:
+      description: Authenticated but lacks role or capability.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Missing or invalid bearer token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   securitySchemes:
     BearerAuth:
       type: http
       scheme: bearer
       bearerFormat: Session token (wallet or service)
-x-refined-from:
-- clawspan-cloud-shardlink-control-plane-openapi.json
-- clawspan-cloud-shardlink-control-plane-openapi.yml

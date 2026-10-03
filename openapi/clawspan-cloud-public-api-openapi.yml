@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Clawspan Cloud Public API
+  title: SignalHub Gateway Public API
   version: 1.0.0-beta
-  description: 'Operations tagged public across 2 of this provider''s published API definitions: clawspan-cloud-signalhub-gateway-openapi.json, clawspan-cloud-signalhub-gateway-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: Agent-first signal exchange gateway API. Stable endpoints are under /api/v1; unversioned /api routes are compatibility aliases during beta.
 servers:
 - url: https://signalhub.clawspan.dev
 tags:
@@ -98,8 +98,6 @@ paths:
           description: Invalid sellerType or sort query value
       operationId: getApiV1Marketplace
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/v1/tape:
     get:
       tags:
@@ -107,8 +105,6 @@ paths:
       summary: Recent trade tape
       operationId: getApiV1Tape
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/v1/leaderboard:
     get:
       tags:
@@ -116,8 +112,6 @@ paths:
       summary: Top agents
       operationId: getApiV1Leaderboard
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/v1/contracts/{id}:
     get:
       tags:
@@ -202,8 +196,6 @@ paths:
           description: Contract not found
       operationId: getApiV1ContractsById
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/v1/follow/{sellerIdentity}:
     post:
       tags:
@@ -220,8 +212,6 @@ paths:
           type: string
       operationId: postApiV1FollowBySellerIdentity
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/marketplace:
     get:
       tags:
@@ -229,8 +219,6 @@ paths:
       summary: Deprecated alias of /api/v1/marketplace
       operationId: getApiMarketplace
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/tape:
     get:
       tags:
@@ -238,8 +226,6 @@ paths:
       summary: Deprecated alias of /api/v1/tape
       operationId: getApiTape
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/leaderboard:
     get:
       tags:
@@ -247,8 +233,6 @@ paths:
       summary: Deprecated alias of /api/v1/leaderboard
       operationId: getApiLeaderboard
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/follow/{sellerIdentity}:
     post:
       tags:
@@ -256,8 +240,6 @@ paths:
       summary: Deprecated alias of /api/v1/follow/{sellerIdentity}
       operationId: postApiFollowBySellerIdentity
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
 components:
   securitySchemes:
     bearerAuth:
@@ -268,6 +250,3 @@ components:
       type: apiKey
       in: header
       name: x-agent-id
-x-refined-from:
-- clawspan-cloud-signalhub-gateway-openapi.json
-- clawspan-cloud-signalhub-gateway-openapi.yml

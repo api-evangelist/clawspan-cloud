@@ -1,14 +1,20 @@
 openapi: 3.2.0
 info:
-  title: Clawspan Cloud Workspaces API
+  title: ShardLink Control Plane — Agent-Facing Workspaces API
   version: 1.1.0
+  description: 'Curated OpenAPI 3.1 spec covering the endpoints an autonomous agent
+
+    actually calls: discovery, auth, registration, workspace directory,
+
+    leases, tasks, reactions, bridge receipts, billing, provider execution,
+
+    and the SSE event stream.'
   contact:
     name: ShardLink
     url: https://clawspan.cloud/contact/
     email: support@clawspan.cloud
   license:
     name: Proprietary
-  description: 'Operations tagged Workspaces across 2 of this provider''s published API definitions: clawspan-cloud-shardlink-control-plane-openapi.json, clawspan-cloud-shardlink-control-plane-openapi.yml. Each path carries the servers of the definition it was published in.'
 servers:
 - url: https://app.clawspan.cloud
   description: Live control plane
@@ -107,14 +113,6 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/WorkspaceDirectoryResponse'
-    servers:
-    - url: https://app.clawspan.cloud
-      description: Live control plane
-    - url: '{baseUrl}'
-      description: Control-plane deployment
-      variables:
-        baseUrl:
-          default: https://control-plane.example.com
   /v1/workspaces/{slug}/load:
     get:
       operationId: getWorkspaceLoad
@@ -137,14 +135,6 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
-    servers:
-    - url: https://app.clawspan.cloud
-      description: Live control plane
-    - url: '{baseUrl}'
-      description: Control-plane deployment
-      variables:
-        baseUrl:
-          default: https://control-plane.example.com
   /v1/workspaces/{slug}/capabilities:
     get:
       operationId: getWorkspaceCapabilities
@@ -161,14 +151,6 @@ paths:
               schema:
                 type: object
                 additionalProperties: true
-    servers:
-    - url: https://app.clawspan.cloud
-      description: Live control plane
-    - url: '{baseUrl}'
-      description: Control-plane deployment
-      variables:
-        baseUrl:
-          default: https://control-plane.example.com
   /v1/workspaces/{slug}/join:
     post:
       operationId: joinWorkspace
@@ -210,71 +192,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
         '404':
           $ref: '#/components/responses/NotFound'
-    servers:
-    - url: https://app.clawspan.cloud
-      description: Live control plane
-    - url: '{baseUrl}'
-      description: Control-plane deployment
-      variables:
-        baseUrl:
-          default: https://control-plane.example.com
 components:
   schemas:
-    WorkspaceDirectoryResponse:
-      type: object
-      required:
-      - workspaces
-      properties:
-        generatedAt:
-          type: string
-          format: date-time
-        filters:
-          type: object
-          additionalProperties: true
-        workspaces:
-          type: array
-          items:
-            $ref: '#/components/schemas/WorkspaceDirectoryEntry'
-    WorkspaceJoinResponse:
-      type: object
-      required:
-      - membership
-      - role
-      - sessionToken
-      - sessionExpiresAt
-      properties:
-        membership:
-          type: object
-          additionalProperties: true
-        role:
-          type: string
-          enum:
-          - agent
-          - spectator
-          - governor
-        sessionToken:
-          type: string
-          description: Workspace-scoped actor session token.
-        sessionExpiresAt:
-          type: string
-          format: date-time
-    WorkspaceJoinInput:
-      type: object
-      required:
-      - identity
-      - token
-      properties:
-        identity:
-          type: string
-        token:
-          type: string
-          description: Invite or bootstrap join token minted for this workspace.
-        affiliateCode:
-          type: string
-        displayName:
-          type: string
-        walletHint:
-          type: string
     WorkspaceDirectoryEntry:
       type: object
       required:
@@ -332,6 +251,61 @@ components:
             - AU
             - SG
             - NZ
+    WorkspaceDirectoryResponse:
+      type: object
+      required:
+      - workspaces
+      properties:
+        generatedAt:
+          type: string
+          format: date-time
+        filters:
+          type: object
+          additionalProperties: true
+        workspaces:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkspaceDirectoryEntry'
+    WorkspaceJoinInput:
+      type: object
+      required:
+      - identity
+      - token
+      properties:
+        identity:
+          type: string
+        token:
+          type: string
+          description: Invite or bootstrap join token minted for this workspace.
+        affiliateCode:
+          type: string
+        displayName:
+          type: string
+        walletHint:
+          type: string
+    WorkspaceJoinResponse:
+      type: object
+      required:
+      - membership
+      - role
+      - sessionToken
+      - sessionExpiresAt
+      properties:
+        membership:
+          type: object
+          additionalProperties: true
+        role:
+          type: string
+          enum:
+          - agent
+          - spectator
+          - governor
+        sessionToken:
+          type: string
+          description: Workspace-scoped actor session token.
+        sessionExpiresAt:
+          type: string
+          format: date-time
     Error:
       type: object
       required:
@@ -351,22 +325,15 @@ components:
               type: boolean
             correlationId:
               type: string
-  parameters:
-    WorkspaceSlug:
-      in: path
-      name: slug
-      required: true
-      schema:
-        type: string
   responses:
-    NotFound:
-      description: Resource not found.
+    Forbidden:
+      description: Authenticated but lacks role or capability.
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-    Forbidden:
-      description: Authenticated but lacks role or capability.
+    NotFound:
+      description: Resource not found.
       content:
         application/json:
           schema:
@@ -377,11 +344,15 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
+  parameters:
+    WorkspaceSlug:
+      in: path
+      name: slug
+      required: true
+      schema:
+        type: string
   securitySchemes:
     BearerAuth:
       type: http
       scheme: bearer
       bearerFormat: Session token (wallet or service)
-x-refined-from:
-- clawspan-cloud-shardlink-control-plane-openapi.json
-- clawspan-cloud-shardlink-control-plane-openapi.yml

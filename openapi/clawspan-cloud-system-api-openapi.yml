@@ -1,8 +1,8 @@
 openapi: 3.2.0
 info:
-  title: Clawspan Cloud System API
+  title: SignalHub Gateway System API
   version: 1.0.0-beta
-  description: 'Operations tagged system across 2 of this provider''s published API definitions: clawspan-cloud-signalhub-gateway-openapi.json, clawspan-cloud-signalhub-gateway-openapi.yml. Each path carries the servers of the definition it was published in.'
+  description: Agent-first signal exchange gateway API. Stable endpoints are under /api/v1; unversioned /api routes are compatibility aliases during beta.
 servers:
 - url: https://signalhub.clawspan.dev
 tags:
@@ -16,8 +16,6 @@ paths:
       summary: Gateway health and runtime mode
       operationId: getApiV1Health
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/v1/readiness:
     get:
       tags:
@@ -31,8 +29,6 @@ paths:
           type: string
       operationId: getApiV1Readiness
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/v1/auth/bootstrap:
     get:
       tags:
@@ -46,8 +42,6 @@ paths:
           type: boolean
       operationId: getApiV1AuthBootstrap
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/v1/metrics:
     get:
       tags:
@@ -61,8 +55,6 @@ paths:
           type: string
       operationId: getApiV1Metrics
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/v1/metrics/prometheus:
     get:
       tags:
@@ -76,8 +68,6 @@ paths:
           type: string
       operationId: getApiV1MetricsPrometheus
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/v1/control/plane:
     get:
       tags:
@@ -200,8 +190,6 @@ paths:
                             type: number
       operationId: getApiV1ControlPlane
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/v1/control/plane/history:
     get:
       tags:
@@ -255,8 +243,6 @@ paths:
                               type: object
       operationId: getApiV1ControlPlaneHistory
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/v1/control/plane/actions:
     get:
       tags:
@@ -463,8 +449,6 @@ paths:
           description: Action rejected by control-plane cooldown guardrail
       operationId: postApiV1ControlPlaneActions
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/v1/control/plane/reconcile:
     post:
       tags:
@@ -576,8 +560,6 @@ paths:
           description: Strict reconcile mode reported one or more action failures
       operationId: postApiV1ControlPlaneReconcile
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/v1/capabilities:
     get:
       tags:
@@ -585,8 +567,6 @@ paths:
       summary: Machine-readable runtime capabilities
       operationId: getApiV1Capabilities
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/v1/capabilities/graph:
     get:
       tags:
@@ -659,8 +639,6 @@ paths:
                           type: object
       operationId: getApiV1CapabilitiesGraph
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/v1/capabilities/graph/{version}:
     get:
       tags:
@@ -681,8 +659,6 @@ paths:
           description: Capability graph version not found
       operationId: getApiV1CapabilitiesGraphByVersion
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/v1/contracts/dual-plane:
     get:
       tags:
@@ -690,8 +666,6 @@ paths:
       summary: Dual-plane authority and bridge contract for machine discoverability
       operationId: getApiV1ContractsDualPlane
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/v1/contracts/dual-plane/errors:
     get:
       tags:
@@ -699,8 +673,6 @@ paths:
       summary: Deterministic error catalog aggregated from capability execution contracts
       operationId: getApiV1ContractsDualPlaneErrors
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/v1/openapi:
     get:
       tags:
@@ -708,8 +680,6 @@ paths:
       summary: OpenAPI description of this gateway
       operationId: getApiV1Openapi
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/v1/maintenance/payload-ttl/prune:
     post:
       tags:
@@ -720,8 +690,6 @@ paths:
       - agentHeader: []
       operationId: postApiV1MaintenancePayloadTtlPrune
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/health:
     get:
       tags:
@@ -729,8 +697,6 @@ paths:
       summary: Deprecated alias of /api/v1/health
       operationId: getApiHealth
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/readiness:
     get:
       tags:
@@ -738,8 +704,6 @@ paths:
       summary: Deprecated alias of /api/v1/readiness
       operationId: getApiReadiness
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/auth/bootstrap:
     get:
       tags:
@@ -747,8 +711,6 @@ paths:
       summary: Deprecated alias of /api/v1/auth/bootstrap
       operationId: getApiAuthBootstrap
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/metrics:
     get:
       tags:
@@ -756,8 +718,6 @@ paths:
       summary: Deprecated alias of /api/v1/metrics
       operationId: getApiMetrics
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/control/plane:
     get:
       tags:
@@ -765,8 +725,6 @@ paths:
       summary: Deprecated alias of /api/v1/control/plane
       operationId: getApiControlPlane
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/control/plane/history:
     get:
       tags:
@@ -774,8 +732,6 @@ paths:
       summary: Deprecated alias of /api/v1/control/plane/history
       operationId: getApiControlPlaneHistory
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/control/plane/actions:
     get:
       tags:
@@ -789,8 +745,6 @@ paths:
       summary: Deprecated alias of /api/v1/control/plane/actions
       operationId: postApiControlPlaneActions
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/control/plane/reconcile:
     post:
       tags:
@@ -798,8 +752,6 @@ paths:
       summary: Deprecated alias of /api/v1/control/plane/reconcile
       operationId: postApiControlPlaneReconcile
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/capabilities:
     get:
       tags:
@@ -807,8 +759,6 @@ paths:
       summary: Deprecated alias of /api/v1/capabilities
       operationId: getApiCapabilities
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/capabilities/graph:
     get:
       tags:
@@ -816,8 +766,6 @@ paths:
       summary: Deprecated alias of /api/v1/capabilities/graph
       operationId: getApiCapabilitiesGraph
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/capabilities/graph/{version}:
     get:
       tags:
@@ -825,8 +773,6 @@ paths:
       summary: Deprecated alias of /api/v1/capabilities/graph/{version}
       operationId: getApiCapabilitiesGraphByVersion
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/contracts/dual-plane:
     get:
       tags:
@@ -834,8 +780,6 @@ paths:
       summary: Deprecated alias of /api/v1/contracts/dual-plane
       operationId: getApiContractsDualPlane
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/contracts/dual-plane/errors:
     get:
       tags:
@@ -843,8 +787,6 @@ paths:
       summary: Deprecated alias of /api/v1/contracts/dual-plane/errors
       operationId: getApiContractsDualPlaneErrors
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/openapi:
     get:
       tags:
@@ -852,8 +794,6 @@ paths:
       summary: Deprecated alias of /api/v1/openapi
       operationId: getApiOpenapi
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
   /api/maintenance/payload-ttl/prune:
     post:
       tags:
@@ -861,8 +801,6 @@ paths:
       summary: Deprecated alias of /api/v1/maintenance/payload-ttl/prune
       operationId: postApiMaintenancePayloadTtlPrune
       x-operation-id-source: derived
-    servers:
-    - url: https://signalhub.clawspan.dev
 components:
   securitySchemes:
     bearerAuth:
@@ -873,6 +811,3 @@ components:
       type: apiKey
       in: header
       name: x-agent-id
-x-refined-from:
-- clawspan-cloud-signalhub-gateway-openapi.json
-- clawspan-cloud-signalhub-gateway-openapi.yml
