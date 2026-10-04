@@ -127,6 +127,8 @@ apis:
   humanURL: https://clawspan.cloud/technical/
   baseURL: https://app.clawspan.cloud
   tags:
+  - Affiliates
+  tags_raw:
   - affiliate
   properties:
   - type: OpenAPI
@@ -161,6 +163,8 @@ apis:
   humanURL: https://clawspan.cloud/technical/
   baseURL: https://app.clawspan.cloud
   tags:
+  - Agents
+  tags_raw:
   - agent
   properties:
   - type: OpenAPI
@@ -229,6 +233,8 @@ apis:
   humanURL: https://clawspan.cloud/technical/
   baseURL: https://app.clawspan.cloud
   tags:
+  - Authentication
+  tags_raw:
   - Auth
   properties:
   - type: OpenAPI
@@ -331,6 +337,8 @@ apis:
   humanURL: https://clawspan.cloud/technical/
   baseURL: https://app.clawspan.cloud
   tags:
+  - Delegation
+  tags_raw:
   - delegation
   properties:
   - type: OpenAPI
@@ -399,6 +407,8 @@ apis:
   humanURL: https://clawspan.cloud/technical/
   baseURL: https://app.clawspan.cloud
   tags:
+  - Disputes
+  tags_raw:
   - disputes
   properties:
   - type: OpenAPI
@@ -501,6 +511,8 @@ apis:
   humanURL: https://clawspan.cloud/technical/
   baseURL: https://app.clawspan.cloud
   tags:
+  - Pricing
+  tags_raw:
   - pricing
   properties:
   - type: OpenAPI
@@ -569,6 +581,8 @@ apis:
   humanURL: https://clawspan.cloud/technical/
   baseURL: https://app.clawspan.cloud
   tags:
+  - Public
+  tags_raw:
   - public
   properties:
   - type: OpenAPI
@@ -637,6 +651,8 @@ apis:
   humanURL: https://clawspan.cloud/technical/
   baseURL: https://app.clawspan.cloud
   tags:
+  - Real-Time
+  tags_raw:
   - realtime
   properties:
   - type: OpenAPI
@@ -671,6 +687,8 @@ apis:
   humanURL: https://clawspan.cloud/technical/
   baseURL: https://app.clawspan.cloud
   tags:
+  - Seller
+  tags_raw:
   - seller
   properties:
   - type: OpenAPI
@@ -739,6 +757,8 @@ apis:
   humanURL: https://clawspan.cloud/technical/
   baseURL: https://app.clawspan.cloud
   tags:
+  - System
+  tags_raw:
   - system
   properties:
   - type: OpenAPI
@@ -773,6 +793,8 @@ apis:
   humanURL: https://clawspan.cloud/technical/
   baseURL: https://app.clawspan.cloud
   tags:
+  - Task
+  tags_raw:
   - Tasks
   properties:
   - type: OpenAPI
@@ -841,6 +863,8 @@ apis:
   humanURL: https://clawspan.cloud/technical/
   baseURL: https://app.clawspan.cloud
   tags:
+  - Workspace
+  tags_raw:
   - Workspaces
   properties:
   - type: OpenAPI
@@ -875,6 +899,9 @@ maintainers:
 - FN: APIs.json
   email: info@apis.io
 common:
+- type: CapabilityMap
+  url: capabilities/clawspan-cloud-capability-edges.yml
+  name: ClawSpan Business Capability Map
 - type: Overlay
   url: overlays/clawspan-cloud-shardlink-control-plane-overlay.yaml
 - type: Overlay
