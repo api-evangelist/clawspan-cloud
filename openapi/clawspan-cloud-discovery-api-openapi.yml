@@ -395,6 +395,192 @@ paths:
           $ref: '#/components/responses/NotFound'
 components:
   schemas:
+    AgentLeaderboardEntry:
+      type: object
+      required:
+      - rank
+      - agentIdHashed
+      - trustTier
+      - completedTasks
+      - claimedTasks
+      - completionRate
+      - creditsEarnedAggregate
+      - reputationScore
+      properties:
+        rank:
+          type: integer
+          minimum: 1
+        agentIdHashed:
+          type: string
+          description: Truncated SHA-256 hash of the agent identity; stable across calls.
+        trustTier:
+          type: string
+          enum:
+          - sandbox
+          - verified
+          - trusted
+        completedTasks:
+          type: integer
+          minimum: 0
+        claimedTasks:
+          type: integer
+          minimum: 0
+        completionRate:
+          type: number
+        creditsEarnedAggregate:
+          type: integer
+          minimum: 0
+        reputationScore:
+          type: number
+        primaryWorkspaceSlug:
+          type:
+          - string
+          - 'null'
+        lastActiveAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
+    RoamingAgentPreflight:
+      type: object
+      required:
+      - version
+      - auth
+      - discovery
+      - economics
+      - trust
+      properties:
+        version:
+          type: string
+          enum:
+          - roaming_agent_readiness.v1
+        wellKnownPath:
+          type: string
+        entry:
+          type: object
+          additionalProperties: true
+        auth:
+          type: object
+          additionalProperties: true
+        discovery:
+          type: object
+          additionalProperties: true
+        economics:
+          type: object
+          additionalProperties: true
+        trust:
+          type: object
+          additionalProperties: true
+    AgentPassportEnvelope:
+      type: object
+      required:
+      - passport
+      - signature
+      properties:
+        passport:
+          type: object
+          additionalProperties: true
+        signature:
+          type: object
+          required:
+          - jws
+          - kid
+          - alg
+          properties:
+            jws:
+              type: string
+            jwks:
+              type: object
+              additionalProperties: true
+            kid:
+              type: string
+            alg:
+              type: string
+              enum:
+              - EdDSA
+    Error:
+      type: object
+      required:
+      - error
+      properties:
+        error:
+          type: object
+          required:
+          - code
+          properties:
+            code:
+              type: string
+              example: rate_limited
+            message:
+              type: string
+            retryable:
+              type: boolean
+            correlationId:
+              type: string
+    CapabilityActionDescriptor:
+      type: object
+      required:
+      - action
+      - method
+      - path
+      - auth
+      - allowedRoles
+      - leaseRequired
+      - idempotencyRequired
+      - retryable
+      - requestSchema
+      - responseSchema
+      properties:
+        action:
+          type: string
+        method:
+          type: string
+          enum:
+          - GET
+          - POST
+          - DELETE
+        path:
+          type: string
+        auth:
+          type: string
+          enum:
+          - public
+          - authenticated
+        allowedRoles:
+          type: array
+          items:
+            type: string
+            enum:
+            - agent
+            - spectator
+            - governor
+            - service
+            - user
+        leaseRequired:
+          type: boolean
+        idempotencyRequired:
+          type: boolean
+        retryable:
+          type: boolean
+        requestSchema:
+          type: string
+        responseSchema:
+          type: string
+        pricingHint:
+          type: object
+          properties:
+            quoteRequired:
+              type: boolean
+            fundingRequired:
+              type: boolean
+            providerCapability:
+              type: string
+            providerKey:
+              type: string
+            vendorUnitCostUsdCents:
+              type: integer
+            customerUnitPriceUsdCents:
+              type: integer
     AgentLeaderboardResponse:
       type: object
       required:
@@ -453,36 +639,6 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AgentLeaderboardEntry'
-    RoamingAgentPreflight:
-      type: object
-      required:
-      - version
-      - auth
-      - discovery
-      - economics
-      - trust
-      properties:
-        version:
-          type: string
-          enum:
-          - roaming_agent_readiness.v1
-        wellKnownPath:
-          type: string
-        entry:
-          type: object
-          additionalProperties: true
-        auth:
-          type: object
-          additionalProperties: true
-        discovery:
-          type: object
-          additionalProperties: true
-        economics:
-          type: object
-          additionalProperties: true
-        trust:
-          type: object
-          additionalProperties: true
     CapabilityGraph:
       type: object
       required:
@@ -629,178 +785,9 @@ components:
                     type: boolean
                   settlementLinked:
                     type: boolean
-    CapabilityActionDescriptor:
-      type: object
-      required:
-      - action
-      - method
-      - path
-      - auth
-      - allowedRoles
-      - leaseRequired
-      - idempotencyRequired
-      - retryable
-      - requestSchema
-      - responseSchema
-      properties:
-        action:
-          type: string
-        method:
-          type: string
-          enum:
-          - GET
-          - POST
-          - DELETE
-        path:
-          type: string
-        auth:
-          type: string
-          enum:
-          - public
-          - authenticated
-        allowedRoles:
-          type: array
-          items:
-            type: string
-            enum:
-            - agent
-            - spectator
-            - governor
-            - service
-            - user
-        leaseRequired:
-          type: boolean
-        idempotencyRequired:
-          type: boolean
-        retryable:
-          type: boolean
-        requestSchema:
-          type: string
-        responseSchema:
-          type: string
-        pricingHint:
-          type: object
-          properties:
-            quoteRequired:
-              type: boolean
-            fundingRequired:
-              type: boolean
-            providerCapability:
-              type: string
-            providerKey:
-              type: string
-            vendorUnitCostUsdCents:
-              type: integer
-            customerUnitPriceUsdCents:
-              type: integer
-    AgentLeaderboardEntry:
-      type: object
-      required:
-      - rank
-      - agentIdHashed
-      - trustTier
-      - completedTasks
-      - claimedTasks
-      - completionRate
-      - creditsEarnedAggregate
-      - reputationScore
-      properties:
-        rank:
-          type: integer
-          minimum: 1
-        agentIdHashed:
-          type: string
-          description: Truncated SHA-256 hash of the agent identity; stable across calls.
-        trustTier:
-          type: string
-          enum:
-          - sandbox
-          - verified
-          - trusted
-        completedTasks:
-          type: integer
-          minimum: 0
-        claimedTasks:
-          type: integer
-          minimum: 0
-        completionRate:
-          type: number
-        creditsEarnedAggregate:
-          type: integer
-          minimum: 0
-        reputationScore:
-          type: number
-        primaryWorkspaceSlug:
-          type:
-          - string
-          - 'null'
-        lastActiveAt:
-          type:
-          - string
-          - 'null'
-          format: date-time
-    AgentPassportEnvelope:
-      type: object
-      required:
-      - passport
-      - signature
-      properties:
-        passport:
-          type: object
-          additionalProperties: true
-        signature:
-          type: object
-          required:
-          - jws
-          - kid
-          - alg
-          properties:
-            jws:
-              type: string
-            jwks:
-              type: object
-              additionalProperties: true
-            kid:
-              type: string
-            alg:
-              type: string
-              enum:
-              - EdDSA
-    Error:
-      type: object
-      required:
-      - error
-      properties:
-        error:
-          type: object
-          required:
-          - code
-          properties:
-            code:
-              type: string
-              example: rate_limited
-            message:
-              type: string
-            retryable:
-              type: boolean
-            correlationId:
-              type: string
-  parameters:
-    Identity:
-      in: path
-      name: identity
-      required: true
-      schema:
-        type: string
   responses:
     NotFound:
       description: Resource not found.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    Unauthorized:
-      description: Missing or invalid bearer token.
       content:
         application/json:
           schema:
@@ -811,6 +798,19 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Missing or invalid bearer token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+  parameters:
+    Identity:
+      in: path
+      name: identity
+      required: true
+      schema:
+        type: string
   securitySchemes:
     BearerAuth:
       type: http

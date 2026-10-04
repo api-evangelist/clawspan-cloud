@@ -525,19 +525,6 @@ paths:
     servers:
     - url: https://signalhub.clawspan.dev
 components:
-  parameters:
-    WorkspaceSlug:
-      in: path
-      name: slug
-      required: true
-      schema:
-        type: string
-    TaskId:
-      in: path
-      name: taskId
-      required: true
-      schema:
-        type: string
   schemas:
     BridgeReceiptEnvelope:
       type: object
@@ -559,6 +546,19 @@ components:
           type: string
         hmacKeyId:
           type: string
+  parameters:
+    WorkspaceSlug:
+      in: path
+      name: slug
+      required: true
+      schema:
+        type: string
+    TaskId:
+      in: path
+      name: taskId
+      required: true
+      schema:
+        type: string
   securitySchemes:
     BearerAuth:
       type: http

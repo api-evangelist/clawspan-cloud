@@ -176,6 +176,12 @@ paths:
           $ref: '#/components/responses/Forbidden'
 components:
   responses:
+    NotFound:
+      description: Resource not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
     Conflict:
       description: Race or idempotency conflict.
       content:
@@ -184,6 +190,18 @@ components:
             $ref: '#/components/schemas/Error'
     Forbidden:
       description: Authenticated but lacks role or capability.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: Malformed request.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Missing or invalid bearer token.
       content:
         application/json:
           schema:
@@ -199,25 +217,66 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/PaymentRequirementEnvelope'
-    NotFound:
-      description: Resource not found.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    Unauthorized:
-      description: Missing or invalid bearer token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    BadRequest:
-      description: Malformed request.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
   schemas:
+    ProviderExecutionResponse:
+      type: object
+      required:
+      - execution
+      properties:
+        execution:
+          type: object
+          additionalProperties: true
+        envelope:
+          type: object
+          additionalProperties: true
+        settlement:
+          type: object
+          additionalProperties: true
+        lineage:
+          type: object
+          additionalProperties: true
+        x402:
+          type: object
+          properties:
+            paymentId:
+              type: string
+            requiredHeader:
+              type: string
+            paymentHeader:
+              type: string
+            responseHeader:
+              type: string
+        stagingGuardrail:
+          type: object
+          additionalProperties: true
+    Error:
+      type: object
+      required:
+      - error
+      properties:
+        error:
+          type: object
+          required:
+          - code
+          properties:
+            code:
+              type: string
+              example: rate_limited
+            message:
+              type: string
+            retryable:
+              type: boolean
+            correlationId:
+              type: string
+    ProviderExecuteInput:
+      type: object
+      properties:
+        envelopeId:
+          type: string
+          description: Pre-funded spend envelope to charge. When omitted, payment runs via the x402 handshake instead.
+        metadata:
+          type: object
+          additionalProperties: true
     PaymentRequirementEnvelope:
       type: object
       required:
@@ -306,59 +365,6 @@ components:
                   maxAmountRequiredUsdCents:
                     type: integer
                     minimum: 0
-    ProviderExecuteInput:
-      type: object
-      properties:
-        envelopeId:
-          type: string
-          description: Pre-funded spend envelope to charge. When omitted, payment runs via the x402 handshake instead.
-        metadata:
-          type: object
-          additionalProperties: true
-    ProviderExecutionResponse:
-      type: object
-      required:
-      - execution
-      properties:
-        execution:
-          type: object
-          additionalProperties: true
-        envelope:
-          type: object
-          additionalProperties: true
-        settlement:
-          type: object
-          additionalProperties: true
-        lineage:
-          type: object
-          additionalProperties: true
-        x402:
-          type: object
-          properties:
-            paymentId:
-              type: string
-            requiredHeader:
-              type: string
-            paymentHeader:
-              type: string
-            responseHeader:
-              type: string
-        stagingGuardrail:
-          type: object
-          additionalProperties: true
-    ProviderQuoteResponse:
-      type: object
-      required:
-      - quote
-      properties:
-        quote:
-          type: object
-          additionalProperties: true
-          description: Stored provider-quote record (quoteId, capability, providerKey, units, vendorCostUsdCents, customerPriceUsdCents, marginRatio, pricingVersion, expiresAt, status).
-        stagingGuardrail:
-          type: object
-          additionalProperties: true
-          description: Present only on staging deployments.
     ProviderQuoteInput:
       type: object
       required:
@@ -459,25 +465,19 @@ components:
                     type:
                     - string
                     - 'null'
-    Error:
+    ProviderQuoteResponse:
       type: object
       required:
-      - error
+      - quote
       properties:
-        error:
+        quote:
           type: object
-          required:
-          - code
-          properties:
-            code:
-              type: string
-              example: rate_limited
-            message:
-              type: string
-            retryable:
-              type: boolean
-            correlationId:
-              type: string
+          additionalProperties: true
+          description: Stored provider-quote record (quoteId, capability, providerKey, units, vendorCostUsdCents, customerPriceUsdCents, marginRatio, pricingVersion, expiresAt, status).
+        stagingGuardrail:
+          type: object
+          additionalProperties: true
+          description: Present only on staging deployments.
   parameters:
     WorkspaceSlug:
       in: path

@@ -193,7 +193,83 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 components:
+  responses:
+    NotFound:
+      description: Resource not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: Authenticated but lacks role or capability.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: Malformed request.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   schemas:
+    WorkspaceJoinResponse:
+      type: object
+      required:
+      - membership
+      - role
+      - sessionToken
+      - sessionExpiresAt
+      properties:
+        membership:
+          type: object
+          additionalProperties: true
+        role:
+          type: string
+          enum:
+          - agent
+          - spectator
+          - governor
+        sessionToken:
+          type: string
+          description: Workspace-scoped actor session token.
+        sessionExpiresAt:
+          type: string
+          format: date-time
+    Error:
+      type: object
+      required:
+      - error
+      properties:
+        error:
+          type: object
+          required:
+          - code
+          properties:
+            code:
+              type: string
+              example: rate_limited
+            message:
+              type: string
+            retryable:
+              type: boolean
+            correlationId:
+              type: string
+    WorkspaceDirectoryResponse:
+      type: object
+      required:
+      - workspaces
+      properties:
+        generatedAt:
+          type: string
+          format: date-time
+        filters:
+          type: object
+          additionalProperties: true
+        workspaces:
+          type: array
+          items:
+            $ref: '#/components/schemas/WorkspaceDirectoryEntry'
     WorkspaceDirectoryEntry:
       type: object
       required:
@@ -251,21 +327,6 @@ components:
             - AU
             - SG
             - NZ
-    WorkspaceDirectoryResponse:
-      type: object
-      required:
-      - workspaces
-      properties:
-        generatedAt:
-          type: string
-          format: date-time
-        filters:
-          type: object
-          additionalProperties: true
-        workspaces:
-          type: array
-          items:
-            $ref: '#/components/schemas/WorkspaceDirectoryEntry'
     WorkspaceJoinInput:
       type: object
       required:
@@ -283,67 +344,6 @@ components:
           type: string
         walletHint:
           type: string
-    WorkspaceJoinResponse:
-      type: object
-      required:
-      - membership
-      - role
-      - sessionToken
-      - sessionExpiresAt
-      properties:
-        membership:
-          type: object
-          additionalProperties: true
-        role:
-          type: string
-          enum:
-          - agent
-          - spectator
-          - governor
-        sessionToken:
-          type: string
-          description: Workspace-scoped actor session token.
-        sessionExpiresAt:
-          type: string
-          format: date-time
-    Error:
-      type: object
-      required:
-      - error
-      properties:
-        error:
-          type: object
-          required:
-          - code
-          properties:
-            code:
-              type: string
-              example: rate_limited
-            message:
-              type: string
-            retryable:
-              type: boolean
-            correlationId:
-              type: string
-  responses:
-    Forbidden:
-      description: Authenticated but lacks role or capability.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    NotFound:
-      description: Resource not found.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    BadRequest:
-      description: Malformed request.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
   parameters:
     WorkspaceSlug:
       in: path

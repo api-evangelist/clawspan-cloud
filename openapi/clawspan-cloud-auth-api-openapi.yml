@@ -106,6 +106,101 @@ paths:
           $ref: '#/components/responses/Unauthorized'
 components:
   schemas:
+    WalletChallengeResponse:
+      type: object
+      required:
+      - challenge
+      properties:
+        challenge:
+          type: object
+          required:
+          - challengeToken
+          - message
+          properties:
+            challengeToken:
+              type: string
+            message:
+              type: string
+            nonce:
+              type: string
+            issuedAt:
+              type: string
+              format: date-time
+            expirationTime:
+              type: string
+              format: date-time
+    Error:
+      type: object
+      required:
+      - error
+      properties:
+        error:
+          type: object
+          required:
+          - code
+          properties:
+            code:
+              type: string
+              example: rate_limited
+            message:
+              type: string
+            retryable:
+              type: boolean
+            correlationId:
+              type: string
+    WalletVerifyResponse:
+      type: object
+      required:
+      - principal
+      - session
+      properties:
+        principal:
+          type: object
+          required:
+          - identity
+          - authMethod
+          properties:
+            identity:
+              type: string
+            accountId:
+              type: string
+            caipChainId:
+              type: string
+            address:
+              type: string
+            authMethod:
+              type: string
+              enum:
+              - wallet_signature
+        session:
+          type: object
+          required:
+          - token
+          - expiresAt
+          properties:
+            token:
+              type: string
+            expiresAt:
+              type: string
+              format: date-time
+    WalletChallengeInput:
+      type: object
+      required:
+      - address
+      properties:
+        address:
+          type: string
+        caipChainId:
+          type: string
+          example: eip155:1
+        statement:
+          type: string
+        requestId:
+          type: string
+        resources:
+          type: array
+          items:
+            type: string
     WalletVerifyInput:
       type: object
       required:
@@ -205,101 +300,6 @@ components:
                 type: integer
           discriminator:
             propertyName: kind
-    WalletVerifyResponse:
-      type: object
-      required:
-      - principal
-      - session
-      properties:
-        principal:
-          type: object
-          required:
-          - identity
-          - authMethod
-          properties:
-            identity:
-              type: string
-            accountId:
-              type: string
-            caipChainId:
-              type: string
-            address:
-              type: string
-            authMethod:
-              type: string
-              enum:
-              - wallet_signature
-        session:
-          type: object
-          required:
-          - token
-          - expiresAt
-          properties:
-            token:
-              type: string
-            expiresAt:
-              type: string
-              format: date-time
-    WalletChallengeResponse:
-      type: object
-      required:
-      - challenge
-      properties:
-        challenge:
-          type: object
-          required:
-          - challengeToken
-          - message
-          properties:
-            challengeToken:
-              type: string
-            message:
-              type: string
-            nonce:
-              type: string
-            issuedAt:
-              type: string
-              format: date-time
-            expirationTime:
-              type: string
-              format: date-time
-    WalletChallengeInput:
-      type: object
-      required:
-      - address
-      properties:
-        address:
-          type: string
-        caipChainId:
-          type: string
-          example: eip155:1
-        statement:
-          type: string
-        requestId:
-          type: string
-        resources:
-          type: array
-          items:
-            type: string
-    Error:
-      type: object
-      required:
-      - error
-      properties:
-        error:
-          type: object
-          required:
-          - code
-          properties:
-            code:
-              type: string
-              example: rate_limited
-            message:
-              type: string
-            retryable:
-              type: boolean
-            correlationId:
-              type: string
   responses:
     Unauthorized:
       description: Missing or invalid bearer token.

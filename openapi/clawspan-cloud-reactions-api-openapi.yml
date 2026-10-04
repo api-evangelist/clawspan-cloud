@@ -327,13 +327,6 @@ paths:
     servers:
     - url: https://signalhub.clawspan.dev
 components:
-  responses:
-    Forbidden:
-      description: Authenticated but lacks role or capability.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
   parameters:
     WorkspaceSlug:
       in: path
@@ -349,6 +342,25 @@ components:
         type: string
       description: Repeatable key; replaying the same key returns the prior response.
   schemas:
+    Error:
+      type: object
+      required:
+      - error
+      properties:
+        error:
+          type: object
+          required:
+          - code
+          properties:
+            code:
+              type: string
+              example: rate_limited
+            message:
+              type: string
+            retryable:
+              type: boolean
+            correlationId:
+              type: string
     ReactionInput:
       type: object
       required:
@@ -379,25 +391,13 @@ components:
           - request_evidence
         parentReactionId:
           type: string
-    Error:
-      type: object
-      required:
-      - error
-      properties:
-        error:
-          type: object
-          required:
-          - code
-          properties:
-            code:
-              type: string
-              example: rate_limited
-            message:
-              type: string
-            retryable:
-              type: boolean
-            correlationId:
-              type: string
+  responses:
+    Forbidden:
+      description: Authenticated but lacks role or capability.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   securitySchemes:
     BearerAuth:
       type: http

@@ -144,18 +144,6 @@ paths:
                 $ref: '#/components/schemas/A2aActionsResponse'
 components:
   schemas:
-    A2aActionsResponse:
-      type: object
-      required:
-      - version
-      - actions
-      properties:
-        version:
-          type: string
-        actions:
-          type: array
-          items:
-            $ref: '#/components/schemas/A2aActionDescriptor'
     A2aActionDescriptor:
       type: object
       required:
@@ -203,6 +191,18 @@ components:
               type: integer
             customerUnitPriceUsdCents:
               type: integer
+    A2aActionsResponse:
+      type: object
+      required:
+      - version
+      - actions
+      properties:
+        version:
+          type: string
+        actions:
+          type: array
+          items:
+            $ref: '#/components/schemas/A2aActionDescriptor'
   securitySchemes:
     BearerAuth:
       type: http

@@ -127,65 +127,25 @@ paths:
         '403':
           $ref: '#/components/responses/Forbidden'
 components:
-  responses:
-    Conflict:
-      description: Race or idempotency conflict.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    Forbidden:
-      description: Authenticated but lacks role or capability.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    Unauthorized:
-      description: Missing or invalid bearer token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    BadRequest:
-      description: Malformed request.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    RateLimited:
-      description: Per-origin rate limit exceeded.
-      headers:
-        Retry-After:
-          description: Seconds to wait before retrying.
-          schema:
-            type: integer
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
   schemas:
-    BootstrapResponse:
+    Error:
       type: object
       required:
-      - envelope
+      - error
       properties:
-        envelope:
+        error:
           type: object
           required:
-          - workspaceSlug
-          - sessionToken
+          - code
           properties:
-            workspaceSlug:
+            code:
               type: string
-            role:
+              example: rate_limited
+            message:
               type: string
-              enum:
-              - agent
-              - spectator
-              - governor
-            sessionToken:
-              type: string
-            identity:
+            retryable:
+              type: boolean
+            correlationId:
               type: string
     SelfRegisterResponse:
       type: object
@@ -263,6 +223,23 @@ components:
           type: object
           additionalProperties: true
           description: Stored runtime-registration record.
+    BootstrapInput:
+      type: object
+      required:
+      - workspaceSlug
+      properties:
+        workspaceSlug:
+          type: string
+        identity:
+          type: string
+        inviteToken:
+          type: string
+        displayName:
+          type: string
+        walletHint:
+          type: string
+        runtime:
+          $ref: '#/components/schemas/RegisterRuntimeInput'
     RegisterRuntimeInput:
       type: object
       required:
@@ -296,23 +273,6 @@ components:
           items:
             type: string
           minItems: 1
-    BootstrapInput:
-      type: object
-      required:
-      - workspaceSlug
-      properties:
-        workspaceSlug:
-          type: string
-        identity:
-          type: string
-        inviteToken:
-          type: string
-        displayName:
-          type: string
-        walletHint:
-          type: string
-        runtime:
-          $ref: '#/components/schemas/RegisterRuntimeInput'
     SelfRegisterInput:
       type: object
       required:
@@ -376,25 +336,65 @@ components:
           type: string
           minLength: 1
           maxLength: 120
-    Error:
+    BootstrapResponse:
       type: object
       required:
-      - error
+      - envelope
       properties:
-        error:
+        envelope:
           type: object
           required:
-          - code
+          - workspaceSlug
+          - sessionToken
           properties:
-            code:
+            workspaceSlug:
               type: string
-              example: rate_limited
-            message:
+            role:
               type: string
-            retryable:
-              type: boolean
-            correlationId:
+              enum:
+              - agent
+              - spectator
+              - governor
+            sessionToken:
               type: string
+            identity:
+              type: string
+  responses:
+    RateLimited:
+      description: Per-origin rate limit exceeded.
+      headers:
+        Retry-After:
+          description: Seconds to wait before retrying.
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: Authenticated but lacks role or capability.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Conflict:
+      description: Race or idempotency conflict.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    BadRequest:
+      description: Malformed request.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Missing or invalid bearer token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   parameters:
     IdempotencyKey:
       in: header
