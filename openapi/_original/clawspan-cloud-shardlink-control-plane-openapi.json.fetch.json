@@ -1,0 +1,12 @@
+{
+ "url": "https://app.clawspan.cloud/openapi.json",
+ "requested_url": "https://app.clawspan.cloud/openapi.json",
+ "status": 200,
+ "content_type": "application/json; charset=utf-8",
+ "bytes": 62632,
+ "sha256": "1f92cbd122ef61552a8c31263f4b0a5a0a54acde309da9d1429d54b75f7a4213",
+ "fetched_at": "2026-10-04",
+ "fetched_by": "APIEvangelist-Harvest/1.0 (+https://apievangelist.com)",
+ "match": "byte-identical",
+ "note": "Re-fetched from the provider by verify-openapi-sources.py; the archived file is byte-identical to what the provider serves."
+}
