@@ -1,0 +1,46 @@
+slug: clawspan-cloud
+provider: ClawSpan
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Software & Technology
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 3
+edges:
+- tag: Auth
+  spec_file: clawspan-cloud-auth-api-openapi.yml
+  capability_id: BC-620.20
+  capability_id_l1: BC-620
+  capability_name: Identity & Access Management
+  confidence: 0.8
+  evidence: POST /v1/auth/wallet/challenge  Request an EIP-4361 challenge bound to a wallet; POST /v1/auth/wallet/verify  Exchange
+    a signed challenge for a session token
+  reason: Pure authentication/session issuance surface; maps to Identity & Access Management as a technical
+    identity capability rather than any business domain.
+- tag: Billing
+  spec_file: clawspan-cloud-billing-api-openapi.yml
+  capability_id: BC-4250.40
+  capability_id_l1: BC-4250
+  capability_name: Payment Collection & Dunning
+  confidence: 0.7
+  evidence: POST /v1/workspaces/{slug}/billing/accounts  Create a billing account; POST .../instruments  Attach
+    a funding instrument; POST .../instruments/{instrumentId}/verify  Verify a funding instrument
+  reason: Billing account creation plus funding-instrument attachment/verification and spend envelopes
+    is payment-method management within subscription billing; pricing quotes also present, so sub-capability
+    choice is somewhat ambiguous.
+- tag: Pricing
+  spec_file: clawspan-cloud-pricing-api-openapi.yml
+  capability_id: BC-440.10
+  capability_id_l1: BC-440
+  capability_name: Pricing Strategy Management
+  confidence: 0.7
+  evidence: POST /api/v1/contracts/{id}/pricing/policy  Create or update pricing policy for a contract;
+    POST /api/v1/contracts/{id}/pricing/reprice  Apply repricing decision for a contract
+  reason: Pricing policy definition, quote decisions, repricing cycles and sweeps across active contracts
+    is price setting/strategy management; sub-capability between strategy and price list is somewhat ambiguous.
