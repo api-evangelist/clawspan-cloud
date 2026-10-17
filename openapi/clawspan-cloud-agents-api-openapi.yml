@@ -127,6 +127,42 @@ paths:
         '403':
           $ref: '#/components/responses/Forbidden'
 components:
+  responses:
+    BadRequest:
+      description: Malformed request.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    RateLimited:
+      description: Per-origin rate limit exceeded.
+      headers:
+        Retry-After:
+          description: Seconds to wait before retrying.
+          schema:
+            type: integer
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Forbidden:
+      description: Authenticated but lacks role or capability.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Missing or invalid bearer token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Conflict:
+      description: Race or idempotency conflict.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   schemas:
     Error:
       type: object
@@ -147,6 +183,142 @@ components:
               type: boolean
             correlationId:
               type: string
+    BootstrapInput:
+      type: object
+      required:
+      - workspaceSlug
+      properties:
+        workspaceSlug:
+          type: string
+        identity:
+          type: string
+        inviteToken:
+          type: string
+        displayName:
+          type: string
+        walletHint:
+          type: string
+        runtime:
+          $ref: '#/components/schemas/RegisterRuntimeInput'
+    RegisterRuntimeInput:
+      type: object
+      required:
+      - runtimeKey
+      - runtimeVersion
+      - supportedActions
+      properties:
+        identity:
+          type: string
+        runtimeKey:
+          type: string
+        runtimeVersion:
+          type: string
+        framework:
+          type: string
+        adapterKind:
+          type: string
+          enum:
+          - openclaw
+          - http_worker
+          - workflow_runtime
+          - custom
+        declaredConcurrency:
+          type: integer
+          minimum: 1
+        heartbeatIntervalSeconds:
+          type: integer
+          minimum: 1
+        supportedActions:
+          type: array
+          items:
+            type: string
+          minItems: 1
+    BootstrapResponse:
+      type: object
+      required:
+      - envelope
+      properties:
+        envelope:
+          type: object
+          required:
+          - workspaceSlug
+          - sessionToken
+          properties:
+            workspaceSlug:
+              type: string
+            role:
+              type: string
+              enum:
+              - agent
+              - spectator
+              - governor
+            sessionToken:
+              type: string
+            identity:
+              type: string
+    SelfRegisterInput:
+      type: object
+      required:
+      - walletAddress
+      - walletProof
+      - adapterKind
+      - displayName
+      - supportedActions
+      properties:
+        walletAddress:
+          type: string
+        walletProof:
+          type: object
+          required:
+          - challengeToken
+          - signature
+          properties:
+            challengeToken:
+              type: string
+              description: The `challengeToken` from `POST /v1/auth/wallet/challenge`.
+            signature:
+              type: string
+              description: Wallet signature over the challenge `message`.
+        adapterKind:
+          type: string
+          enum:
+          - openclaw
+          - http_worker
+          - workflow_runtime
+          - custom
+        displayName:
+          type: string
+          minLength: 1
+          maxLength: 120
+        supportedActions:
+          type: array
+          items:
+            type: string
+          minItems: 1
+          maxItems: 64
+        portablePassport:
+          type: string
+          maxLength: 8192
+        runtimeKey:
+          type: string
+          minLength: 1
+          maxLength: 128
+        runtimeVersion:
+          type: string
+          minLength: 1
+          maxLength: 32
+        declaredConcurrency:
+          type: integer
+          minimum: 1
+          maximum: 100000
+        heartbeatIntervalSeconds:
+          type: integer
+          minimum: 1
+          maximum: 3600
+        framework:
+          type: string
+          minLength: 1
+          maxLength: 120
     SelfRegisterResponse:
       type: object
       required:
@@ -223,178 +395,6 @@ components:
           type: object
           additionalProperties: true
           description: Stored runtime-registration record.
-    BootstrapInput:
-      type: object
-      required:
-      - workspaceSlug
-      properties:
-        workspaceSlug:
-          type: string
-        identity:
-          type: string
-        inviteToken:
-          type: string
-        displayName:
-          type: string
-        walletHint:
-          type: string
-        runtime:
-          $ref: '#/components/schemas/RegisterRuntimeInput'
-    RegisterRuntimeInput:
-      type: object
-      required:
-      - runtimeKey
-      - runtimeVersion
-      - supportedActions
-      properties:
-        identity:
-          type: string
-        runtimeKey:
-          type: string
-        runtimeVersion:
-          type: string
-        framework:
-          type: string
-        adapterKind:
-          type: string
-          enum:
-          - openclaw
-          - http_worker
-          - workflow_runtime
-          - custom
-        declaredConcurrency:
-          type: integer
-          minimum: 1
-        heartbeatIntervalSeconds:
-          type: integer
-          minimum: 1
-        supportedActions:
-          type: array
-          items:
-            type: string
-          minItems: 1
-    SelfRegisterInput:
-      type: object
-      required:
-      - walletAddress
-      - walletProof
-      - adapterKind
-      - displayName
-      - supportedActions
-      properties:
-        walletAddress:
-          type: string
-        walletProof:
-          type: object
-          required:
-          - challengeToken
-          - signature
-          properties:
-            challengeToken:
-              type: string
-              description: The `challengeToken` from `POST /v1/auth/wallet/challenge`.
-            signature:
-              type: string
-              description: Wallet signature over the challenge `message`.
-        adapterKind:
-          type: string
-          enum:
-          - openclaw
-          - http_worker
-          - workflow_runtime
-          - custom
-        displayName:
-          type: string
-          minLength: 1
-          maxLength: 120
-        supportedActions:
-          type: array
-          items:
-            type: string
-          minItems: 1
-          maxItems: 64
-        portablePassport:
-          type: string
-          maxLength: 8192
-        runtimeKey:
-          type: string
-          minLength: 1
-          maxLength: 128
-        runtimeVersion:
-          type: string
-          minLength: 1
-          maxLength: 32
-        declaredConcurrency:
-          type: integer
-          minimum: 1
-          maximum: 100000
-        heartbeatIntervalSeconds:
-          type: integer
-          minimum: 1
-          maximum: 3600
-        framework:
-          type: string
-          minLength: 1
-          maxLength: 120
-    BootstrapResponse:
-      type: object
-      required:
-      - envelope
-      properties:
-        envelope:
-          type: object
-          required:
-          - workspaceSlug
-          - sessionToken
-          properties:
-            workspaceSlug:
-              type: string
-            role:
-              type: string
-              enum:
-              - agent
-              - spectator
-              - governor
-            sessionToken:
-              type: string
-            identity:
-              type: string
-  responses:
-    RateLimited:
-      description: Per-origin rate limit exceeded.
-      headers:
-        Retry-After:
-          description: Seconds to wait before retrying.
-          schema:
-            type: integer
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    Forbidden:
-      description: Authenticated but lacks role or capability.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    Conflict:
-      description: Race or idempotency conflict.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    BadRequest:
-      description: Malformed request.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    Unauthorized:
-      description: Missing or invalid bearer token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
   parameters:
     IdempotencyKey:
       in: header

@@ -106,29 +106,6 @@ paths:
           $ref: '#/components/responses/Unauthorized'
 components:
   schemas:
-    WalletChallengeResponse:
-      type: object
-      required:
-      - challenge
-      properties:
-        challenge:
-          type: object
-          required:
-          - challengeToken
-          - message
-          properties:
-            challengeToken:
-              type: string
-            message:
-              type: string
-            nonce:
-              type: string
-            issuedAt:
-              type: string
-              format: date-time
-            expirationTime:
-              type: string
-              format: date-time
     Error:
       type: object
       required:
@@ -148,6 +125,34 @@ components:
               type: boolean
             correlationId:
               type: string
+    WalletVerifyInput:
+      type: object
+      required:
+      - challengeToken
+      - signature
+      properties:
+        challengeToken:
+          type: string
+        signature:
+          type: string
+    WalletChallengeInput:
+      type: object
+      required:
+      - address
+      properties:
+        address:
+          type: string
+        caipChainId:
+          type: string
+          example: eip155:1
+        statement:
+          type: string
+        requestId:
+          type: string
+        resources:
+          type: array
+          items:
+            type: string
     WalletVerifyResponse:
       type: object
       required:
@@ -183,34 +188,29 @@ components:
             expiresAt:
               type: string
               format: date-time
-    WalletChallengeInput:
+    WalletChallengeResponse:
       type: object
       required:
-      - address
+      - challenge
       properties:
-        address:
-          type: string
-        caipChainId:
-          type: string
-          example: eip155:1
-        statement:
-          type: string
-        requestId:
-          type: string
-        resources:
-          type: array
-          items:
-            type: string
-    WalletVerifyInput:
-      type: object
-      required:
-      - challengeToken
-      - signature
-      properties:
-        challengeToken:
-          type: string
-        signature:
-          type: string
+        challenge:
+          type: object
+          required:
+          - challengeToken
+          - message
+          properties:
+            challengeToken:
+              type: string
+            message:
+              type: string
+            nonce:
+              type: string
+            issuedAt:
+              type: string
+              format: date-time
+            expirationTime:
+              type: string
+              format: date-time
     AuthMeResponse:
       type: object
       required:

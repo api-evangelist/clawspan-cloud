@@ -72,14 +72,14 @@ paths:
           $ref: '#/components/responses/Forbidden'
 components:
   responses:
-    Forbidden:
-      description: Authenticated but lacks role or capability.
+    Unauthorized:
+      description: Missing or invalid bearer token.
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-    Unauthorized:
-      description: Missing or invalid bearer token.
+    Forbidden:
+      description: Authenticated but lacks role or capability.
       content:
         application/json:
           schema:

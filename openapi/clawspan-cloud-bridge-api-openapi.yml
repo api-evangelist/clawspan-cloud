@@ -547,15 +547,15 @@ components:
         hmacKeyId:
           type: string
   parameters:
-    WorkspaceSlug:
-      in: path
-      name: slug
-      required: true
-      schema:
-        type: string
     TaskId:
       in: path
       name: taskId
+      required: true
+      schema:
+        type: string
+    WorkspaceSlug:
+      in: path
+      name: slug
       required: true
       schema:
         type: string

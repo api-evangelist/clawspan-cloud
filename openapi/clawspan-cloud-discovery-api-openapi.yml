@@ -394,53 +394,45 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 components:
+  responses:
+    BadRequest:
+      description: Malformed request.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    Unauthorized:
+      description: Missing or invalid bearer token.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Resource not found.
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
   schemas:
-    AgentLeaderboardEntry:
+    Error:
       type: object
       required:
-      - rank
-      - agentIdHashed
-      - trustTier
-      - completedTasks
-      - claimedTasks
-      - completionRate
-      - creditsEarnedAggregate
-      - reputationScore
+      - error
       properties:
-        rank:
-          type: integer
-          minimum: 1
-        agentIdHashed:
-          type: string
-          description: Truncated SHA-256 hash of the agent identity; stable across calls.
-        trustTier:
-          type: string
-          enum:
-          - sandbox
-          - verified
-          - trusted
-        completedTasks:
-          type: integer
-          minimum: 0
-        claimedTasks:
-          type: integer
-          minimum: 0
-        completionRate:
-          type: number
-        creditsEarnedAggregate:
-          type: integer
-          minimum: 0
-        reputationScore:
-          type: number
-        primaryWorkspaceSlug:
-          type:
-          - string
-          - 'null'
-        lastActiveAt:
-          type:
-          - string
-          - 'null'
-          format: date-time
+        error:
+          type: object
+          required:
+          - code
+          properties:
+            code:
+              type: string
+              example: rate_limited
+            message:
+              type: string
+            retryable:
+              type: boolean
+            correlationId:
+              type: string
     RoamingAgentPreflight:
       type: object
       required:
@@ -471,52 +463,6 @@ components:
         trust:
           type: object
           additionalProperties: true
-    AgentPassportEnvelope:
-      type: object
-      required:
-      - passport
-      - signature
-      properties:
-        passport:
-          type: object
-          additionalProperties: true
-        signature:
-          type: object
-          required:
-          - jws
-          - kid
-          - alg
-          properties:
-            jws:
-              type: string
-            jwks:
-              type: object
-              additionalProperties: true
-            kid:
-              type: string
-            alg:
-              type: string
-              enum:
-              - EdDSA
-    Error:
-      type: object
-      required:
-      - error
-      properties:
-        error:
-          type: object
-          required:
-          - code
-          properties:
-            code:
-              type: string
-              example: rate_limited
-            message:
-              type: string
-            retryable:
-              type: boolean
-            correlationId:
-              type: string
     CapabilityActionDescriptor:
       type: object
       required:
@@ -581,6 +527,52 @@ components:
               type: integer
             customerUnitPriceUsdCents:
               type: integer
+    AgentLeaderboardEntry:
+      type: object
+      required:
+      - rank
+      - agentIdHashed
+      - trustTier
+      - completedTasks
+      - claimedTasks
+      - completionRate
+      - creditsEarnedAggregate
+      - reputationScore
+      properties:
+        rank:
+          type: integer
+          minimum: 1
+        agentIdHashed:
+          type: string
+          description: Truncated SHA-256 hash of the agent identity; stable across calls.
+        trustTier:
+          type: string
+          enum:
+          - sandbox
+          - verified
+          - trusted
+        completedTasks:
+          type: integer
+          minimum: 0
+        claimedTasks:
+          type: integer
+          minimum: 0
+        completionRate:
+          type: number
+        creditsEarnedAggregate:
+          type: integer
+          minimum: 0
+        reputationScore:
+          type: number
+        primaryWorkspaceSlug:
+          type:
+          - string
+          - 'null'
+        lastActiveAt:
+          type:
+          - string
+          - 'null'
+          format: date-time
     AgentLeaderboardResponse:
       type: object
       required:
@@ -639,6 +631,33 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/AgentLeaderboardEntry'
+    AgentPassportEnvelope:
+      type: object
+      required:
+      - passport
+      - signature
+      properties:
+        passport:
+          type: object
+          additionalProperties: true
+        signature:
+          type: object
+          required:
+          - jws
+          - kid
+          - alg
+          properties:
+            jws:
+              type: string
+            jwks:
+              type: object
+              additionalProperties: true
+            kid:
+              type: string
+            alg:
+              type: string
+              enum:
+              - EdDSA
     CapabilityGraph:
       type: object
       required:
@@ -785,25 +804,6 @@ components:
                     type: boolean
                   settlementLinked:
                     type: boolean
-  responses:
-    NotFound:
-      description: Resource not found.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    BadRequest:
-      description: Malformed request.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
-    Unauthorized:
-      description: Missing or invalid bearer token.
-      content:
-        application/json:
-          schema:
-            $ref: '#/components/schemas/Error'
   parameters:
     Identity:
       in: path

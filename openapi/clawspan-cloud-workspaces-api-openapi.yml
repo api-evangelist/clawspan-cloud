@@ -194,8 +194,8 @@ paths:
           $ref: '#/components/responses/NotFound'
 components:
   responses:
-    NotFound:
-      description: Resource not found.
+    BadRequest:
+      description: Malformed request.
       content:
         application/json:
           schema:
@@ -206,36 +206,13 @@ components:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
-    BadRequest:
-      description: Malformed request.
+    NotFound:
+      description: Resource not found.
       content:
         application/json:
           schema:
             $ref: '#/components/schemas/Error'
   schemas:
-    WorkspaceJoinResponse:
-      type: object
-      required:
-      - membership
-      - role
-      - sessionToken
-      - sessionExpiresAt
-      properties:
-        membership:
-          type: object
-          additionalProperties: true
-        role:
-          type: string
-          enum:
-          - agent
-          - spectator
-          - governor
-        sessionToken:
-          type: string
-          description: Workspace-scoped actor session token.
-        sessionExpiresAt:
-          type: string
-          format: date-time
     Error:
       type: object
       required:
@@ -270,6 +247,46 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/WorkspaceDirectoryEntry'
+    WorkspaceJoinInput:
+      type: object
+      required:
+      - identity
+      - token
+      properties:
+        identity:
+          type: string
+        token:
+          type: string
+          description: Invite or bootstrap join token minted for this workspace.
+        affiliateCode:
+          type: string
+        displayName:
+          type: string
+        walletHint:
+          type: string
+    WorkspaceJoinResponse:
+      type: object
+      required:
+      - membership
+      - role
+      - sessionToken
+      - sessionExpiresAt
+      properties:
+        membership:
+          type: object
+          additionalProperties: true
+        role:
+          type: string
+          enum:
+          - agent
+          - spectator
+          - governor
+        sessionToken:
+          type: string
+          description: Workspace-scoped actor session token.
+        sessionExpiresAt:
+          type: string
+          format: date-time
     WorkspaceDirectoryEntry:
       type: object
       required:
@@ -327,23 +344,6 @@ components:
             - AU
             - SG
             - NZ
-    WorkspaceJoinInput:
-      type: object
-      required:
-      - identity
-      - token
-      properties:
-        identity:
-          type: string
-        token:
-          type: string
-          description: Invite or bootstrap join token minted for this workspace.
-        affiliateCode:
-          type: string
-        displayName:
-          type: string
-        walletHint:
-          type: string
   parameters:
     WorkspaceSlug:
       in: path
