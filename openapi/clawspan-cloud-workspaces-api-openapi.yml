@@ -356,3 +356,9 @@ components:
       type: http
       scheme: bearer
       bearerFormat: Session token (wallet or service)
+x-provenance:
+  method: harvested
+  publisher: ClawSpan
+  source: https://app.clawspan.cloud/openapi.json
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)

@@ -24,6 +24,9 @@ artifacts:
   authentication/clawspan-cloud-authentication.yml:
     method: searched
     evidence: declared in the artifact
+  capabilities/clawspan-cloud-capability-edges.yml:
+    method: unknown
+    evidence: no authorship recorded
   conformance/clawspan-cloud-conformance.yml:
     method: searched
     evidence: declared in the artifact
@@ -45,7 +48,13 @@ artifacts:
   front-door-ai/2026-09-17.yml:
     method: unknown
     evidence: no authorship recorded
-  kin/checks-2026-09-24T161608.yml:
+  integrations/_index.yml:
+    method: generated
+    evidence: carries an API Evangelist house phrase
+  integrations/clawspan-cloud-integration-edges.yml:
+    method: searched
+    evidence: declared in the artifact
+  kin/checks-2026-10-11T110117.yml:
     method: generated
     evidence: Kin Score snapshot written by score.rb
   kin/score-2026-09-19T193153.yml:
@@ -78,6 +87,21 @@ artifacts:
   kin/score-2026-09-24T161608.yml:
     method: generated
     evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-25T210408.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-09-25T232841.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-10-03T000835.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-10-03T024842.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
+  kin/score-2026-10-11T110117.yml:
+    method: generated
+    evidence: Kin Score snapshot written by score.rb
   lifecycle/clawspan-cloud-lifecycle.yml:
     method: searched
     evidence: declared in the artifact
@@ -107,24 +131,95 @@ artifacts:
     evidence: declared in the artifact
   openapi/_original/clawspan-cloud-shardlink-control-plane-openapi.json:
     method: harvested
-    evidence: found in openapi/_original/; the fetch URL and bytes were not recorded, so byte-identity
-      to the provider's source is unverified
+    evidence: byte-identical to https://app.clawspan.cloud/openapi.json (sha256 1f92cbd122ef, fetched
+      2026-10-04)
+  openapi/_original/clawspan-cloud-shardlink-control-plane-openapi.yml:
+    method: harvested
+    evidence: the same operations as https://app.clawspan.cloud/openapi.json (sha256 1f92cbd122ef, fetched
+      2026-10-04)
   openapi/_original/clawspan-cloud-signalhub-gateway-openapi.json:
     method: harvested
     evidence: found in openapi/_original/; the fetch URL and bytes were not recorded, so byte-identity
       to the provider's source is unverified
-  openapi/clawspan-cloud-shardlink-control-plane-openapi.yml:
+  openapi/_original/clawspan-cloud-signalhub-gateway-openapi.yml:
+    method: harvested
+    evidence: found in openapi/_original/; the fetch URL and bytes were not recorded, so byte-identity
+      to the provider's source is unverified
+  openapi/clawspan-cloud-a2a-api-openapi.yml:
     method: derived
     evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
-  openapi/clawspan-cloud-signalhub-gateway-openapi.yml:
+  openapi/clawspan-cloud-affiliate-api-openapi.yml:
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
+  openapi/clawspan-cloud-agent-api-openapi.yml:
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
+  openapi/clawspan-cloud-agents-api-openapi.yml:
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
+  openapi/clawspan-cloud-auth-api-openapi.yml:
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
+  openapi/clawspan-cloud-billing-api-openapi.yml:
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
+  openapi/clawspan-cloud-bridge-api-openapi.yml:
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
+  openapi/clawspan-cloud-delegation-api-openapi.yml:
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
+  openapi/clawspan-cloud-discovery-api-openapi.yml:
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
+  openapi/clawspan-cloud-disputes-api-openapi.yml:
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
+  openapi/clawspan-cloud-health-api-openapi.yml:
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
+  openapi/clawspan-cloud-leases-api-openapi.yml:
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
+  openapi/clawspan-cloud-pricing-api-openapi.yml:
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
+  openapi/clawspan-cloud-providers-api-openapi.yml:
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
+  openapi/clawspan-cloud-public-api-openapi.yml:
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
+  openapi/clawspan-cloud-reactions-api-openapi.yml:
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
+  openapi/clawspan-cloud-realtime-api-openapi.yml:
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
+  openapi/clawspan-cloud-seller-api-openapi.yml:
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
+  openapi/clawspan-cloud-streams-api-openapi.yml:
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
+  openapi/clawspan-cloud-system-api-openapi.yml:
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
+  openapi/clawspan-cloud-tasks-api-openapi.yml:
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
+  openapi/clawspan-cloud-viral-api-openapi.yml:
+    method: derived
+    evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
+  openapi/clawspan-cloud-workspaces-api-openapi.yml:
     method: derived
     evidence: paths are a subset of openapi/_original/ (split from the harvested spec)
   overlays/clawspan-cloud-shardlink-control-plane-overlay.yaml:
-    method: generated
-    evidence: declared in the artifact
+    method: derived
+    evidence: an API Evangelist overlay (title) over the provider's contract
   overlays/clawspan-cloud-signalhub-gateway-overlay.yaml:
-    method: generated
-    evidence: declared in the artifact
+    method: derived
+    evidence: an API Evangelist overlay (title) over the provider's contract
   packages/clawspan-cloud-packages.yml:
     method: searched
     evidence: declared in the artifact
